@@ -4,6 +4,10 @@
 
 CoreSys is developed under **FÈUE (Förenta Evolutionernas Universitets Elektronik)** as a research and educational platform for experimental OS architecture.
 
+THIS REPO IS IN ACTIVE DEVELOPMENT AND NOT YET FUNCTIONAL. EXPECT FREQUENT CHANGES AND BREAKAGES.
+
+THIS REPO HAS SUBMODULES
+
 ---
 
 ## Project Goals
