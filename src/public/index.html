@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>CoreSys (FÈUE)</title>
+ <link rel="shortcut icon" href="https://feue256.github.io/CoreSys/src/public/assets/images/webp/logo.webp" type="image/x-icon"/>
+ <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<body>
+  <header role="banner">
+    <h1 id="pageTitle">CoreSys OS Edition</h1>
+    <p>A visionary standalone operating system engineered by FÈUE</p>
+
+    <label for="fontSelector" style="color:#39ff14; margin-top:1rem; display:inline-block;">Choose Font:</label>
+    <select id="fontSelector" aria-label="Choose font for page">
+      <option value="'Audiowide', cursive" selected>Audiowide</option>
+      <option value="'Orbitron', monospace">Orbitron</option>
+      <option value="'Share Tech Mono', monospace">Share Tech Mono</option>
+      <option value="'Major Mono Display', monospace">Major Mono Display</option>
+    </select>
+  </header>
+
+  <main id="maincontent" role="main">
+    <section id="about">
+      <h2>About</h2>
+      <p><strong>CoreSys OS Edition</strong> is a bold and independent operating system developed from scratch by <strong>FÈUE</strong>.  
+      Designed exclusively for classic <em>BIOS</em> systems after a full architectural migration from UEFI.  
+      The system now boots through a custom real-mode loader and enters protected mode without any UEFI dependencies. This do not have any support for BIOS or EDK2 or 32 bit mode only 64 bit mode!</p>
+    </section>
+
+    <section id="roadmap">
+      <h2>Roadmap</h2>
+      <ul>
+        <li>"Hello, World!" and setting up the project</li>
+        <li>Create a custom versions of Cyber::Boot functions for CoreSys</li>
+        <li>First public release that's not in DEBUG mode (BUILD_TYPE=DEGUB in .config/build.cfg)</li>
+        <li>Maybe a API and Graphics</li>
+        <li>More functions and things to add to CoreSys</li>
+      </ul>
+    </section>
+
+    <section id="ficbuefi">
+      <h2>Features in CoreSys</h2>
+      <ul>
+        <li>Every old Cyber::Boot function (can be modifyed) and more (List comes with offial release)</li>
+      </ul>
+    </section>
+
+    <section id="download">
+      <h2>Download</h2>
+      Coming Soon!!!
+    </section>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <p>
+        Questions or feedback? Reach out via email at
+        <a href="mailto:feue.com1@outlook.com" style="color:#39ff14;" aria-label="Send email to feue.com1 at outlook.com">
+          feue.com1@outlook.com
+        </a>
+      </p>
+    </section>
+  </main>
+
+  <footer role="contentinfo">
+    © 2025 FÈUE FSS | All rights reserved
+    <br />
+    <button id="toggleRoadmap" aria-pressed="false" aria-label="Toggle light and dark mode">Switch to Light Mode</button>
+    <br />
+      Thanks to Queso Fuego (Parts of code), Cyber::Boot (Fork), Terry A. Davis (TempleOS), Ankit Kumar (Polaris OS), Neptune650 (Polaris OS), MishaTy (Polaris OS), redmine4404 (Polaris OS), AnalogFeelings (Polaris), every person on the EDK II team and many more for the inspiration and help in making this project possible!
+    </p>
+  </footer>
+ <script src="js/script.js"></script>
+</body>
+
+</html>

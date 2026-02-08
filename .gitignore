@@ -1,0 +1,4 @@
+*.tmp
+.ssh/
+.vscode/
+.git/
