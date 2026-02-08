@@ -1,35 +1,60 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-# Resolve absolute repo root (robust in WSL, symlinks, cron, etc.)
-REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+# ---------- Progress bar ----------
+progress() {
+    local msg="$1"
+    local delay="${2:-0.3}"
+    echo -ne "$msg"
+    for i in {1..3}; do
+        echo -ne "."
+        sleep "$delay"
+    done
+    echo " done"
+}
+
+# Resolve absolute repo root
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "Repository root: $REPO_DIR"
 cd "$REPO_DIR"
 
-# Sanity check: ensure this is a git repo
-if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    echo "Error: Not a git repository: $REPO_DIR"
+progress "Checking git repository"
+
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
+    echo "Error: Not a git repository"
+    exit 1
+}
+
+BRANCH="$(git symbolic-ref --short HEAD 2>/dev/null || true)"
+if [ -z "$BRANCH" ]; then
+    echo "Error: Detached HEAD"
     exit 1
 fi
 
-# Ask once (no infinite loop)
-read -p "Enter commit message (or press Enter for default): " COMMIT_MSG
-if [ -z "$COMMIT_MSG" ]; then
-    COMMIT_MSG="Quick commit at $(date +"%Y-%m-%d %H:%M:%S")"
-fi
+progress "Checking remote origin"
 
-# Stage changes
-git add .
+git remote get-url origin >/dev/null 2>&1 || {
+    echo "Error: Remote 'origin' missing"
+    exit 1
+}
 
-# Do not fail if there is nothing to commit
+# Ask commit message
+read -r -p "Enter commit message (or press Enter for default): " COMMIT_MSG
+COMMIT_MSG="${COMMIT_MSG:-Quick commit at $(date +"%Y-%m-%d %H:%M:%S")}"
+
+progress "Staging files"
+git add -A
+
 if git diff --cached --quiet; then
     echo "Nothing to commit."
     exit 0
 fi
 
-# Commit and push
-git commit -m "$COMMIT_MSG"
-git push origin main
+progress "Creating commit"
+git commit -m "$COMMIT_MSG" >/dev/null
 
-echo "Git push completed with commit: $COMMIT_MSG"
+progress "Pushing to origin/$BRANCH"
+git push origin "$BRANCH" >/dev/null
+
+echo "Git push completed successfully."
