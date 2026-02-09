@@ -26,8 +26,8 @@
     <section id="about">
       <h2>About</h2>
       <p><strong>CoreSys OS Edition</strong> is a bold and independent operating system developed from scratch by <strong>FÈUE</strong>.  
-      Designed exclusively for classic <em>BIOS</em> systems after a full architectural migration from UEFI.  
-      The system now boots through a custom real-mode loader and enters protected mode without any UEFI dependencies. This do not have any support for BIOS or EDK2 or 32 bit mode only 64 bit mode!</p>
+      Designed exclusively for new <em>UEFI</em> systems.  
+      The system now boots through a custom bootloader and enters protected mode without any BIOS support. This do not have any support for BIOS or EDK2 or 32 bit mode only 64 bit mode!</p>
     </section>
 
     <section id="roadmap">
@@ -35,7 +35,7 @@
       <ul>
         <li>"Hello, World!" and setting up the project</li>
         <li>Create a custom versions of Cyber::Boot functions for CoreSys</li>
-        <li>First public release that's not in DEBUG mode (BUILD_TYPE=DEGUB in .config/build.cfg)</li>
+        <li>First public release that's not in DEBUG mode (MODE=RELEASE in .config/config.cfg)</li>
         <li>Maybe a API and Graphics</li>
         <li>More functions and things to add to CoreSys</li>
       </ul>
