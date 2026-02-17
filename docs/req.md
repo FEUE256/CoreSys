@@ -19,7 +19,22 @@ First you need:
 - python3
 - python3-distutils
 - build-essential
+- python3-venv
+- dos2unix
+- hexedit
+- bison
+- flex
+- libgmp3-dev
+- libmpc-dev
+- libmpfr-dev
+- texinfo
+- libcloog-isl-dev
+- libisl-dev
+- mtools
+- sleuthkit
 
-If you get a error copy paste it to a mail to FÈUE or paste the error into ChatGPT!!!
+You can download all of them with ``CoreSys/scripts/apt.sh`` .
+
+If you get a error copy paste it to a email to FÈUE or paste the error into ChatGPT!!!
 
 Hopes it helps!

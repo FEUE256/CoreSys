@@ -1,0 +1,3 @@
+# MC Files
+
+MC stands for "Machine Code". These files is just a normal ASM (.s, .asm) file but in binary format (base 2). See [this test file](./test.mc) for an example. The compiler is build with CoreSys and is in the `CoreSys/bin/Release/MC/mc2.run` file. When you're programming in MC remember do not use spaces or newlines, and only use 1s and 0s. mc2 stands for "Machine Code Compiler". https://www.rapidtables.com/convert/number/ascii-to-binary.html is a great tool for converting ASCII to binary. The ASM architecture is x86-64, and the syntax is NASM. The output of the compiler is a binary file that can be directly executed by the CPU. The compiler is written in C and is very simple, see source code `CoreSys/src/MC/main.c`.

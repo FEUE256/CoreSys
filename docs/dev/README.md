@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-CoreSys is a system project with a diskwriter utility for hardware deployment and a web-based interface for management website. The project supports both software emulation (via QEMU) and hardware deployment.
+CoreSys is a system project with a diskwriter utility for hardware deployment and a web-based interface for management website. The project supports both software emulation (via QEMU) and hardware deployment. -j in make is not supported.
 
 ## Development Setup
 
@@ -15,22 +15,22 @@ From the project root:
 
 ```bash
 # Create build directory
-mkdir -p build
+mkdir -p build/master
 
 # Build with CMake (if using CMake)
-cmake -B build
-cmake --build build
+make all -B
 
-# Or build with Make
-cd build/Diskwriter
-make
 ```
+
+Use make subdirs -B for not building edk2. 
+Use make DO_TEST=1 all for build with tests.
+Use make DO_TEST=1 subdirs -B for build with tests without edk2.
 
 ### Testing with QEMU
 
 ```bash
-cd scripts
-./qemu.sh
+cd build/master
+make qemu
 ```
 
 ## Code Guidelines

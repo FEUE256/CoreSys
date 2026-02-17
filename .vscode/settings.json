@@ -4,5 +4,6 @@
     },
     "C_Cpp.files.exclude": [
         "../**"
-    ]
+    ],
+    "C_Cpp.dimInactiveRegions": false
 }

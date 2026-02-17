@@ -1,46 +1,37 @@
-#!/bin/sh
-# Launch CoreSys in QEMU
-# Usage: ./qemu.sh [debug|release]
+#!/bin/bash
 
-MODE="${1:-release}"
-
-case "$MODE" in
-    debug)
-        NAME="Debug"
-        ;;
-    release)
-        NAME="Release"
-        ;;
-    *)
-        echo "Invalid mode: $MODE"
-        echo "Valid modes: debug, release"
-        exit 1
-        ;;
-esac
-
-BOOT_IMG="../bin/$NAME/CoreSys/boot.img"
-FIRMWARE="../firmware/OVMF_CODE.fd"
-
-# Check if boot image exists
-if [ ! -f "$BOOT_IMG" ]; then
-    echo "Error: Boot image not found at $BOOT_IMG"
-    echo "Please build the project first."
-    exit 1
+# Check if argument is provided
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 <MODE> (Debug/Release)"
+  exit 1
 fi
 
-# Check if firmware exists (optional)
-BIOS_ARGS=""
-if [ -f "$FIRMWARE" ]; then
-    BIOS_ARGS="-bios $FIRMWARE"
+MODE="$1"
+
+# Validate MODE
+if [ "$MODE" != "Debug" ] && [ "$MODE" != "Release" ]; then
+  echo "Error: MODE must be either 'Debug' or 'Release', not '$MODE'"
+  exit 1
 fi
 
+IMG="../bin/$MODE/CoreSys/CoreSys.img"
+
+# Check if image exists
+if [ ! -f "$IMG" ]; then
+  echo "Error: CoreSys image not found at $IMG"
+  exit 1
+fi
+
+# Run QEMU
 qemu-system-x86_64 \
-    -m 256M \
-    -machine q35 \
-    -drive format=raw,file="$BOOT_IMG" \
-    $BIOS_ARGS \
-    -name "CoreSys ($MODE)" \
-    -netdev user,id=net0 \
-    -device e1000,netdev=net0 \
-    -serial stdio \
-    -monitor vc
+-drive format=raw,file="$IMG" \
+-bios ../firmware/bios64.bin \
+-m 256M \
+-vga std \
+-name CoreSys \
+-machine q35 \
+-usb \
+-device usb-mouse \
+-rtc base=localtime \
+-net none \
+-serial stdio

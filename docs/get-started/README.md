@@ -15,32 +15,10 @@ cd Path/to/CoreSys/build/master
 ```
 3. Run Script
 ```bash
-make qemu
+make qemu -B
 ```
-(Qemu come work when this text is removed now it do NOT work)
 
 ## Hardware
 WARNING: THIS WILL WIPE THE WHOLE DRIVE
-Note: Run diskwriter.run with sudo
-Note: When you unmount the disk files can be corrupted
 
-1. Open WSL or the terminal
-2. Change Folder
-```bash
-cd Path/to/CoreSys/bin/Release/Diskwriter
-```
-3. List disks
-```bash
-lsblk
-```
-See which disk it is by checking its disk size. Remember the characters under the title "NAME" for the disk. Check if it is mounted under the title "MOUNTPOINTS" for the disk if that is blank, go to step 5 else go to step 4.
-4. Unmount the disk
-```bash
-umount -f /mnt/NAME
-```
-5. Flash the device
-```bash
-sudo ./diskwriter.run ../CoreSys/boot.img NAME
-```
-
-(boot.img come work when this text is removed now it do NOT work)
+1. Go to google and search up how to use Rufus.

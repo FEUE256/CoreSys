@@ -1,7 +1,7 @@
-.PHONY: all clean FORCE
+.PHONY: all clean FORCE gpt
 
 # =====================
-# Config files
+# Config file
 # =====================
 CONFIG_FILE := ../../.config/config.cfg
 
@@ -17,23 +17,41 @@ $(BUILD_DIR):
 # =====================
 # Compile .c -> ELF object
 # =====================
-$(O_FILE): $(SRC_FILE) | $(BUILD_DIR)
-	@echo "Compiling $< → $@"
-	$(COMPILER) -target x86_64-efi $(CFLAGS) -I$(SRC_DIR)/include -c $< -o $@
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # =====================
-# Build EFI in BUILD_DIR
+# Ensure BIN_DIR exists
 # =====================
-$(BUILD_EFI): $(O_FILE) | $(BUILD_DIR)
+$(BIN_DIR):
+	mkdir -p $@
+
+# =====================
+# Build EFI in BIN_DIR
+# =====================
+$(BUILD_EFI): $(O_FILE) | $(BIN_DIR)
 	@echo "Linking EFI in BUILD_DIR: $@"
-	x86_64-w64-mingw32-objcopy -O pei-x86-64 $(O_FILE) $@
+	$(CC) $(O_FILE) $(LDFLAGS) -o $@
 	@echo "Built EFI application: $@"
 	rm -f $(O_FILE)
 
 # =====================
+# Making IMG file
+# =====================
+gpt:
+	@echo "Creating CoreSys image in $(MODE) mode..."
+	@mkdir -p $(FINAL_IMG_DIR)
+	@$(GPT_TOOL) -e $(BUILD_EFI)
+	@mv $(GPT_IMG) $(FINAL_IMG)
+	@rm -f $(BUILD_EFI)
+	@rm -f $(GPT_FILE_TXT)
+	@echo "CoreSys.img created at $(FINAL_IMG)"
+
+# =====================
 # All target
 # =====================
-all: FORCE $(BUILD_EFI)
+all: FORCE $(BUILD_EFI) gpt
 
 # =====================
 # FORCE rebuild
@@ -44,5 +62,5 @@ FORCE:
 # Clean
 # =====================
 clean:
-	rm -f $(O_FILE) $(BUILD_EFI)
+	rm -f $(O_FILE) $(BUILD_EFI) $(FINAL_IMG)
 	@echo "Cleaned build artifacts"
