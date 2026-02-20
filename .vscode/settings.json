@@ -2,8 +2,13 @@
     "files.exclude": {
         "../": true
     },
-    "C_Cpp.files.exclude": [
-        "../**"
-    ],
-    "C_Cpp.dimInactiveRegions": false
+    "C_Cpp.files.exclude": {
+        "../**": true
+    },
+    "C_Cpp.errorSquiggles": "disabled",
+    "C_Cpp.dimInactiveRegions": false,
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "C_Cpp.autocomplete": "disabled",
+    "problems.decorations.enabled": false,
+    "problems.autoReveal": false
 }

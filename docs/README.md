@@ -23,3 +23,11 @@
 ## UEFI GPT Creator
 
 - [UEFI GPT Creator](GPT/README.md)
+
+## CoreSys Filetypes Cheat Sheet
+
+- [CoreSys Filetypes Cheat Sheet](CFCS/README.md)
+
+## Full docs for the CoreSys history
+
+- [Full docs for the CoreSys history](history/README.md)
