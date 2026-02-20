@@ -1,12 +1,12 @@
 # FÈUE CoreSys (CoreSystem)
 
-**CoreSys** is a low-level operating system project designed for **UEFI-based systems**, written primarily in **C**. The project explores modern firmware-native system design, minimal boot paths, and direct hardware interaction without relying on legacy BIOS layers or existing operating system kernels.
+**CoreSys** is a low-level operating system project designed for **UEFI-based systems**, written primarily in **C** and **TC**. The project explores modern firmware-native system design, minimal boot paths, and direct hardware interaction without relying on legacy BIOS layers or existing operating system kernels.
 
 CoreSys is developed under **FÈUE (Förenta Evolutionernas Universitets Elektronik)** as a research and educational platform for experimental OS architecture.
 
 THIS REPO IS IN ACTIVE DEVELOPMENT AND NOT YET FUNCTIONAL. EXPECT FREQUENT CHANGES AND BREAKAGES.
 
-THIS REPO HAS SUBMODULES
+THIS REPO HAS SUBMODULES!
 
 ---
 
@@ -47,6 +47,11 @@ Before building CoreSys, ensure you have the following installed:
 
 ---
 
+## NOTICE
+See more in the NOTICE.md
+
+---
+
 ## Terminal
 
 1. Open WSL or the Terminal
@@ -71,3 +76,4 @@ cd Path/to/CoreSys/build/master
 make clean
 ```
  
+Read more in the docs/ folder.
