@@ -20,6 +20,7 @@ First you need:
 - python3-distutils
 - build-essential
 - python3-venv
+- python-is-python3
 - dos2unix
 - hexedit
 - bison

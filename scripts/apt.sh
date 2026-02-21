@@ -16,6 +16,7 @@ sudo apt install -y \
     llvm \
     clang \
     lld \
+    python-is-python3 \
     gcc-mingw-w64 \
     g++-mingw-w64 \
     binutils-mingw-w64 \

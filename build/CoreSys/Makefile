@@ -11,35 +11,48 @@ else
 $(error Missing config file: $(CONFIG_FILE))
 endif
 
+# =====================
+# Ensure build dirs exist
+# =====================
 $(BUILD_DIR):
 	mkdir -p $@
 
-# =====================
-# Compile .c -> ELF object
-# =====================
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
-	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# =====================
-# Ensure BIN_DIR exists
-# =====================
 $(BIN_DIR):
 	mkdir -p $@
 
 # =====================
-# Build EFI in BIN_DIR
+# Compile CoreSys source
 # =====================
-$(BUILD_EFI): $(O_FILE) | $(BIN_DIR)
-	@echo "Linking EFI in BUILD_DIR: $@"
-	$(CC) $(O_FILE) $(LDFLAGS) -o $@
-	@echo "Built EFI application: $@"
-	rm -f $(O_FILE)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # =====================
-# Making IMG file
+# Compile EDK2 libraries
 # =====================
-gpt:
+$(BUILD_DIR)/lib/MdePkg/Library/%.o: $(SRC_DIR)/lib/MdePkg/Library/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# =====================
+# Object lists
+# =====================
+LIB_OBJS := $(patsubst $(SRC_DIR)/lib/MdePkg/Library/%.c,$(BUILD_DIR)/lib/MdePkg/Library/%.o,$(LIB_SRCS))
+
+ALL_OBJS := $(O_FILE) $(LIB_OBJS)
+
+# =====================
+# Link EFI
+# =====================
+$(BUILD_EFI): $(ALL_OBJS) | $(BIN_DIR)
+	@echo "Linking CoreSys EFI..."
+	$(CC) $(ALL_OBJS) $(LDFLAGS) -o $@
+	@echo "Built EFI: $@"
+
+# =====================
+# Create GPT image
+# =====================
+gpt: $(BUILD_EFI)
 	@echo "Creating CoreSys image in $(MODE) mode..."
 	@mkdir -p $(FINAL_IMG_DIR)
 	@$(GPT_TOOL) -e $(BUILD_EFI)
@@ -49,18 +62,16 @@ gpt:
 	@echo "CoreSys.img created at $(FINAL_IMG)"
 
 # =====================
-# All target
+# All
 # =====================
 all: FORCE $(BUILD_EFI) gpt
 
-# =====================
-# FORCE rebuild
-# =====================
 FORCE:
 
 # =====================
 # Clean
 # =====================
-clean:
-	rm -f $(O_FILE) $(BUILD_EFI) $(FINAL_IMG)
+clean: 
+	rm -fr "$(BUILD_DIR)/lib"
+	rm -f "$(O_FILE)" "$(BUILD_EFI)" "$(FINAL_IMG)"  "$(BUILD_DIR)/efi.o"
 	@echo "Cleaned build artifacts"

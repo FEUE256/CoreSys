@@ -109,23 +109,19 @@ ifeq ($(EDK_NOT_CLEAN),1)
 	@echo "Skipping EDK2 clean because EDK_NOT_CLEAN=1"
 else
 	@echo "Cleaning EDK2 and EDK23 builds..."
-	# Ta bort Build-mappar
 	rm -rf "$(EDK2_DIR)/Build" "$(EDK23_DIR)/Build"
 
-	# Kör make clean i byggmapparna
 	$(MAKE) -C "$(EDK2_BUILD_DIR)" clean
 	$(MAKE) -C "$(BASETOOLS2_DIR)" clean
 
-	# Ta bort alla .efi-filer
-	cd $(EDK2_DIR) && rm -f */*.efi
-	cd $(EDK23_DIR) && rm -f */*.efi
+	cd "$(EDK2_DIR)" && rm -f ./*.efi
+	cd "$(EDK23_DIR)" && rm -f ./*.efi
 endif
 
-# Rensa i subdirektorier oavsett EDK_NOT_CLEAN
 	@echo "Cleaning subdirectories..."
 	@for dir in $(SUBDIRS); do \
-		if [ -f $$dir/Makefile ]; then \
+		if [ -f "$$dir/Makefile" ]; then \
 			echo "[Make] Cleaning in $$dir..."; \
-			$(MAKE) -C $$dir clean; \
-		fi \
+			$(MAKE) -C "$$dir" clean; \
+		fi; \
 	done
