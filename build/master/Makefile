@@ -72,3 +72,4 @@ clean:
 			$(MAKE) -C "$$dir" clean -B; \
 		fi; \
 	done
+	@rm -f ./CoreSys.img ./SEVI.TXT ../../bin/Debug/CoreSys/kernel.re

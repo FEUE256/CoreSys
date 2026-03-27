@@ -1695,6 +1695,49 @@ EFI_STATUS change_boot_variables(void) {
     return EFI_SUCCESS;
 }
 
+void fgets(CHAR16 *buffer, UINTN max_len) {
+    if (!buffer || max_len == 0) return;
+
+    UINTN idx = 0;
+    EFI_INPUT_KEY key;
+
+    while (idx < max_len - 1) { // reservera plats för null
+        // Vänta på tangenttryck
+        if (gST->ConIn->ReadKeyStroke(gST->ConIn, &key) != EFI_SUCCESS) {
+            continue;
+        }
+
+        // Enter avslutar raden
+        if (key.UnicodeChar == CHAR_CARRIAGE_RETURN) {
+            buffer[idx] = L'\0';
+            // Skriv newline på skärmen
+            gST->ConOut->OutputString(gST->ConOut, L"\r\n");
+            break;
+        }
+
+        // Backspace
+        if (key.UnicodeChar == CHAR_BACKSPACE && idx > 0) {
+            idx--;
+            gST->ConOut->OutputString(gST->ConOut, L"\b \b"); // ta bort tecken visuellt
+            continue;
+        }
+
+        // Spara tecken i bufferten och skriv på skärmen
+        buffer[idx++] = key.UnicodeChar;
+
+        CHAR16 tmp[2] = { key.UnicodeChar, L'\0' };
+        gST->ConOut->OutputString(gST->ConOut, tmp);
+    }
+
+    // Null-terminator om max_len uppnådd utan enter
+    if (idx == max_len - 1) {
+        buffer[idx] = L'\0';
+    }
+}
+
+#include <init/cmd/exec.h> // cmd();
+
+
 // =========================================================
 // Show Menu Function
 // =========================================================
@@ -1719,6 +1762,7 @@ void ShowFMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
         L"Print ACPI tables",
         L"Print globle EFI variables",
         L"Change boot variables",
+        L"CoreSys Terminal",
         L"Back to main menu"
     };
     const UINTN optionCount = sizeof(options) / sizeof(options[0]);
@@ -1738,10 +1782,10 @@ void ShowFMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
     }
 }
 
-void fmain_main() {
+void fmain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
     UINTN selected = 0;
     EFI_INPUT_KEY key;
-    const UINTN optionCount = 13;
+    const UINTN optionCount = 14;
 
     ShowFMenu(cout, selected);
 
@@ -1770,22 +1814,13 @@ void fmain_main() {
                     case 9: print_acpi_tables(); break;
                     case 10: print_efi_global_variables(); break;
                     case 11: change_boot_variables(); break;
-                    case 12: return; break; // Back to main menu
+                    case 12: cmd(ImageHandle, SystemTable); break;
+                    case 13: return; break; // Back to main menu
                 }
                 break;
             }
         }
     }
-}
-
-EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
-    init(ImageHandle, SystemTable);
-    clear_screen();
-
-    fmain_main();
-
-    bmain_main(ImageHandle, SystemTable);
-    return EFI_SUCCESS;
 }
 
 void init(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
@@ -1803,6 +1838,16 @@ void init(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
     // Set console protocols
     cout = SystemTable->ConOut;
     cin  = SystemTable->ConIn;
+}
+
+EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
+    init(ImageHandle, SystemTable);
+    clear_screen();
+
+    fmain_main(ImageHandle, SystemTable);
+
+    bmain_main(ImageHandle, SystemTable);
+    return EFI_SUCCESS;
 }
 
 // =========================================================

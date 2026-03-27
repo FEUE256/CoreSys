@@ -24,9 +24,10 @@ $(BIN_DIR):
 	mkdir -p $@				
 
 # CoreSys source files
-$(BUILD_DIR)/%.o: $(K_DIR)/%.c
+$(BUILD_DIR)/%.o: $(C_DIR)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(K_CFLAGS) -c $< -o $@
+	$(CC) $(C_CFLAGS) -c $< -o $@
+
 
 # =====================
 # Compile EDK2 libraries
@@ -38,26 +39,26 @@ $(BUILD_DIR)/lib/MdePkg/Library/%.o: $(SRC_DIR)/lib/MdePkg/Library/%.c
 # =====================
 # Object lists
 # =====================
-K_SRCS := $(wildcard $(K_DIR)/*.c)
-ALL_OBJS := $(patsubst $(K_DIR)/%.c,$(BUILD_DIR)/%.o,$(K_SRCS)) $(LIB_OBJS)
+C_SRCS := $(wildcard $(C_DIR)/*.c)
+ALL_OBJS := $(patsubst $(C_DIR)/%.c,$(BUILD_DIR)/%.o,$(C_SRCS)) $(LIB_OBJS)
 
 # =====================
 # Link EFI
 # =====================
-$(BUILD_K_EFI): $(ALL_OBJS) | $(BIN_DIR)
+$(BUILD_C_EFI): $(ALL_OBJS) | $(BIN_DIR)
 	@echo "ALL_OBJS = $(ALL_OBJS)"
 	@echo "Linking CoreSys EFI..."
-	$(CC) $(ALL_OBJS) $(K_LDFLAGS) -o $@
+	$(CC) $(ALL_OBJS) $(C_LDFLAGS) -o $@
 	@echo "Built EFI: $@"
 	
-$(BUILD_K_EFI_NE): $(BUILD_K_EFI) $(NE_TOOL)
+$(BUILD_C_EFI_NE): $(BUILD_C_EFI) $(NE_TOOL)
 	@echo "Applying NE header..."
 	@$(NE_TOOL) -i $< -o $@
 
 # =====================
 # All
 # =====================
-all: FORCE $(BUILD_K_EFI) $(BUILD_K_EFI_NE)
+all: FORCE $(BUILD_C_EFI) $(BUILD_C_EFI_NE) gpt
 
 FORCE:
 
@@ -65,7 +66,5 @@ FORCE:
 # Clean
 # =====================
 clean: 
-	rm -fr "$(BUILD_DIR)/lib"
-	rm -f "$(ALL_OBJS)" "$(BUILD_K_EFI)" "$(SRC_DIR/main.o)" "$(BUILD_DIR)/main.o" "$(SRC_DIR)/init/main.o" "$(BUILD_K_EFI_NE)"
+	rm -f "$(ALL_OBJS)" "$(BUILD_C_EFI)" "$(C_O_FILE)" "$(SRC_DIR/main.o)" "$(BUILD_DIR)/main.o" $(DIST_LOCATION) "../../../dist/.smb*" "../../../dist/.__smb*"
 	@echo "Cleaned build artifacts"
-	

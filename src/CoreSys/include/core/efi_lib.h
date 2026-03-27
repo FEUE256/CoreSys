@@ -11,6 +11,9 @@
 
 #include <core/efi.h>
 
+#define CHAR_CARRIAGE_RETURN L'\r'   // Enter key
+#define CHAR_BACKSPACE       L'\b'   // Backspace key
+
 // -----------------
 // Global macros
 // -----------------

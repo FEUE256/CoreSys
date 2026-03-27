@@ -1,23 +1,16 @@
 #pragma once 
 
-#include <core/efi.h>         // Basic UEFI types
-#include <core/efi_lib.h>     // Simple EFI lib
-#include <core/stdio_efi.h>   // Includes Clear Screen
+#include <core/efi.h>
 
-// =========================================================
-// EFI reboot (cold)
-// =========================================================
-void reboot(void) {
-    clear_screen();
-    cout->OutputString(cout, L"\r\nRebooting...\r\n");
-    rs->ResetSystem(EfiResetCold, EFI_SUCCESS, 0, NULL);
+extern EFI_SYSTEM_TABLE *gST;
+extern EFI_RUNTIME_SERVICES *gRS;
+
+void reboot() {
+    gST->ConOut->OutputString(gST->ConOut, L"\r\nRebooting...\r\n");
+    gRS->ResetSystem(EfiResetCold, EFI_SUCCESS, 0, NULL);
 }
 
-// =========================================================
-// EFI shutdown
-// =========================================================
-void shutdown(void) {
-    clear_screen();
-    cout->OutputString(cout, L"\r\nShutting down...\r\n");
-    rs->ResetSystem(EfiResetShutdown, EFI_SUCCESS, 0, NULL);
+void shutdown() {
+    gST->ConOut->OutputString(gST->ConOut, L"\r\nShutting down...\r\n");
+    gRS->ResetSystem(EfiResetShutdown, EFI_SUCCESS, 0, NULL);
 }
