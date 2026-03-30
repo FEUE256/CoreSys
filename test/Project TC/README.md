@@ -1,0 +1,21 @@
+# Technical C (TC)
+
+In this folder come tc grow to a big progeramming language for CoreSys.
+
+UNTILL THIS MESSAGE IS REMOVED DO NOT USE TC; It's under big dev and is very unstable!
+
+It's a low level programming language, with a syntax similar to C, but with some differences. It's designed to be used for writing low level code, such as operating systems, drivers, and other system software. It's also designed to be easy to learn and use, with a simple syntax and a small set of keywords. It's also designed to be portable, with support for multiple platforms and architectures. It's also designed to be efficient, with a focus on performance and low memory usage. It has support for many language features, such as pointers, structures, unions, and more. It's also designed to be extensible, with support for user-defined types and functions. It's also designed to be safe, with support for bounds checking and other safety features. It's also designed to be modular, with support for separate compilation and linking. It's also designed to be compatible with C, with support for C libraries and interoperability with C code. Insperation: C-family languages but also python, asm 86_64x NASM and MC. CoreSys come have 100% support for TC, and it's the recommended language for writing CoreSys code. It's also designed to be used with the CoreSys build system, with support for building and linking TC code with other languages. It's also designed to be used with the CoreSys documentation system, with support for generating documentation from TC code. It's also designed to be used with the CoreSys testing system, with support for writing tests in TC. It's also designed to be used with the CoreSys debugging system, with support for debugging TC code. It's also designed to be used with the CoreSys profiling system, with support for profiling TC code. It's also designed to be used with the CoreSys optimization system, with support for optimizing TC code. It's also designed to be used with the CoreSys analysis system, with support for analyzing TC code. It's also designed to be used with the CoreSys verification system, with support for verifying TC code. It's also designed to be used with the CoreSys validation system, with support for validating TC code. It's also designed to be used with the CoreSys deployment system, with support for deploying TC code. It's also designed to be used with the CoreSys maintenance system, with support for maintaining TC code. It's also designed to be used with the CoreSys evolution system, with support for evolving TC code. It's also designed to be used with the CoreSys community, with support for sharing and collaborating on TC code. It's also designed to be used with the CoreSys ecosystem, with support for integrating TC code with other tools and systems. It's also designed to be used with the CoreSys future, with support for new features and improvements in TC. It's also designed to be used with the CoreSys past, with support for legacy code and compatibility with older versions of TC. It's also designed to be used with the CoreSys present, with support for current features and capabilities of TC. It's also designed to be used with the CoreSys users, with support for user feedback and contributions to TC. It's also designed to be used with the CoreSys developers, with support for developer feedback and contributions to TC. It's also designed to be used with the CoreSys maintainers, with support for maintainer feedback and contributions to TC. It's also designed to be used with the CoreSys community, with support for community feedback and contributions to TC. It's also designed to be used with the CoreSys ecosystem, with support for ecosystem feedback and contributions to TC. It's also designed to be used with the CoreSys future, with support for future feedback and contributions to TC. It's also designed to be used with the CoreSys past, with support for past feedback and contributions to TC. It's also designed to be used with the CoreSys present, with support for present feedback and contributions to TC. The file extantion is ".tc". Created for devs to devs.
+
+## Syntax 
+
+[Read the syntax documentation](syntax.md)
+
+## TR API subsytem
+
+[Read the TR API subsystem documentation](tr.md)
+
+By: Nils Efverman, CEO FÈUE
+
+## TC2
+
+[Read about TC2](tc2.md)
