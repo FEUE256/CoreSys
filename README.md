@@ -44,6 +44,12 @@ Because of this, CoreSys is not intended to be distributed or used within the St
 
 ---
 
+## Wiki
+
+The Coresys wiki is located at https://github.com/FEUE256/CoreSys/wiki
+
+---
+
 # How to Build CoreSys
 
 ## Prerequisites
