@@ -20,7 +20,7 @@ NOTE: This docs can be outdated, if you find any outdated information please rep
 
 ## Master Makefile
 
-* [Master Makefile]("Master Makefile/README.md")
+* [Master Makefile](https://github.com/FEUE256/CoreSys/blob/master/docs/Master%20Makefile/README.md)
 
 ## MC Programming Language
 
