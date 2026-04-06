@@ -20,7 +20,7 @@ NOTE: This docs can be outdated, if you find any outdated information please rep
 
 ## Master Makefile
 
-* [Master Makefile](Master Makefile/README.md)
+* [Master Makefile]("Master Makefile/README.md")
 
 ## MC Programming Language
 
