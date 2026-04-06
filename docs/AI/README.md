@@ -1,3 +1,5 @@
+more ai at https://github.com/FEUE256/CoreSys/blob/master/docs/AI/CoreSyS%20Deep%20Report.pdf
+
 # CoreSys UEFI-Native Operating System – Technical Documentation
 
 The **CoreSys** repository (https://github.com/FEUE256/CoreSys) is an experimental operating system designed to boot directly via UEFI firmware, without using a traditional BIOS. It includes its own UEFI bootloader and kernel, aiming to explore low-level OS design on modern PC platforms. CoreSys appears intended for learning and research purposes. This document examines every aspect of the CoreSys repository: its structure, build scripts, and source code for the bootloader, kernel, memory, graphics, and drivers. We reference related UEFI and OS development sources to explain the design decisions.
