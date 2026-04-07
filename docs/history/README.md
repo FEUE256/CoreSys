@@ -2,6 +2,9 @@
 
 This documataion starts at: `2026-02-20`. This document will have big steps and normal updateds also. This can also be like a little blog for CoreSys. It's Nils Efverman that have writen all of this:
 
+## Small fixes
+  Just some small fixes
+
 ## Big update comming (2026-03-09 - The commit after cd3f594 Release)
 	First Sorry for long wait for thing. Time of writing: 2026-03-27. I has been sick. My computer as been crazy etc etc. Now its have been I long time but also many many behind the scens stuff fot the OS env. Big things:
 	- New Error Code system
