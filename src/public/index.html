@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>CoreSys (FÈUE)</title>
- <link rel="shortcut icon" href="https://feue256.github.io/CoreSys/src/public/assets/images/webp/logo.webp" type="image/x-icon"/>
- <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CoreSys (FÈUE)</title>
+  <link rel="shortcut icon" href="https://feue256.github.io/CoreSys/src/public/assets/images/webp/logo.webp" type="image/x-icon"/>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Major+Mono+Display&family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
+  <a href="#maincontent" class="skip-link">Skip to main content</a>
+
   <header role="banner">
     <h1 id="pageTitle">CoreSys OS Edition</h1>
     <p>A visionary standalone operating system engineered by FÈUE</p>
@@ -21,22 +26,23 @@
     </select>
   </header>
 
-
-<nav class="nav">
-  <a href="#about">About</a>
-  <a href="#roadmap">Roadmap</a>
-  <a href="#download">Download</a>
-  <a href="#contact">Contact</a>
-  <a href="#sc">Source Code</a>
-  <a href="#legal">Legal</a>
-</nav>
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="#about">About</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#download">Download</a>
+      <a href="#contact">Contact</a>
+      <a href="#sc">Source Code</a>
+      <a href="#legal">Legal</a>
+    </div>
+  </nav>
 
   <main id="maincontent" role="main">
     <section id="about">
       <h2>About</h2>
       <p><strong>CoreSys OS Edition</strong> is a bold and independent operating system developed from scratch by <strong>FÈUE</strong>.  
       Designed exclusively for new <em>UEFI</em> systems.  
-      The system now boots through a custom bootloader and enters protected mode without any BIOS support. This project does use EDK headers but no full EDK overhaul. This does not have any support for BIOS or EDK2 or 32-bit mode, only 64-bit mode!</p>
+      The system now boots through a custom bootloader and enters protected mode without any BIOS support. This project uses EDK headers but no full EDK overhaul. No support for BIOS or EDK2 or 32-bit mode, only 64-bit mode!</p>
     </section>
 
     <section id="roadmap">
@@ -62,9 +68,7 @@
 
     <section id="download">
       <h2>Download</h2>
-  <a href="https://feue256.github.io/CoreSys/dist/CoreSys.img" download>
-    Download CoreSys Image
-</a>
+      <a href="https://feue256.github.io/CoreSys/dist/CoreSys.img" download>Download CoreSys Image</a>
     </section>
 
     <section id="contact">
@@ -77,14 +81,14 @@
       </p>
     </section>
 
-  <section id="sc">
+    <section id="sc">
       <h2>Source code</h2>
-     <p>
-  The source code is open source with FÈUE license available at 
-  <a href="https://github.com/FEUE256/CoreSys" target="_blank" rel="noopener">
-    FEUE256/CoreSys on GitHub
-  </a>
-</p>
+      <p>
+        The source code is open source with FÈUE license available at 
+        <a href="https://github.com/FEUE256/CoreSys" target="_blank" rel="noopener">
+          FEUE256/CoreSys on GitHub
+        </a>
+      </p>
     </section>
 
     <section id="legal">
