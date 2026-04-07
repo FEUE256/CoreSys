@@ -37,4 +37,4 @@ clean:
 	@$(MAKE) -f $(B_MAKE) clean
 	@$(MAKE) -f $(I_MAKE) clean
 	@rm -f ./SEVI.TXT
-	@rm -f "$(FINAL_IMG)" "$(DIST_LOCATION)"
+	@rm -f "$(FINAL_IMG)"
