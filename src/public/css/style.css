@@ -13,6 +13,11 @@
       font-size: 18px; /* Större bastext */
     }
 
+    .nav {
+      display: flex;
+      justify-content: center; /* centers items. horizontally.   */
+    }
+
     a {
       color: #00ffea;
       text-decoration: underline;
