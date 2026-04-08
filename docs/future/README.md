@@ -5,6 +5,12 @@ This doc come not be 100 % real thing that will come to CoreSys! This doc will a
 Rem:
 in efi_lib.h when sf() is done uncomment // use sf() here and // sf(); lines
 
+Modes:
+1. Normal
+2. Driver mode
+3. Debug mode
+4. Safe mode
+
 ## error codes
 
 64 bit

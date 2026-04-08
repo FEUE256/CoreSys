@@ -32,6 +32,22 @@ $(BUILD_DIR)/boot/%.o: $(B_DIR)/boot/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(B_CFLAGS) -c $< -o $@
 
+$(BUILD_DIR)/boot/os.o: $(B_DIR)/boot/os.c
+	@mkdir -p $(dir $@)
+	$(CC) $(B_CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/hw/main.o: $(B_DIR)/hw/main.c
+	@mkdir -p $(dir $@)
+	$(CC) $(B_CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/us/main.o: $(B_DIR)/us/main.c
+	@mkdir -p $(dir $@)
+	$(CC) $(B_CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/req/main.o: $(B_DIR)/req/main.c
+	@mkdir -p $(dir $@)
+	$(CC) $(B_CFLAGS) -c $< -o $@
+
 # =====================
 # Compile EDK2 libraries
 # =====================
@@ -42,7 +58,7 @@ $(BUILD_DIR)/lib/MdePkg/Library/%.o: $(SRC_DIR)/lib/MdePkg/Library/%.c
 # =====================
 # Object lists
 # =====================
-B_SRCS := $(wildcard $(B_DIR)/*.c) $(wildcard $(B_DIR)/boot/*.c)
+B_SRCS := $(wildcard $(B_DIR)/*.c) $(wildcard $(B_DIR)/boot/*.c) $(wildcard $(B_DIR)/hw/*.c) $(wildcard $(B_DIR)/us/*.c) $(wildcard $(B_DIR)/req/*.c)
 ALL_OBJS := $(patsubst $(B_DIR)/%.c,$(BUILD_DIR)/%.o,$(B_SRCS)) $(LIB_OBJS)
 
 # =====================
@@ -67,5 +83,5 @@ FORCE:
 # =====================
 clean: 
 	rm -fr "$(BUILD_DIR)/lib"
-	rm -f "$(ALL_OBJS)" "$(BUILD_EFI)" "$(B_O_FILE)" "$(SRC_DIR/main.o)" "$(BUILD_DIR)/main.o" "$(SRC_DIR)/bootloader/boot/boot.o" "$(BUILD_DIR)/boot/boot.o"
+	rm -f "$(ALL_OBJS)" "$(BUILD_EFI)" "$(B_O_FILE)" "$(SRC_DIR/main.o)" "$(BUILD_DIR)/main.o" "$(SRC_DIR)/bootloader/boot/boot.o" "$(SRC_DIR)/bootloader/hw/main.o" "$(BUILD_DIR)/boot/boot.o" "$(SRC_DIR)/bootloader/us/main.o" "$(BUILD_DIR)/req/main.o" "$(BUILD_DIR)/hw/main.o" "$(BUILD_DIR)/us/main.o" "$(BUILD_DIR)/boot/os.o"
 	@echo "Cleaned build artifacts"

@@ -26,6 +26,14 @@ Use make subdirs -B for not building edk2.
 Use make DO_TEST=1 all for build with tests.
 Use make DO_TEST=1 subdirs -B for build with tests without edk2.
 
+## CoreSys Makefile Options
+
+use ADD_ESP_FILE and ADD_ESP_PATH ex:
+
+make ADD_ESP_FILE = ./ex.efi ADD_ESP_PATH = /EFI/EX/EX.EFI
+
+Then ./ex.efi will be /EFI/EX/EX.EFI so you can try that 
+
 ### Testing with QEMU
 
 ```bash
