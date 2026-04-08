@@ -20,6 +20,11 @@ body {
   box-shadow: 0 0 12px 4px #39ff14aa;
 }
 
+.center {
+  width: 300px;
+  margin: 0 auto;
+}
+
 .nav-container {
   display: flex;
   gap: 1.5rem;
