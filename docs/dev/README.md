@@ -22,6 +22,13 @@ make all -B
 
 ```
 
+If you get
+
+qemu-system-x86_64: Failed to get "write" lock
+Is another process using the image [../../dist/CoreSys.img]?
+
+run rm ../../dist/CoreSys.img and then make all qemu -B
+
 Use make subdirs -B for not building edk2. 
 Use make DO_TEST=1 all for build with tests.
 Use make DO_TEST=1 subdirs -B for build with tests without edk2.

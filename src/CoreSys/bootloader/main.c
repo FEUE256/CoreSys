@@ -107,6 +107,7 @@ void ShowOMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
 
     const CHAR16* options[] = {
         L"Other OS",
+        L"Cyber::Boot",
         L"Back to Main Menu"
     };
     const UINTN optionCount = sizeof(options) / sizeof(options[0]);
@@ -147,7 +148,8 @@ void o_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
                 case L'\r':  // Enter
                 switch (selected) {
                     case 0: o_init(ImageHandle, SystemTable); break; // extern Function
-                    case 1: bmain_main(ImageHandle, SystemTable); break;
+                    case 1: cb(ImageHandle, SystemTable); break; // extern Function
+                    case 2: bmain_main(ImageHandle, SystemTable); break;
                 }
                 break;
             }

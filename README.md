@@ -8,6 +8,8 @@ THIS REPO IS IN ACTIVE DEVELOPMENT AND NOT YET FUNCTIONAL. EXPECT FREQUENT CHANG
 
 THIS REPO HAS SUBMODULES!
 
+If makefile error under compilation just try again.
+
 ---
 
 ## Project Goals

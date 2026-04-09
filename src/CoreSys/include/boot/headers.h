@@ -22,3 +22,4 @@ void us_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable);
 void EFIAPI req_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable);
 void reboot(void);
 void shutdown(void);
+EFI_STATUS EFIAPI cb(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable);

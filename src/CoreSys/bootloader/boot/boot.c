@@ -5,6 +5,7 @@
 
 #include <boot/headers.h>
 #include <boot/typedef.h>
+#include <stdbool.h>
 #include <protocols/SFS.h>
 
 // Return helper
@@ -74,7 +75,6 @@ EFI_STATUS load_efi(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable, CHAR1
     return Status;
 }
 
-// Start an EFI image
 EFI_STATUS jump(EFI_SYSTEM_TABLE *SystemTable, EFI_HANDLE LoadedImage) {
     if (!LoadedImage || !SystemTable) return EFI_INVALID_PARAMETER;
     return SystemTable->BootServices->StartImage(LoadedImage, NULL, NULL);

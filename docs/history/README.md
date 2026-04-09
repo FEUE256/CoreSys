@@ -2,7 +2,13 @@
 
 This documataion starts at: `2026-02-20`. This document will have big steps and normal updateds also. This can also be like a little blog for CoreSys. It's Nils Efverman that have writen all of this:
 
-## Small fixes
+## ExitBootServices (2026-04-09)
+	Makeed sure exitbootservices and kernel works
+
+## UEFI Shell and Recovery (2026-04-08 - 2026-04-09)
+	Fixed the recovery part of the CoreSys bootloader
+
+## Small fixes (2026-04-07)
   Just some small fixes
 
 ## Big update comming (2026-03-09 - The commit after cd3f594 Release)

@@ -19,7 +19,7 @@ else
 $(error Missing config file: $(CONFIG_FILE))
 endif
 
-all: bootloader init gpt
+all: bootloader init kernel gpt
 
 bootloader:
 	@echo "Building CoreSys bootloader in $(MODE) mode..."
@@ -31,26 +31,33 @@ init:
 	@$(MAKE) -f $(I_MAKE) all -B
 	@echo "Init built successfully"
 
+kernel:
+	@echo "Building CoreSys kernel in $(MODE) mode..."
+	@$(MAKE) -f $(K_MAKE) all -B
+	@echo "Kernel built successfully"
+
 gpt: $(BUILD_EFI)
 	@echo "Creating CoreSys image in $(MODE) mode..."
 	@mkdir -p $(FINAL_IMG_DIR)
-	# Lägg till EFI-filer i GPT-image utan att köra dem
-	@$(GPT_TOOL) -e $(BUILD_EFI) -ae /EFI/FEUE/ $(ROOT_DIR)bin/$(MODE)/CoreSys/init.efi /EFI/UEFI/ $(ROOT_DIR)bin/Release/UEFI_Shell/SHELLX64.EFI
+	@rm -f $(DIST_LOCATION)
+	@rm -f ../../dist/.__smb008C
+	@$(GPT_TOOL) -e $(BUILD_EFI) -ae /EFI/FEUE/ $(ROOT_DIR)bin/$(MODE)/CoreSys/init.efi /EFI/UEFI/ $(ROOT_DIR)bin/Release/UEFI_Shell/SHELLX64.EFI /EFI/FEUE/ $(ROOT_DIR)bin/$(MODE)/CoreSys/kernel.efi
 
 ifeq ($(ADD_ESP_DEFINED),1)
 	@echo "Adding extra EFI file: $(ADD_ESP_FILE) -> $(ADD_ESP_PATH)"
-	@$(GPT_TOOL) -e $(FINAL_IMG) -ae $(ADD_ESP_PATH) $(ADD_ESP_FILE) /EFI/FEUE/ $(ROOT_DIR)bin/$(MODE)/CoreSys/init.efi /EFI/UEFI/ $(ROOT_DIR)bin/Release/UEFI_Shell/SHELLX64.EFI
+	@$(GPT_TOOL) -e $(FINAL_IMG) -ae $(ADD_ESP_PATH) $(ADD_ESP_FILE) /EFI/FEUE/ $(ROOT_DIR)bin/$(MODE)/CoreSys/init.efi /EFI/UEFI/ $(ROOT_DIR)bin/Release/UEFI_Shell/SHELLX64.EFI /EFI/FEUE/ $(ROOT_DIR)bin/$(MODE)/CoreSys/kernel.efi
 endif
 
 	@mv $(GPT_IMG) $(FINAL_IMG)
 	@rm -f $(BUILD_EFI) $(GPT_FILE_TXT)
-	@rm -f $(DIST_LOCATION)
 	@cp -f $(FINAL_IMG) $(DIST_LOCATION)
 	@echo "CoreSys.img created at $(DIST_LOCATION)"
 
 clean:
 	@echo "Cleaning CoreSys build artifacts..."
 	@$(MAKE) -f $(B_MAKE) clean
+	@$(MAKE) -f $(K_MAKE) clean
 	@$(MAKE) -f $(I_MAKE) clean
 	@rm -f ./SEVI.TXT
+	@rm -f ../../dist/.__smb008C
 	@rm -f "$(FINAL_IMG)"

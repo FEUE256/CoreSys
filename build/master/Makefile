@@ -34,7 +34,7 @@ ifndef BASETOOLS2_DIR
 $(error BASETOOLS2_DIR is not set)
 endif
 
-all: subdirs
+all: clean subdirs
 
 # -------- Subdirectories --------
 subdirs:
@@ -60,7 +60,7 @@ qemu:
 		echo "Error: QEMU script not found at $(QEMU_SCRIPT)"; \
 		exit 1; \
 	fi
-	@(cd $(SCRIPTS_DIR) && ./qemu.sh)
+	@bash $(QEMU_SCRIPT)
 	@echo "\n\nRan QEMU"
 
 # -------- Clean --------
