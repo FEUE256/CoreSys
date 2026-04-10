@@ -2,9 +2,6 @@
 
 This doc come not be 100 % real thing that will come to CoreSys! This doc will also not be good formated!
 
-Rem:
-in efi_lib.h when sf() is done uncomment // use sf() here and // sf(); lines
-
 ## error codes
 
 64 bit
@@ -21,12 +18,6 @@ base:
 \[Args; 8 bits]
 \[ErrorCode; 28 bits]
 \[OS\_Other; 2 bits]
-
-in like maybe hmmm docs/error/README.md and feue256.github.io/CoreSys/EC.html (EC Error Codes)
-
-## Just to rem
-
-build -p ShellPkg/ShellPkg.dsc -a X64 -t GCC5
 
 ## Old CB
 
@@ -75,45 +66,13 @@ build -p ShellPkg/ShellPkg.dsc -a X64 -t GCC5
 - [ ] Testa uppdateringsmekanismen noggrant i olika scenarier.
 System Power
 
-Shutdown
 
-Reboot
 
-Recovery Mode
-
-1. Display / Graphics
-
-Change Text Mode
-
-Set Graphics Mode
-
-Mouse Test
-
-3. Storage / File Operations
-
-Read ESP Files
 
 Read UDP Files
 
-Print Block IO Partition's Info
-
-4. Boot / OS Management
-
-Load Kernel
-
-UEFI Boot Order
-
-5. System Info
 
 Print OS Info
-
-Print Memory Map
-
-Print Config Tables
-
-Print Global EFI Variables
-
-Print Current Time and Date
 
 ## new /src/public
 
