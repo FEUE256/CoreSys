@@ -38,58 +38,110 @@ void init(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 
 
 // Load an EFI image into memory
-EFI_STATUS load_efi(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable, CHAR16 *FilePath, EFI_HANDLE *OutImage) {
+EFI_STATUS load_efi(
+    EFI_HANDLE ImageHandle,
+    EFI_SYSTEM_TABLE *SystemTable,
+    CHAR16 *FilePath,
+    EFI_HANDLE *OutImage
+) {
     EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *Fs;
     EFI_FILE_PROTOCOL *Root = NULL, *File = NULL;
     EFI_STATUS Status;
     void *Buffer = NULL;
     EFI_FILE_INFO *Info = NULL;
+
     UINTN FileSize;
     UINTN InfoSize = sizeof(EFI_FILE_INFO) + 200;
 
-    // Locate filesystem
-    Status = SystemTable->BootServices->LocateProtocol(&gEfiSimpleFileSystemProtocolGuid, NULL, (void**)&Fs);
+    // Locate filesystem protocol
+    Status = SystemTable->BootServices->LocateProtocol(
+        &gEfiSimpleFileSystemProtocolGuid,
+        NULL,
+        (void**)&Fs
+    );
     if (EFI_ERROR(Status)) return Status;
 
     Status = Fs->OpenVolume(Fs, &Root);
     if (EFI_ERROR(Status)) return Status;
 
-    // Open EFI file
-    Status = Root->Open(Root, &File, FilePath, EFI_FILE_MODE_READ, 0);
+    // Open file
+    Status = Root->Open(
+        Root,
+        &File,
+        FilePath,
+        EFI_FILE_MODE_READ,
+        0
+    );
     if (EFI_ERROR(Status)) return Status;
 
-    // Allocate memory for file info
-    Status = SystemTable->BootServices->AllocatePool(EfiLoaderData, InfoSize, (void**)&Info);
+    // Allocate file info buffer
+    Status = SystemTable->BootServices->AllocatePool(
+        EfiLoaderData,
+        InfoSize,
+        (void**)&Info
+    );
     if (EFI_ERROR(Status)) goto cleanup_file;
 
-    Status = File->GetInfo(File, &gEfiFileInfoGuid, &InfoSize, Info);
+    Status = File->GetInfo(
+        File,
+        &gEfiFileInfoGuid,
+        &InfoSize,
+        Info
+    );
     if (EFI_ERROR(Status)) goto cleanup_info;
 
     FileSize = (UINTN)Info->FileSize;
 
-    // Allocate buffer for file
-    Status = SystemTable->BootServices->AllocatePool(EfiLoaderData, FileSize, &Buffer);
+    if (FileSize <= 2) {
+        Status = EFI_INVALID_PARAMETER;
+        goto cleanup_info;
+    }
+
+    // Allocate file buffer
+    Status = SystemTable->BootServices->AllocatePool(
+        EfiLoaderData,
+        FileSize,
+        &Buffer
+    );
     if (EFI_ERROR(Status)) goto cleanup_info;
 
     // Read file into buffer
     Status = File->Read(File, &FileSize, Buffer);
     if (EFI_ERROR(Status)) goto cleanup_buffer;
 
-    // Load image into memory
+    /*
+        IGNORE FIRST 2 BYTES (DO NOT DELETE, ONLY OFFSET)
+        Example: "HJMZ" -> treated as "MZ"
+    */
+    UINT8 *Raw = (UINT8 *)Buffer;
+    UINT8 *Adjusted = Raw + 2;
+    UINTN AdjustedSize = FileSize - 2;
+
     EFI_HANDLE LoadedImage = NULL;
-    Status = SystemTable->BootServices->LoadImage(FALSE, ImageHandle, NULL, Buffer, FileSize, &LoadedImage);
+
+    Status = SystemTable->BootServices->LoadImage(
+        FALSE,
+        ImageHandle,
+        NULL,
+        (VOID *)Adjusted,
+        AdjustedSize,
+        &LoadedImage
+    );
+
     if (EFI_ERROR(Status)) goto cleanup_buffer;
 
     *OutImage = LoadedImage;
     Status = EFI_SUCCESS;
     goto cleanup_info;
 
-    cleanup_buffer:
-        if (Buffer) SystemTable->BootServices->FreePool(Buffer);
-    cleanup_info:
-        if (Info) SystemTable->BootServices->FreePool(Info);
-    cleanup_file:
-        if (File) File->Close(File);
+cleanup_buffer:
+    if (Buffer) SystemTable->BootServices->FreePool(Buffer);
+
+cleanup_info:
+    if (Info) SystemTable->BootServices->FreePool(Info);
+
+cleanup_file:
+    if (File) File->Close(File);
 
     return Status;
 }
@@ -285,7 +337,7 @@ void kernel(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, int DAUDA, in
     }
 
     // Continue normally
-    EFI_STATUS Status = kboot(ImageHandle, SystemTable, L"\\EFI\\FEUE\\KERNEL.EFI", DAUDA, safe);
+    EFI_STATUS Status = kboot(ImageHandle, SystemTable, L"\\EFI\\FEUE\\KERNEL.RE", DAUDA, safe);
 
     printf(L"Returned from kernel with status: 0x%u\r\n", Status);
     printf(L"You need to shutdown with the button...\r\n");

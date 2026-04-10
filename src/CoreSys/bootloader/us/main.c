@@ -37,7 +37,7 @@ void us_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
     }
 
     // Continue normally
-    EFI_STATUS Status = boot(ImageHandle, SystemTable, L"\\EFI\\UEFI\\SHELLX64.EFI");
+    EFI_STATUS Status = boot(ImageHandle, SystemTable, L"\\EFI\\UEFI\\SHELLX64.RE");
 
     if (EFI_ERROR(Status)) {
         SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Boot failed\r\n");

@@ -50,11 +50,14 @@ $(BUILD_K_EFI): $(ALL_OBJS) | $(BIN_DIR)
 	$(CC) $(ALL_OBJS) $(K_LDFLAGS) -o $@
 	@echo "Built EFI: $@"
 	
+$(BUILD_K_EFI_NE): $(BUILD_K_EFI) $(NE_TOOL)
+	@echo "Applying NE header..."
+	@$(NE_TOOL) -i $< -o $@
 
 # =====================
 # All
 # =====================
-all: FORCE $(BUILD_K_EFI) gpt
+all: FORCE $(BUILD_K_EFI) $(BUILD_K_EFI_NE)
 
 FORCE:
 
@@ -63,5 +66,5 @@ FORCE:
 # =====================
 clean: 
 	rm -fr "$(BUILD_DIR)/lib"
-	rm -f "$(ALL_OBJS)" "$(BUILD_K_EFI)" "$(SRC_DIR/main.o)" "$(BUILD_DIR)/main.o" "$(SRC_DIR)/init/main.o"
+	rm -f "$(ALL_OBJS)" "$(BUILD_K_EFI)" "$(SRC_DIR/main.o)" "$(BUILD_DIR)/main.o" "$(SRC_DIR)/init/main.o" "$(BUILD_K_EFI_NE)"
 	@echo "Cleaned build artifacts"
