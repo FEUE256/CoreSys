@@ -14,6 +14,10 @@ NOTE: This docs can be outdated, if you find any outdated information please rep
 
 * [Dev Docs](dev/README.md)
 
+## R*-family spec
+  
+* "CoreSys\docs\r-familt-spec\r-family-spec.pdf"
+
 ## Requirements
 
 * [Requirements](req.md)

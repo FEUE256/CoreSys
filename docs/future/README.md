@@ -2,6 +2,23 @@
 
 This doc come not be 100 % real thing that will come to CoreSys! This doc will also not be good formated!
 
+## .r* family
+
+.run
+.re
+.tc
+.th
+.mod
+
+has header
+.run
+.re
+.mod
+
+hasent header
+.tc
+.th
+
 ## error codes
 
 64 bit
