@@ -9,14 +9,15 @@ if [ ! -f "$IMG" ]; then
 fi
 
 qemu-system-x86_64 \
--drive format=raw,file="$IMG" \
--bios ../../firmware/bios/bios64.bin \
--m 256M \
--vga std \
--name CoreSys \
--machine q35 \
--usb \
--device usb-mouse \
--rtc base=localtime \
--net none \
--serial stdio
+  -drive format=raw,file="$IMG" \
+  -bios ../../firmware/bios/bios64.bin \
+  -m 256M \
+  -vga std \
+  -name CoreSys \
+  -machine q35 \
+  -usb \
+  -device usb-mouse \
+  -rtc base=localtime \
+  -netdev user,id=n0 \
+  -device rtl8139,netdev=n0 \
+  -serial stdio

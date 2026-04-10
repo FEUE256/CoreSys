@@ -62,7 +62,7 @@ $(BUILD_DIR)/lib/MdePkg/Library/%.o: $(SRC_DIR)/lib/MdePkg/Library/%.c
 # =====================
 # Object lists
 # =====================
-B_SRCS := $(wildcard $(B_DIR)/*.c) $(wildcard $(B_DIR)/boot/*.c) $(wildcard $(B_DIR)/hw/*.c) $(wildcard $(B_DIR)/us/*.c) $(wildcard $(B_DIR)/req/*.c)  $(wildcard $(B_DIR)/cb/*.c)
+B_SRCS := $(wildcard $(B_DIR)/*.c) $(wildcard $(B_DIR)/boot/*.c) $(wildcard $(B_DIR)/hw/*.c) $(wildcard $(B_DIR)/us/*.c) $(wildcard $(B_DIR)/req/*.c)  $(wildcard $(B_DIR)/cb/*.c) 
 ALL_OBJS := $(patsubst $(B_DIR)/%.c,$(BUILD_DIR)/%.o,$(B_SRCS)) $(LIB_OBJS)
 
 # =====================
@@ -87,5 +87,5 @@ FORCE:
 # =====================
 clean: 
 	rm -fr "$(BUILD_DIR)/lib"
-	rm -f "$(ALL_OBJS)" "$(BUILD_EFI)" "$(B_O_FILE)" "$(SRC_DIR/main.o)" "$(BUILD_DIR)/main.o" "$(SRC_DIR)/bootloader/boot/boot.o" "$(SRC_DIR)/bootloader/hw/main.o" "$(BUILD_DIR)/boot/boot.o" "$(SRC_DIR)/bootloader/us/main.o" "$(BUILD_DIR)/req/main.o" "$(BUILD_DIR)/hw/main.o" "$(BUILD_DIR)/us/main.o" "$(BUILD_DIR)/boot/os.o" "$(BUILD_DIR)/cb/main.o" $(DIST_LOCATION) ../../../dist/.smb* ../../../dist/.__smb*
+	rm -f "$(ALL_OBJS)" "$(BUILD_EFI)" "$(B_O_FILE)" "$(SRC_DIR/main.o)" "$(BUILD_DIR)/main.o" "$(SRC_DIR)/bootloader/boot/boot.o" "$(SRC_DIR)/bootloader/hw/main.o" "$(BUILD_DIR)/boot/boot.o" "$(SRC_DIR)/bootloader/us/main.o" "$(BUILD_DIR)/req/main.o" "$(BUILD_DIR)/hw/main.o" "$(BUILD_DIR)/us/main.o" "$(BUILD_DIR)/boot/os.o" "$(BUILD_DIR)/cb/main.o" $(DIST_LOCATION) ../../../dist/.smb* ../../../dist/.__smb* 
 	@echo "Cleaned build artifacts"

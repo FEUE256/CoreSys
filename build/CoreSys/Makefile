@@ -61,3 +61,4 @@ clean:
 	@rm -f ./SEVI.TXT
 	@rm -f ../../dist/.__smb008C
 	@rm -f "$(FINAL_IMG)"
+	

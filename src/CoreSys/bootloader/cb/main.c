@@ -1,5 +1,5 @@
 // --------------------------------
-// FÈUE File CoreSys HW Init
+// FÈUE File CoreSys Cyber::Boot
 // Contains code of the project
 // CyberBoot by FÈUE
 // --------------------------------
