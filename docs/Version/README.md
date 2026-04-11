@@ -1,6 +1,6 @@
 # CoreSys & Co Version
 
-- CoreSys Version: 2.8v Dev
+- CoreSys Version: 3.1v Dev
 - TC Version: 0.3v Beta
 - MC Version: 1.1v Release
 - GPT Tool Version: 2.5 Release
