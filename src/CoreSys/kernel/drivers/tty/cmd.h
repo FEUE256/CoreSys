@@ -12,6 +12,7 @@ extern void tty_write(const char *s);
 
 static void execute_command(const char *cmd, kargs* args)
 {
+    (void)args;
     // HELP
     if (cmd[0] == 'h' && cmd[1] == 'e' && cmd[2] == 'l' && cmd[3] == 'p')
     {
