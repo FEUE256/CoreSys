@@ -10,6 +10,7 @@ typedef struct {
     UINTN DescriptorSize;              // Size of each memory descriptor
     UINT32 DescriptorVersion;          // Version of memory descriptor
     EFI_MEMORY_DESCRIPTOR* MemoryMap; // Pointer to EFI memory map
+    UINTN MapKey;                    // Map key for exiting boot services
 
     // Framebuffer info
     VOID* FramebufferBase;             // Base address of the framebuffer

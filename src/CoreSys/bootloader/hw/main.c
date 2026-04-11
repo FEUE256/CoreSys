@@ -203,7 +203,7 @@ EFI_STATUS EFIAPI hw_imain(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable
 
 int kmain(kargs *Args) {
     Args->SystemTable->ConOut->ClearScreen(Args->SystemTable->ConOut);
-    Args->SystemTable->ConOut->OutputString(Args->SystemTable->ConOut, L"Hello from the HW kernel!\r\n");
+    Args->SystemTable->ConOut->OutputString(Args->SystemTable->ConOut, L"Run CoreSys in e.g QEMU for kernel support!\r\n");
     while (1) {
     }
 
