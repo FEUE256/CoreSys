@@ -3,9 +3,9 @@
 - CoreSys Version: 3.4v Dev
 - MC Version: 1.1v Release
 - GPT Tool Version: 2.5 Release
-- Project (Everything around CoreSyS including website etc.) 3.5v
+- Project (Everything around CoreSyS including website etc.) 3.6v
 
-CSC Version: 10.5v
+CSC Version: 10.6v
 (For Devs remember to change CS_MAX in include/kernel/version.h)
 
 CSC (CoreSys & Co)
