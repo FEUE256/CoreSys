@@ -6,7 +6,7 @@
 - Project (Everything around CoreSyS including website etc.) 3.8v
 
 CSC Version: 11.0v
-(For Devs remember to change CS_VER in include/kernel/version.h)
+(For Devs remember to change CS_VER in include/kernel/version.h AND docs7history update)
 
 CSC (CoreSys & Co)
 

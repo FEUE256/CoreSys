@@ -2,7 +2,10 @@
 
 This documataion starts at: `2026-02-20`. This document will have big steps and normal updateds also. This can also be like a little blog for CoreSys. It's Nils Efverman that have writen all of this:
 
-## API
+## 11.0 CSC (2026-04-24)
+	The 11.0 CSC Release. This is the release with a fully new kernel design and new documantion and scripts and YAML to the config. Updated dist/CoreSys.img. Build Time: 27.979s real (user: 5.436s, sys 1.714s)
+
+## API (2026-04-19)
 	Fix CoreSys API
 
 ## ExitBootServices (2026-04-09)
