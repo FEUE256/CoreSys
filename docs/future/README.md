@@ -22,7 +22,6 @@ base:
 ## Old CB
 
 # 3. CBC (Cyber::Boot CMD)
-- [ ] Implementera CBC som ett fullständigt textbaserat kommandoskal i KM.
 - [ ] Lägg till filsystemsstöd (läs/skriv) för User Data Partition (UDP) i CBC.
 - [ ] Implementera grundläggande kommandon för filhantering och systemkommandon.
 - [ ] Implementera update/upgrade-kommando:
@@ -80,14 +79,6 @@ new website over halt from old CB (CyberBoot)
 
 /docs/public for Website help
 
-## OS API
-
-OS API for TC and c etc in CS (Technical C, CoreSys)
-
-The OS API shell be wrieen in TC (Technical C)
-
-/docs/api/ for docs
-
 ## C2 (CoreSys Complex Input Output System)
 
 a OVMF fork in TC (Technical C)
@@ -125,9 +116,94 @@ IDK just planning
 
 \# PLAN 
 
-* API
 * Drivers (and UDAM (Unsigned Driver Allowed Mode) in bootloader)
 * Pin/Password
 * Std Drivers hardcoded signed public key / private
 * TPM
 * Finding CoreSys computer recurerments
+
+BOOT OCH START
+- Bootloader (t.ex. GRUB, UEFI Boot Manager)
+- Secure Boot
+- Boot-signering / Key Management
+- Firmware / BIOS / UEFI
+
+KÄRNA (KERNEL)
+- Processhantering / Scheduler
+- Trådar / Multithreading
+- Minneshantering / Virtual Memory
+- Systemkallelser (Syscalls)
+- Interruption Handler
+- Device Drivers / Drivrutiner
+- Error Handling / ECP (Error Code Protocol)
+- Kernel-mode / User-mode separation
+- Kernel Modules / Loadable Modules
+
+DRIVRUTINER OCH HÅRDVARUINTERFACE
+- Kernel-mode drivers
+- User-mode drivers
+- Hardware Abstraction Layer (HAL)
+- Driver Signing / Certificates
+- TPM / Trusted Platform Module integration
+- I/O Controllers (disk, nätverk, ljud, USB)
+- Graphics / GPU drivers
+
+SÄKERHET
+- Authentication / User accounts
+- Permissions / Access Control
+- TPM / Secure Enclave
+- Disk Encryption / BitLocker / LUKS
+- Secure API / Crypto Libraries
+- Sandboxing / Virtualization
+
+SYSTEM API / ABI
+- Application Programming Interface (API) – för program
+- Application Binary Interface (ABI) – för kompilerade binärer
+- Error Code Protocol (ECP) – felhantering mellan kernel/drivrutiner
+- Network Stack API (sockets, TCP/IP)
+- File System API (FAT, NTFS, ext4, etc.)
+
+FILSYSTEM OCH LAGRING
+- File System Drivers
+- Disk Management
+- Journaling / Metadata management
+- Virtual File System (VFS)
+
+NÄTVERK
+- Network Stack (TCP/IP, UDP, IPv6)
+- Network drivers
+- Firewall / Packet Filtering
+- VPN support
+
+USER INTERFACE
+- Command Line Interface (CLI)
+- Graphical User Interface (GUI)
+- Window Manager / Desktop Environment
+- Input devices (keyboard, mouse, touchscreen)
+
+SYSTEMTJÄNSTER
+- Daemons / Background services
+- Logging
+- Scheduler / Cron jobs
+- Resource management
+
+UTVECKLINGSVERKTYG
+- Compiler (GCC, Clang, MSVC)
+- Linker / Loader
+- Debugger (GDB, WinDbg)
+- Build tools (Make, Ninja, CMake)
+- Libraries (libc, graphical libraries, network libs)
+- Documentation (man pages, headers)
+
+VIRTUALISERING OCH CONTAINERISERING
+- Hypervisor / VM support (KVM, Hyper-V, VirtualBox)
+- Container runtimes (Docker, LXC)
+- API/ABI för virtualiserade miljöer
+
+ÖVRIGT
+- Time / Clock management
+- Power management / ACPI
+- Plug-and-Play / Hotplug support
+- Event logging / Error reporting
+- Telemetry / Diagnostic interfaces
+- 

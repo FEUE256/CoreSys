@@ -9,7 +9,7 @@ void fgets(CHAR16 *buffer, UINTN max_len);
 void clear_screen();
 
 void chelp() {
-    printf(L"Commands: clear/cls (Clear the screen), help (Shows this text), exit (Quits the program), shutdown (Shuts the computer down), reboot (Reboots the computer), pwd (Print current dir name), run (runs the asm code in CoreSys/src/CoreSys/asm/code.s x86_64 ASM (asm.efi in UDP)), ps (Lists all proceess), ls (lists all files), whoami (Prints current user), uname (Prints spec)");
+    printf(L"Commands: clear/cls (Clear the screen), help (Shows this text), exit (Quits the program), shutdown (Shuts the computer down), reboot (Reboots the computer), pwd (Print current dir name), run (Runs PE2FMI), ps (Lists all proceess), whoami (Prints current user), uname (Prints spec)");
 }
 
 
@@ -143,7 +143,66 @@ cleanup:
     return Status;
 }
 
+// =========================================================
+// Show Menu Function
+// =========================================================
+void ShowRMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
+    clear_screen();
 
+    cout->SetAttribute(cout, EFI_TEXT_ATTR(EFI_BLACK, EFI_WHITE));
+
+    cout->OutputString(cout, (CHAR16 *)L"CoreSys Run UEFI Version\r\n\r\n");
+    cout->OutputString(cout, (CHAR16 *)L"Use the W/S/w/s keys to navigate, ENTER to confirm.\r\n\r\n");
+
+    const CHAR16* options[] = {
+        L"PE2FMI",
+        L"Back to terminal"
+    };
+    const UINTN optionCount = sizeof(options) / sizeof(options[0]);
+
+    for (UINTN i = 0; i < optionCount; i++) {
+        if (i == selected) {
+            cout->SetAttribute(cout, EFI_TEXT_ATTR(EFI_BLACK, EFI_WHITE));
+            cout->OutputString(cout, (CHAR16 *)L"> ");
+            cout->OutputString(cout, (CHAR16 *)options[i]);
+            cout->OutputString(cout, (CHAR16 *)L"\r\n");
+            cout->SetAttribute(cout, EFI_TEXT_ATTR(EFI_WHITE, EFI_BLACK));
+        } else {
+            cout->OutputString(cout, (CHAR16 *)L"  ");
+            cout->OutputString(cout, (CHAR16 *)options[i]);
+            cout->OutputString(cout, (CHAR16 *)L"\r\n");
+        }
+    }
+}
+
+void rmain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
+    UINTN selected = 0;
+    EFI_INPUT_KEY key;
+    const UINTN optionCount = 2;
+
+    ShowRMenu(cout, selected);
+
+    while (1) {
+        if (cin->ReadKeyStroke(cin, &key) == EFI_SUCCESS) {
+            switch (key.UnicodeChar) {
+                case L'w': case L'W':
+                    selected = (selected == 0) ? optionCount - 1 : selected - 1;
+                    ShowRMenu(cout, selected);
+                    break;
+                case L's': case L'S':
+                    selected = (selected + 1) % optionCount;
+                    ShowRMenu(cout, selected);
+                    break;
+                case L'\r':  // Enter
+                switch (selected) {
+                    case 0: bboot(ImageHandle, SystemTable, L"\\OWN\\C.RE"); break;
+                    case 1: return; break; // Back to main menu
+                }
+                break;
+            }
+        }
+    }
+}
 
 typedef void (*BIN_ENTRY)(void);
 
@@ -195,10 +254,6 @@ void cmd(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
             printf(L"UDP/\r\n");
         }
 
-        else if (strncmp_u16(input, L"ls", 2) == 0) {
-            printf(L"asm.s\r\n");
-        }
-
         else if (strncmp_u16(input, L"ps", 2) == 0) {
             printf(L"/cmd\r\n");
             printf(L"ps\r\n");
@@ -213,7 +268,7 @@ void cmd(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
         }
 
         else if (strncmp_u16(input, L"run", 3) == 0) {
-            bboot(image, gST, L"\\OWN\\C.RE");
+            rmain_main(ImageHandle, SystemTable);
         }
 
         else {

@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <stdarg.h>
 #include <stdbool.h>
+#include <arch/x86_64.h>
+#include <project/head.h>
 #include <sf/main.c> // For sf() system failure function, which is used in this library for fatal error handling
 
 #include <core/efi.h>
@@ -153,40 +155,6 @@ typedef struct {
     UINT32 rows; 
     UINT32 cols;
 } Timer_Context;
-
-// Memory map and associated meta data
-typedef struct {
-    UINTN                 size;
-    EFI_MEMORY_DESCRIPTOR *map;
-    UINTN                 key;
-    UINTN                 desc_size;
-    UINT32                desc_version;
-} Memory_Map_Info;
-
-// Bitmapped font info (assuming monospaced)
-typedef struct {
-    char     *name;             // Font name
-    uint32_t width;             // Glyph width in pixels
-    uint32_t height;            // Glyph height in pixels
-    uint32_t num_glyphs;        // Number of glyphs in array/font
-    uint8_t  *glyphs;           // Glyph data/array
-    bool     left_col_first;    // Are bits for glyphs stored in memory left->right 
-                                //   e.g. PSF font, or right->left e.g. terminus?
-} Bitmap_Font;
-
-// Example Kernel Parameters
-typedef struct {
-    Memory_Map_Info                   mmap; 
-    EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE gop_mode;
-    EFI_RUNTIME_SERVICES              *RuntimeServices;
-    UINTN                             NumberOfTableEntries;
-    EFI_CONFIGURATION_TABLE           *ConfigurationTable;
-    UINTN                             num_fonts;
-    Bitmap_Font                       *fonts;
-} Kernel_Parms;
-
-// Kernel entry point typedef
-typedef void EFIAPI (*Entry_Point)(Kernel_Parms *);
 
 // EFI Configuration Table GUIDs and string names
 typedef struct {
@@ -680,7 +648,7 @@ add_int_to_buf_c16(UINTN number, UINT8 base, BOOLEAN signed_num, UINTN min_digit
 // ========================================================================
 // (CHAR16) Fill formatted string buffer with printf() format conversions
 // ========================================================================
-bool format_string_c16(CHAR16 *buf, CHAR16 *fmt, va_list args) {
+bool format_string_c16(CHAR16 *buf, const CHAR16 *fmt, va_list args) {
     bool result = true;
     CHAR16 charstr[2] = {0};    
     UINTN buf_idx = 0;
@@ -1006,7 +974,7 @@ bool format_string_c16(CHAR16 *buf, CHAR16 *fmt, va_list args) {
 // ==================================================================================
 // (CHAR16) Print formatted strings to a file stream, using a va_list for arguments
 // ==================================================================================
-bool vfprintf_c16(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *stream, CHAR16 *fmt, va_list args) {
+bool vfprintf_c16(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *stream, const CHAR16 *fmt, va_list args) {
     CHAR16 buf[1024];   // Format string buffer for % strings
     if (!format_string_c16(buf, fmt, args)) 
         return false;
@@ -1014,10 +982,120 @@ bool vfprintf_c16(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *stream, CHAR16 *fmt, va_list 
     return !EFI_ERROR(stream->OutputString(stream, buf));
 }
 
+static void append_char(CHAR16 *buf, int *i, CHAR16 c)
+{
+    buf[(*i)++] = c;
+    buf[*i] = L'\0';
+}
+
+static void append_str(CHAR16 *buf, int *i, const CHAR16 *s)
+{
+    if (!s) s = L"(null)";
+    while (*s)
+        append_char(buf, i, *s++);
+}
+
+static void append_int(CHAR16 *buf, int *i, int value)
+{
+    CHAR16 temp[32];
+    int idx = 0;
+    bool neg = false;
+
+    if (value < 0) {
+        neg = true;
+        value = -value;
+    }
+
+    do {
+        temp[idx++] = L'0' + (value % 10);
+        value /= 10;
+    } while (value > 0);
+
+    if (neg)
+        temp[idx++] = L'-';
+
+    while (idx--)
+        append_char(buf, i, temp[idx]);
+}
+
+static void append_hex(CHAR16 *buf, int *i, unsigned long long value)
+{
+    CHAR16 temp[32];
+    const CHAR16 *hex = L"0123456789ABCDEF";
+    int idx = 0;
+
+    do {
+        temp[idx++] = hex[value & 0xF];
+        value >>= 4;
+    } while (value);
+
+    append_char(buf, i, L'0');
+    append_char(buf, i, L'x');
+
+    while (idx--)
+        append_char(buf, i, temp[idx]);
+}
+
+bool vswprintf(CHAR16 *buf, size_t size, const CHAR16 *fmt, va_list args)
+{
+    if (!buf || !fmt || size == 0)
+        return false;
+
+    int i = 0;
+    buf[0] = L'\0';
+
+    for (int f = 0; fmt[f] != L'\0'; f++)
+    {
+        if (i >= (int)size - 1)
+            break;
+
+        if (fmt[f] != L'%') {
+            append_char(buf, &i, fmt[f]);
+            continue;
+        }
+
+        f++; // skip '%'
+
+        if (fmt[f] == L'\0')
+            break;
+
+        switch (fmt[f])
+        {
+            case L's':
+                append_str(buf, &i, va_arg(args, CHAR16*));
+                break;
+
+            case L'd':
+                append_int(buf, &i, va_arg(args, int));
+                break;
+
+            case L'x':
+                append_hex(buf, &i, va_arg(args, unsigned long long));
+                break;
+
+            case L'p':
+                append_hex(buf, &i, (unsigned long long)va_arg(args, void*));
+                break;
+
+            case L'%':
+                append_char(buf, &i, L'%');
+                break;
+
+            default:
+                append_char(buf, &i, L'%');
+                append_char(buf, &i, fmt[f]);
+                break;
+        }
+    }
+
+    buf[i] = L'\0';
+    return true;
+}
+
 // ============================================
 // (CHAR16) Print formatted strings to stdout
 // ============================================
-bool printf_c16(CHAR16 *fmt, ...) {
+bool printf_c16(const CHAR16 *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     return vfprintf_c16(cout, fmt, args);
@@ -1424,7 +1502,7 @@ bool sprintf(char *s, char *fmt, ...) {
 // Print a formatted error message stderr and get a key from the user,
 //   so they can acknowledge the error and it doesn't go on immediately.
 // =======================================================================
-bool error(char *file, int line, const char *func, EFI_STATUS status, CHAR16 *fmt, ...) {
+bool error(char *file, int line, const char *func, EFI_STATUS status, const CHAR16 *fmt, ...) {
     printf_c16(u"\r\nERROR: FILE %hhs, LINE %d, FUNCTION %hhs\r\n", file, line, func);
 
     // Print error code & string if applicable
@@ -1439,6 +1517,7 @@ bool error(char *file, int line, const char *func, EFI_STATUS status, CHAR16 *fm
     get_key();  // User will respond with input before going on
     return result;
 }
+
 #define error(...) error(__FILE__, __LINE__, __func__, __VA_ARGS__)
 
 // ================================================
@@ -2360,11 +2439,6 @@ void *mmap_allocate_pages(Memory_Map_Info *mmap, UINTN pages) {
     next_page_address = (void *)((UINT8 *)page + (pages * PAGE_SIZE));
     return page;
 }
-
-// ===========================================================
-// Identity map a page of memory, virtual = physical address
-// ===========================================================
-extern void arch_map_page(uint64_t physical_address, uint64_t virtual_address, Memory_Map_Info *mmap);
 
 void identity_map_page(UINTN address, Memory_Map_Info *mmap) {
     arch_map_page(address, address, mmap);

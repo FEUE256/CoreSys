@@ -6,6 +6,9 @@
 #include <drivers/sf/main.h>
 #include <drivers/log/main.h>
 #include <kernel/version.h>
+#include <drivers/page/main.h>
+#include <stddef.h>
+#include <stdint.h>
 
 extern void tty_loop(kargs* args);
 extern void tty_write(const char *s);
@@ -16,7 +19,7 @@ static void execute_command(const char *cmd, kargs* args)
     // HELP
     if (cmd[0] == 'h' && cmd[1] == 'e' && cmd[2] == 'l' && cmd[3] == 'p')
     {
-        tty_write("Commands: help (Show this box), clear/cls (Clears the terminal), echo (Print text), shutdown (Shuts the computer down), hlt (Halts the CPU), sf (Starts a System Failure), ver (Shows the system version), fsinfo (Info about the filesystem), ps (lists proccess), as (Prints ASCII table)\n");
+        tty_write("Commands: help (Show this box), clear/cls (Clears the terminal), echo (Print text), shutdown (Shuts the computer down), hlt (Halts the CPU), sf (Starts a System Failure), ver (Shows the system version), fsinfo (Info about the filesystem), ps (lists proccess), ii (Prints ASCII table), rax (Print the rax register)\n");
     }
     // CLEAR / CLS
     else if (
@@ -65,7 +68,19 @@ static void execute_command(const char *cmd, kargs* args)
         kprint("    Terminal (CMD)\n");
         kprint("        ps (CMD)\n");
     }
-    else if (cmd[0] == 'a' && cmd[1] == 's')
+    else if (cmd[0] == 'r' && cmd[1] == 'a' && cmd[2] == 'x')
+    {
+        uint64_t rax_value;
+
+        __asm__ volatile (
+            "mov %%rax, %0"
+            : "=r"(rax_value)
+        );
+
+        serial_write_u64(rax_value);
+        kprint("\n");
+    }
+    else if (cmd[0] == 'i' && cmd[1] == 'i')
     {
         kprint("ASCII TABLE (0–127)\n");
 
@@ -209,4 +224,3 @@ static void execute_command(const char *cmd, kargs* args)
         k_log("Unknown Command has been run in CMD");
     }
 }
-

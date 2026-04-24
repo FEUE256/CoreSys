@@ -68,6 +68,11 @@ See more in the NOTICE.md
 
 ---
 
+## Permitions
+
+1. Go to build/master
+2. make init
+
 ## Terminal
 
 1. Open WSL or the Terminal

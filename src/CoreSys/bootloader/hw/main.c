@@ -14,10 +14,11 @@
 #include <stdbool.h>
 #include <init/kargs.h>        // Kernel arguments structure
 #include <init/headers.h>       // Kernel header structures
+#include <API/CoreSys.h> // CoreSys API
 
 int kmain(kargs *Args);
 
-EFI_STATUS get_memory_map(EFI_SYSTEM_TABLE *SystemTable, kargs *Args) {
+EFI_STATUS get_memory_map_km(EFI_SYSTEM_TABLE *SystemTable, kargs *Args) {
     if (!SystemTable || !Args) return EFI_INVALID_PARAMETER;
 
     EFI_STATUS Status;
@@ -109,7 +110,7 @@ int kernel(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, int DAUDA, int
     Args.safe = safe;
 
     // Optional: Fill other fields if needed
-    get_memory_map(SystemTable, &Args);
+    get_memory_map_km(SystemTable, &Args);
     get_framebuffer(SystemTable, &Args);
     get_acpi_rsdp(SystemTable, &Args);
 
@@ -130,8 +131,8 @@ void ShowIMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
 
     cout->SetAttribute(cout, EFI_TEXT_ATTR(EFI_BLACK, EFI_WHITE));
 
-    cout->OutputString(cout, (CHAR16 *)L"CoreSys Init HW UEFI Version\r\n\r\n");
-    cout->OutputString(cout, (CHAR16 *)L"Use the W/S/w/s keys to navigate, ENTER to confirm.\r\n\r\n");
+    cs_logf(CS_LOG_INFO, u"CoreSys Init HW UEFI Version\r\n\r\n");
+    cs_logf(CS_LOG_INFO, u"Use the W/S/w/s keys to navigate, ENTER to confirm.\r\n\r\n");
 
     const CHAR16* options[] = {
         L"CoreSys (Normal)",
@@ -191,6 +192,8 @@ EFI_STATUS EFIAPI hw_imain(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable
     init(ImageHandle, SystemTable);
     clear_screen();
 
+    cs_logf(CS_LOG_INFO, u"CoreSys HW Init UEFI has been booted successfully");
+
     imain_main(ImageHandle, SystemTable);
 
     return EFI_SUCCESS;
@@ -203,6 +206,7 @@ EFI_STATUS EFIAPI hw_imain(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable
 
 int kmain(kargs *Args) {
     Args->SystemTable->ConOut->ClearScreen(Args->SystemTable->ConOut);
+    cs_logf(CS_LOG_INFO, u"CoreSys HW Kernel UEFI has been booted successfully");
     Args->SystemTable->ConOut->OutputString(Args->SystemTable->ConOut, L"Run CoreSys in e.g QEMU for kernel support!\r\n");
     while (1) {
     }

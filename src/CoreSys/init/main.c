@@ -18,6 +18,7 @@
 #include <stdbool.h>
 #include <init/kargs.h>
 #include <init/headers.h>
+#include <API/CoreSys.h> // CoreSys API
 
 void init(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable)
 {
@@ -128,7 +129,7 @@ cleanup_file:
 // -------------------------------
 // FIXED memory map
 // -------------------------------
-EFI_STATUS get_memory_map(EFI_SYSTEM_TABLE *SystemTable, kargs *Args)
+EFI_STATUS get_memory_map_km(EFI_SYSTEM_TABLE *SystemTable, kargs *Args)
 {
     EFI_STATUS Status;
 
@@ -247,7 +248,7 @@ EFI_STATUS kjump(EFI_SYSTEM_TABLE *SystemTable, EFI_HANDLE LoadedImage, int DAUD
     kargs Args = {0};
     EFI_STATUS Status;
 
-    Status = get_memory_map(SystemTable, &Args);
+    Status = get_memory_map_km(SystemTable, &Args);
     if (EFI_ERROR(Status))
         return Status;
 
@@ -290,7 +291,7 @@ EFI_STATUS kboot(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, CHAR16* 
     Status = kjump(SystemTable, LoadedImage, DAUDA, safe);
 
 cleanup:
-    printf(L"Return. Press any key...\r\n");
+    printf(L"Returned from kernel. Press any key to continue...\r\n");
     get_key();
 
     if (LoadedImage)
@@ -328,7 +329,7 @@ void kernel(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, int DAUDA, in
 
     EFI_STATUS Status = kboot(ImageHandle, SystemTable, L"\\EFI\\FEUE\\KERNEL.RE", DAUDA, safe);
 
-    printf(L"Kernel returned: 0x%u\r\n", Status);
+    printf(L"Kernel returned: 0x%llx\r\n", (unsigned long long)Status);
 }
 
 // -------------------------------
@@ -413,6 +414,11 @@ EFI_STATUS EFIAPI imain(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable)
 {
     init(ImageHandle, SystemTable);
     clear_screen();
+
+    cs_logf(CS_LOG_INFO, u"CoreSys Init has been boot successfully");
+    cs_logf(CS_LOG_INFO, u"Press any key to continue...");
+
+    get_key();
 
     imain_main(ImageHandle, SystemTable);
 

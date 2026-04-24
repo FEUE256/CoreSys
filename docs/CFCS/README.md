@@ -5,3 +5,4 @@ CoreSys has mainly 4 filetypes it uses in the OS, and those are following:
 - `.mod` like a .dll/.so for CoreSys.
 - `.tc` the offical programming language for CoreSys.
 - `.th` the offical header file for the offical programming language for CoreSys.
+- `.re` like a .efi/.exe for CoreSys.

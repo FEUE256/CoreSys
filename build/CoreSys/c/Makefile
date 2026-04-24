@@ -66,5 +66,5 @@ FORCE:
 # Clean
 # =====================
 clean: 
-	rm -f "$(ALL_OBJS)" "$(BUILD_C_EFI)" "$(C_O_FILE)" "$(SRC_DIR/main.o)" "$(BUILD_DIR)/main.o" $(DIST_LOCATION) "../../../dist/.smb*" "../../../dist/.__smb*"
+	rm -f "$(ALL_OBJS)" "$(BUILD_C_EFI)" "$(C_O_FILE)" "$(SRC_DIR/main.o)" "$(BUILD_DIR)/main.o"  "../../../dist/.smb*" "../../../dist/.__smb*"
 	@echo "Cleaned build artifacts"

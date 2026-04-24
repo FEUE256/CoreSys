@@ -42,6 +42,7 @@ packages=(
     libisl-dev
     gcc-x86-64-linux-gnu 
     binutils-x86-64-linux-gnu
+    qemu-system-gui
 )
 
 for pkg in "${packages[@]}"; do

@@ -11,8 +11,12 @@
 #include <drivers/sf/main.h>         // System Failure functions
 #include <drivers/log/main.h>        // Logging functions
 #include <drivers/tty/main.h>        // TTY Terminal
+// Do not include API/CoreSys.h
 
 int kmain(kargs* args) {
+
+    k_log("CoreSys UEFI Kernel has been booted successfully.");
+
     initSerial(); // Init Serial
     k_log("Serial port initialized successfully.");
 

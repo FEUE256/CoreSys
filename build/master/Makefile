@@ -1,40 +1,21 @@
 .PHONY: all edk2 edk2_3 clean subdirs qemu
 
+mc:
+	python3 ../../scripts/maintenance/parser.py
+
 # =====================
 # Config files
 # =====================
 CONFIG_FILE := ../../.config/build.cfg
 MODE_FILE   := ../../.config/config.cfg
 
+all: mc clean subdirs
+
 ifneq ("$(wildcard $(CONFIG_FILE))","")
 include $(CONFIG_FILE)
 else
 $(error Missing config file: $(CONFIG_FILE))
 endif
-
-ifneq ("$(wildcard $(MODE_FILE))","")
-include $(MODE_FILE)
-else
-$(error Missing mode config file: $(MODE_FILE))
-endif
-
-ifndef EDK2_DIR
-$(error EDK2_DIR is not set)
-endif
-
-ifndef EDK2_BUILD_DIR
-$(error EDK2_BUILD_DIR is not set)
-endif
-
-ifndef EDK23_DIR
-$(error EDK23_DIR is not set)
-endif
-
-ifndef BASETOOLS2_DIR
-$(error BASETOOLS2_DIR is not set)
-endif
-
-all: clean subdirs
 
 # -------- Subdirectories --------
 subdirs:
@@ -56,11 +37,11 @@ subdirs:
 # -------- Qemu ---------
 qemu:
 	@echo "Running QEMU..."
-	@if [ ! -f $(QEMU_SCRIPT) ]; then \
+	@if [ ! -f ../../scripts/VM/qemu.sh ]; then \
 		echo "Error: QEMU script not found at $(QEMU_SCRIPT)"; \
 		exit 1; \
 	fi
-	@bash $(QEMU_SCRIPT)
+	@bash ../../scripts/VM/qemu.sh
 	@echo "\n\nRan QEMU"
 
 # -------- Clean --------
@@ -73,3 +54,4 @@ clean:
 		fi; \
 	done
 	@rm -f ./CoreSys.img ./SEVI.TXT ../../bin/Debug/CoreSys/kernel.re
+	

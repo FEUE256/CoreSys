@@ -109,6 +109,24 @@ bool printf(const CHAR16 *format, ...) {
                 continue;
             }
 
+            // Special case: %llx
+            if (*format == L'l' && *(format+1) == L'l' && *(format+2) == L'x') {
+                format += 3;
+                unsigned long long val = va_arg(args, unsigned long long);
+                CHAR16 numbuf[17];
+                numbuf[16] = L'\0';
+                static const CHAR16 hexchars[] = L"0123456789abcdef";
+                for (int i = 15; i >= 0; i--) {
+                    numbuf[i] = hexchars[val & 0xF];
+                    val >>= 4;
+                }
+                int start = 0;
+                while (start < 15 && numbuf[start] == L'0') start++;
+                for (int i = start; numbuf[i] && buf_index < sizeof(buffer)/sizeof(CHAR16) - 1; i++)
+                    buffer[buf_index++] = numbuf[i];
+                continue;
+            }
+
             // Standard formats
             switch (*format) {
                 case L's': {

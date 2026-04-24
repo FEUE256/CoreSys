@@ -47,4 +47,3 @@ void *memset(void *dest, int val, size_t n)
 
     return dest;
 }
-

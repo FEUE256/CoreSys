@@ -5,8 +5,11 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <core/efi.h>
+#include <project/head.h>
 
-#include <core/efi_lib.h>
+extern EFI_SYSTEM_TABLE *gST;
+extern EFI_RUNTIME_SERVICES *gRT;
 
 // GDT = Global Descriptor Table
 // LDT = Local Descriptor Table
@@ -349,10 +352,10 @@ void pcspk_test(void) {
     // Wait up to ~1 second
     EFI_TIME old_time = {0}, new_time = {0};
     EFI_TIME_CAPABILITIES time_cap = {0};
-    rs->GetTime(&new_time, &time_cap);
+    gRT->GetTime(&new_time, &time_cap);
     old_time = new_time;
     while (old_time.Second == new_time.Second) 
-        rs->GetTime(&new_time, &time_cap);
+        gRT->GetTime(&new_time, &time_cap);
 
     pcspk_stop_sound();	      // Stop pc speaker sound
 }

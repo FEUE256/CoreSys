@@ -1811,6 +1811,14 @@ typedef EFI_STATUS (EFIAPI *EFI_LOAD_IMAGE)(
     EFI_HANDLE* ImageHandle
 );
 
+typedef EFI_STATUS (EFIAPI *EFI_GET_NEXT_MONOTONIC_COUNT)(
+    OUT UINT64 *Count
+);
+
+typedef EFI_STATUS (EFIAPI *EFI_STALL)(
+    IN UINTN Microseconds
+);
+
 typedef EFI_STATUS (EFIAPI *EFI_START_IMAGE)(
     EFI_HANDLE ImageHandle,
     UINTN* ExitDataSize,
@@ -1875,9 +1883,9 @@ typedef struct {
     //
     // Miscellaneous Services
     //
-    void*                  GetNextMonotonicCount;
-    void*                  Stall;
-    EFI_SET_WATCHDOG_TIMER SetWatchdogTimer;
+    EFI_GET_NEXT_MONOTONIC_COUNT GetNextMonotonicCount;
+    EFI_STALL                    Stall;
+    EFI_SET_WATCHDOG_TIMER       SetWatchdogTimer;
 
     //
     // DriverSupport Services
@@ -1936,6 +1944,8 @@ typedef struct {
     UINTN                           NumberOfTableEntries;
     EFI_CONFIGURATION_TABLE         *ConfigurationTable;
 } EFI_SYSTEM_TABLE;
+
+EFI_RUNTIME_SERVICES *gRT = NULL;
 
 // EFI_IMAGE_ENTRY_POINT: UEFI Spec 2.10 section 4.1.1
 typedef

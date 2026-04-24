@@ -33,6 +33,7 @@ First you need:
 - libisl-dev
 - mtools
 - sleuthkit
+- qemu-system-gui
 
 You can download all of them with ``CoreSys/scripts/dev/apt.sh`` .
 

@@ -54,6 +54,48 @@ static inline void serial_write(const char *s)
         serial_write_char(*s++);
 }
 
+static inline void serial_write_u64(uint64_t value)
+{
+    char buf[32];
+    int i = 31;
+
+    buf[i] = '\0';
+
+    if (value == 0)
+    {
+        serial_write_char('0');
+        return;
+    }
+
+    while (value > 0 && i > 0)
+    {
+        buf[--i] = '0' + (value % 10);
+        value /= 10;
+    }
+
+    serial_write(&buf[i]);
+}
+
+static inline void serial_write_ptr(const void *p)
+{
+    uint64_t v = (uint64_t)p;
+
+    char buf[19];
+    buf[0] = '0';
+    buf[1] = 'x';
+
+    const char *hex = "0123456789ABCDEF";
+
+    for (int i = 0; i < 16; i++)
+    {
+        buf[2 + i] = hex[(v >> (60 - i * 4)) & 0xF];
+    }
+
+    buf[18] = '\0';
+
+    serial_write(buf);
+}
+
 static inline void kprint(const char *s)
 {
     while (*s)
