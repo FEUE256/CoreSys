@@ -1,5 +1,7 @@
 #pragma once
 
+#include <GUI/main.h>
+
 #define DEFAULT_FG_COLOR EFI_YELLOW
 #define DEFAULT_BG_COLOR EFI_BLUE
 

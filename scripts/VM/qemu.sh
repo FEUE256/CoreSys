@@ -25,10 +25,13 @@ qemu-system-x86_64 \
   -machine q35 \
   -name CoreSys \
   -usb \
-  -device usb-mouse \
+  -device qemu-xhci \
+  -device usb-tablet \
+  -device usb-kbd \
   -rtc base=localtime \
   -netdev user,id=n0 \
   -device rtl8139,netdev=n0 \
-  -serial stdio \
-  -display none \
+  -nographic \
+  -serial mon:stdio \
   -audiodev wav,id=audio0,path="$HOME/CoreSysVM/sound.wav"
+  

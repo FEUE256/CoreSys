@@ -1,13 +1,13 @@
 # CoreSys & Co Version
 
-- CoreSys Version: 3.6v Dev
+- CoreSys Version: 4.2v Dev
 - MC Version: 1.1v Release
 - GPT Tool Version: 2.5 Release
-- Project (Everything around CoreSyS including website etc.) 3.8v
+- Project (Everything around CoreSyS including website etc.) 4.2v
 
-CSC Version: 11.0v
+CSC Version: 12.0v
 (For Devs remember to change CS_VER in include/kernel/version.h AND docs7history update)
 
 CSC (CoreSys & Co)
 
-Fun fact the CSC 9.0v has only 9000 lines of code
+Fun fact the CSC 9.0v has only 9000 (excluded EDK Headers) lines of code

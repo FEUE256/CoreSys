@@ -45,6 +45,7 @@ void ShowFMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
         L"Print globle EFI variables",
         L"Change boot variables",
         L"CoreSys Terminal",
+        L"GUI",
         L"Back to main menu"
     };
     const UINTN optionCount = sizeof(options) / sizeof(options[0]);
@@ -67,7 +68,7 @@ void ShowFMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
 void fmain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
     UINTN selected = 0;
     EFI_INPUT_KEY key;
-    const UINTN optionCount = 14;
+    const UINTN optionCount = 15;
 
     ShowFMenu(cout, selected);
 
@@ -97,7 +98,8 @@ void fmain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
                     case 10: print_efi_global_variables(); break;
                     case 11: change_boot_variables(); break;
                     case 12: cmd(ImageHandle, SystemTable); break;
-                    case 13: return; break; // Back to main menu
+                    case 13: gmain(); break;
+                    case 14: return; break; // Back to main menu
                 }
                 break;
             }

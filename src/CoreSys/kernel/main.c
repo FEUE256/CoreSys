@@ -11,7 +11,18 @@
 #include <drivers/sf/main.h>         // System Failure functions
 #include <drivers/log/main.h>        // Logging functions
 #include <drivers/tty/main.h>        // TTY Terminal
-// Do not include API/CoreSys.h
+// Do not include API/CoreSys.h it will cause k_sf()
+
+/*
+Guide to add custom driver
+
+Include drivers/your/driver/main.h
+
+Create your driver in drivers/..../main.h
+
+Use pragma once and then just C code for your driver and then just impiment a driver-brige in drivers/tty/cmd.h
+
+*/
 
 int kmain(kargs* args) {
 

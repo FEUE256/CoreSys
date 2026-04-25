@@ -13,3 +13,20 @@ Error code is a 64 bit code that is used to indicate an error in the system. It 
 ## Dev
 
 * [Dev](dev/README.md)
+
+## Error codes Layout
+
+The error codes are 64/256 bit.
+
+Base for all error codes:
+
+\[Negative; 1 bit = 1 negative, 0 positive]
+\[DefaultHex; 1 bit = x hex / b binary / t base ten]
+\[Severity; 2 bits]
+\[SubseverityInfo; 2 bits]
+\[Subsystem; 10 bits]
+\[Subsubsystem; 6 bits]
+\[Mode; 4 bits]
+\[Args; 8 bits]
+\[ErrorCode; 28 bits]
+\[OS\_Other; 2 bits]

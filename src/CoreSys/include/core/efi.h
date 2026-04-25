@@ -2096,3 +2096,4 @@ typedef struct EFI_HII_DATABASE_PROTOCOL {
     void                               *GetPackageListHandle;
 } EFI_HII_DATABASE_PROTOCOL;
 
+#define EFI_ABORTED ((EFI_STATUS)0x8000000000000015ULL)
