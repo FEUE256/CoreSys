@@ -291,7 +291,7 @@ EFI_STATUS kboot(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, CHAR16* 
     Status = kjump(SystemTable, LoadedImage, DAUDA, safe);
 
 cleanup:
-    printf(L"Returned from kernel. Press any key to continue...\r\n");
+    printf(L"Returned from kernel (Press enter again to test again it should work). Press any key to continue...\r\n");
     get_key();
 
     if (LoadedImage)

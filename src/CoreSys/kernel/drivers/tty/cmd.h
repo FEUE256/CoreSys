@@ -3,15 +3,29 @@
 #include <core/efi.h>
 #include <drivers/tty/main.h>
 #include <drivers/halt/main.h>
+#include <drivers/ACPI/main.h>
 #include <drivers/sf/main.h>
 #include <drivers/log/main.h>
 #include <kernel/version.h>
 #include <drivers/page/main.h>
+#include <drivers/task/main.h>
+#include <drivers/sys/main.h>
+#include <drivers/syscalls/main.h>
+#include <drivers/cfs/main.h>
+#include <program/syscall_test/main.c>
 #include <stddef.h>
 #include <stdint.h>
 
+void sys_write(const char* s);
+void sys_halt(void);
+char sys_read(void);
+void sys_init(void);
+void sys_clear(void);
+static inline void reboot(void);
+static inline void shutdown(void);
 extern void tty_loop(kargs* args);
 extern void tty_write(const char *s);
+extern void k_sf(const char *s);
 
 static void execute_command(const char *cmd, kargs* args)
 {
@@ -19,7 +33,22 @@ static void execute_command(const char *cmd, kargs* args)
     // HELP
     if (cmd[0] == 'h' && cmd[1] == 'e' && cmd[2] == 'l' && cmd[3] == 'p')
     {
-        tty_write("Commands: help (Show this box), clear/cls (Clears the terminal), echo (Print text), shutdown (Shuts the computer down), hlt (Halts the CPU), sf (Starts a System Failure), ver (Shows the system version), fsinfo (Info about the filesystem), ps (lists proccess), ii (Prints ASCII table), rax (Print the rax register)\n");
+        tty_write(
+            "Commands: help (Show this box)\n"
+            "clear/cls (Clears the terminal)\n"
+            "echo (Print text)\n"
+            "shutdown (Shuts the computer down)\n"
+            "hlt (Halts the CPU)\n"
+            "sf (Starts a System Failure)\n"
+            "ver (Shows the system version)\n"
+            "fsinfo (Info about the filesystem)\n"
+            "ps (lists process)\n"
+            "ii (Prints ASCII table)\n"
+            "rax (Print the rax register)\n"
+            "reboot (Reboots the system)\n"
+            "run (Runs the system call test program)\n"
+            // "cfg (Prints kernel configuration)\n"
+        );
     }
     // CLEAR / CLS
     else if (
@@ -41,12 +70,20 @@ static void execute_command(const char *cmd, kargs* args)
     }
     else if (cmd[0] == 's' && cmd[1] == 'h' && cmd[2] == 'u' && cmd[3] == 't' &&
          cmd[4] == 'd' && cmd[5] == 'o' && cmd[6] == 'w' && cmd[7] == 'n') {
-            tty_write("Shutdown the computer via the power button\r\n");
-            hlt();
+            shutdown();
+         }
+    else if (cmd[0] == 'r' && cmd[1] == 'e' && cmd[2] == 'b' && cmd[3] == 'o' &&
+         cmd[4] == 'o' && cmd[5] == 't') {
+            reboot();
          }
     else if (cmd[0] == 'h' && cmd[1] == 'l' && cmd[2] == 't')
     {
-        hlt();
+        cs_task hlt_task = {
+            .name = "Halt Task",
+            .source_header = "drivers/halt/main.h",
+            .entry = hlt
+        };
+        task_run(&hlt_task); // Halt the system
     }
     else if (cmd[0] == 's' && cmd[1] == 'f')
     {
@@ -80,6 +117,22 @@ static void execute_command(const char *cmd, kargs* args)
         serial_write_u64(rax_value);
         kprint("\n");
     }
+    else if (cmd[0] == 'r' && cmd[1] == 'u' && cmd[2] == 'n')
+    {
+        syscall_test_main();
+    }
+    /* else if (cmd[0] == 'c' && cmd[1] == 'f' && cmd[2] == 'g')
+    {
+        uint64_t size;
+        uint8_t* kernel_cfg = cfs_read(kernel_cfg_file, &size);
+        char buffer[256];
+        memcpy(buffer, kernel_cfg, size);
+        buffer[size] = '\0';
+
+        sys_write("Kernel Configuration:\n");
+        sys_write(buffer);
+        sys_write("\n");
+    } DONT WORK */
     else if (cmd[0] == 'i' && cmd[1] == 'i')
     {
         kprint("ASCII TABLE (0–127)\n");

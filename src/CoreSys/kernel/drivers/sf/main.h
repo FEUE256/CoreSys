@@ -3,9 +3,17 @@
 #include <drivers/serial/main.h>
 #include <drivers/halt/main.h>       // Halt function
 #include <drivers/log/main.h>        // Logging functions
+#include <drivers/init/main.h>       // Initialization functions
+#include <drivers/task/main.h>       // Task management functions
 
 void k_sf(const char *s) {
-    serial_clear();
+    cs_task serial_clear_task = {
+        .name = "Serial Clear Task",
+        .source_header = "drivers/serial/main.h",
+        .entry = serial_clear
+    };
+    task_run(&serial_clear_task); // Clear Serial Output
+
     serial_write("KERNEL SYSTEM FAILURE!!!\n");
     serial_write("KERNEL SYSTEM FAILURE!!!\n");
     serial_write("KERNEL SYSTEM FAILURE!!!\n\n");
@@ -16,6 +24,12 @@ void k_sf(const char *s) {
     serial_write("\r\n");
     serial_write("\r\nYour computer must shutdown now to prevent further damage.\r\n");
     serial_write("\r\nPress the power button to shutdown...");
-    hlt();
+    
+    cs_task hlt_task = {
+        .name = "Halt Task",
+        .source_header = "drivers/halt/main.h",
+        .entry = hlt
+    };
+    task_run(&hlt_task); // Halt the system
 }
 

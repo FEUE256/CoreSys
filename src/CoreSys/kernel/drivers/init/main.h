@@ -1,0 +1,92 @@
+#pragma once
+
+#include <stdint.h>             // Standard integer types
+#include <drivers/serial/main.h>   // Serial port functions
+#include <drivers/halt/main.h>       // Halt function
+#include <drivers/sf/main.h>         // System Failure functions
+#include <drivers/log/main.h>        // Logging functions
+#include <drivers/tty/main.h>        // TTY Terminal
+#include <drivers/ACPI/main.h>       // ACPI functions
+#include <drivers/page/main.h>       // Paging functions
+#include <drivers/task/main.h>       // Task management functions
+#include <drivers/cfs/main.h>        // CoreSys Filesystem (cfs)
+
+void init(cs_task* self) {
+    (void)self; // Unused parameter
+    cs_task init_serial_task = {
+        .name = "Serial initialization Task",
+        .source_header = "drivers/init/main.h",
+        .entry = initSerial
+    };
+    task_run(&init_serial_task); // init Serial Drivers
+    k_log("Serial port initialized successfully.");
+
+    cs_task init_cfs_task = {
+        .name = "CFS initialization Task",
+        .source_header = "drivers/init/main.h",
+        .entry = cfs_init
+    };
+    task_run(&init_cfs_task); // init CFS
+    k_log("CFS initialized successfully.");
+
+    k_log("All drivers in the bpkg (boot package) initialized successfully.");
+}
+
+void deinit(cs_task* self) {
+    (void)self; // Unused parameter
+    k_log("All drivers in the bpkg (boot package) may deinitialized successfully.");
+
+    cs_task deinit_serial_task = {
+        .name = "Serial Deinitialization Task",
+        .source_header = "drivers/init/main.h",
+        .entry = deinitSerial
+    };
+    task_run(&deinit_serial_task); // Deinit Serial Drivers
+    k_log("Serial port deinitialized successfully.");
+
+    cs_task deinit_cfs_task = {
+        .name = "CFS Deinitialization Task",
+        .source_header = "drivers/init/main.h",
+        .entry = cfs_deinit
+    };
+    task_run(&deinit_cfs_task); // Deinit CFS
+    k_log("CFS deinitialized successfully.");
+
+}
+
+void reinit() {
+    cs_task deinit_task = {
+        .name = "Deinitialization Task",
+        .source_header = "drivers/init/main.h",
+        .entry = deinit
+    };
+    task_run(&deinit_task); // Deinit Drivers
+
+    cs_task init_task = {
+        .name = "Initialization Task",
+        .source_header = "drivers/init/main.h",
+        .entry = init
+    };
+
+    task_run(&init_task); // Reinit Drivers
+
+}
+
+void kreinit(cs_task* self) {
+    (void)self; // Unused parameter
+    cs_task deinit_task = {
+        .name = "Deinitialization Task",
+        .source_header = "drivers/init/main.h",
+        .entry = deinit
+    };
+    task_run(&deinit_task); // Deinit Drivers
+
+    cs_task init_task = {
+        .name = "Initialization Task",
+        .source_header = "drivers/init/main.h",
+        .entry = init
+    };
+
+    task_run(&init_task); // Reinit Drivers
+
+}

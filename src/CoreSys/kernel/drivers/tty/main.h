@@ -4,6 +4,7 @@
 #include <drivers/serial/main.h>
 #include <drivers/tty/cmd.h>
 #include <init/kargs.h>
+#include <drivers/task/main.h>       // Task management functions
 
 void tty_putc(char c);
 void tty_write(const char *s);
@@ -11,7 +12,7 @@ void tty_loop(kargs* args);
 
 // You already have this somewhere
 extern void serial_write_char(char c);
-extern char serial_read_char(void);
+extern char serial_read_char();
 extern  void execute_command(const char *cmd, kargs* args);
 
 static char buffer[128];
@@ -34,7 +35,8 @@ void tty_loop(kargs* args)
 
     while (1)
     {
-        char c = serial_read_char();
+
+        char c = serial_read_char(); // Read a character from the serial port
 
         if (c == '\r' || c == '\n')
         {

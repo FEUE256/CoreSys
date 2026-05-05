@@ -2,6 +2,8 @@
 
 #include <init/kargs.h>
 #include <stdint.h>
+#include <drivers/task/main.h>       // Task management functions
+
 
 typedef unsigned char u8;
 typedef unsigned short u16;
@@ -107,7 +109,7 @@ static inline int serial_received(void)
     return inb(COM1 + 5) & 1;
 }
 
-char serial_read_char(void)
+char serial_read_char()
 {
     while (serial_received() == 0)
         ;
@@ -142,8 +144,9 @@ static inline uint16_t inw(uint16_t port)
 // ==============================
 // Utilities
 // ==============================
-static inline void serial_clear(void)
+static inline void serial_clear(cs_task* self)
 {
+    (void)self; // Unused parameter
     serial_write("\x1B[2J\x1B[H");
 }
 
@@ -152,12 +155,23 @@ static inline void kclear(void)
     serial_write("\x1B[2J\x1B[H");
 }
 
+void k_clear(cs_task* self) {
+    (void)self; // Unused parameter
+    serial_write("\x1B[2J\x1B[H");
+}
+
 // ==============================
 // Init
 // ==============================
-static inline void initSerial(void)
+static inline void initSerial(cs_task* self)
 {
-    serial_clear();
+    (void)self; // Unused parameter
+    cs_task clear_task = {
+        .name = "Serial Clear Task",
+        .source_header = "drivers/serial/main.h",
+        .entry = serial_clear
+    };
+    task_run(&clear_task); // Clear serial output
 
     outb(COM1 + 1, 0x00); // disable interrupts
     outb(COM1 + 3, 0x80); // DLAB on
@@ -169,4 +183,31 @@ static inline void initSerial(void)
     outb(COM1 + 3, 0x03); // 8N1
     outb(COM1 + 2, 0xC7); // FIFO enable
     outb(COM1 + 4, 0x0B); // RTS/DSR + IRQ enable (safe default)
+}
+
+// ==============================
+// Deinit
+// ==============================
+static inline void deinitSerial(cs_task* self)
+{
+    (void)self; // Unused parameter
+    // Disable all interrupts
+    outb(COM1 + 1, 0x00);
+
+    // Disable FIFO (clear buffers)
+    outb(COM1 + 2, 0x00);
+
+    // Drop modem control lines (safe idle state)
+    outb(COM1 + 4, 0x00);
+
+    // Optional: reset line control register to default (8N1, DLAB off)
+    outb(COM1 + 3, 0x03);
+
+    // Optional: clear any remaining data
+    cs_task clear_task = {
+        .name = "Serial Clear Task",
+        .source_header = "drivers/serial/main.h",
+        .entry = serial_clear
+    };
+    task_run(&clear_task); // Clear serial output
 }

@@ -17,7 +17,11 @@ NOTE: This docs can be outdated, if you find any outdated information please rep
 ## Drivers
 
 * [Drivers Docs](drivers/README.md)
-  
+
+## System Calls
+
+* [System calls](syscalls/README.md)
+
 ## CPU rings
 
 * [CPU rings](cpu/cpu.png)

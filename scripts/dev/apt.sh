@@ -43,6 +43,7 @@ packages=(
     gcc-x86-64-linux-gnu 
     binutils-x86-64-linux-gnu
     qemu-system-gui
+    python-pip
 )
 
 for pkg in "${packages[@]}"; do
@@ -51,6 +52,8 @@ for pkg in "${packages[@]}"; do
         echo "Warning: Failed to install $pkg, skipping."
     fi
 done
+
+pip install -r ../../python/req.txt --break-system-packages
 
 echo "Done installing packages."
 

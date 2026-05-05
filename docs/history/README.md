@@ -2,6 +2,15 @@
 
 This documataion starts at: `2026-02-20`. This document will have big steps and normal updateds also. This can also be like a little blog for CoreSys. It's Nils Efverman that have writen all of this:
 
+## Added Core Kernel features (2026-05-03)
+	Added:
+    - Task creation
+    - System Calls
+
+## Small thing (2026-05-03)
+	My computer has not been working etc that for the delay.
+	Added bpkg to the kernel. Chaged ne.cfg to be right. Added pyyaml and pip to deps list. Added Arch linux support.
+
 ## 12.0 CSC (2026-04-24)
 	New mimiual GUI stucture (This will not be more developt entill a notice.) Build Time: 33.666s real (user: 5.547s, sys: 1.750s)
 
