@@ -138,7 +138,7 @@ uint8_t* cfs_read(cfs_node* file, uint64_t* size_out) {
     return file->data;
 }
    
-    static cfs_node* kernel_cfg_file;
+    static cfs_node* kernel_cfg_file __attribute__((unused));
 
 // ---------------- INIT / DEINIT FILESYSTEM ----------------
 
