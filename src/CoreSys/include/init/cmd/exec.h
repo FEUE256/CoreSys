@@ -9,7 +9,7 @@ void fgets(CHAR16 *buffer, UINTN max_len);
 void clear_screen();
 
 void chelp() {
-    printf(L"Commands: clear/cls (Clear the screen), help (Shows this text), exit (Quits the program), shutdown (Shuts the computer down), reboot (Reboots the computer), pwd (Print current dir name), run (Runs PE2FMI), ps (Lists all proceess), whoami (Prints current user), uname (Prints spec)");
+    printf(L"Commands: clear/cls (Clear the screen), help (Shows this text), exit (Quits the program), shutdown (Shuts the computer down), reboot (Reboots the computer), pwd (Print current dir name), run (Runs PE2FMI), ps (Lists all proceess), whoami (Prints current user), uname (Prints spec), credits (Shows credits)\r\n");
 }
 
 
@@ -269,6 +269,10 @@ void cmd(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 
         else if (strncmp_u16(input, L"run", 3) == 0) {
             rmain_main(ImageHandle, SystemTable);
+        }
+
+        else if (strncmp_u16(input, L"credits", 7) == 0) {
+            printf(L"Thanks to Queso Fuego (parts of code), elevatorguy (parts of code), Cyber::Boot (fork), Terry A. Davis (TempleOS), Ankit Kumar (Polaris OS), Neptune650 (Polaris OS), MishaTy (Polaris OS), redmine4404 (Polaris OS), AnalogFeelings (Polaris), 1010101001010101 (tinycrypt), chris-morrison (tinycrypt), mczraf (tinycrypt), Ipereira (tinycrypt), malsbat (tinycrypt), rob-brown (tinycrypt), haukepetersen (tinycrypt), mped-oticon (tinycrypt), thoh-ot (tinycrypt), daor-oti (tinycrypt), winnietwo (tinycrypt), sfblackl-intel (tinycrypt), every person on the EDK II team and many more for the inspiration and help in making this project possible! RIP Terry A. Davis!\r\n");
         }
 
         else {

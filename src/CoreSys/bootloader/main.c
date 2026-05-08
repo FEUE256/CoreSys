@@ -20,6 +20,99 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable
 
 #include <init/cmd/exec.h> // cmd();
 
+// START DONT NOT COPY TO funcs.h
+void fgets(CHAR16 *buffer, UINTN max_len) {
+    if (!buffer || max_len == 0) return;
+
+    UINTN idx = 0;
+    EFI_INPUT_KEY key;
+
+    while (idx < max_len - 1) { // reservera plats för null
+        // Vänta på tangenttryck
+        if (gST->ConIn->ReadKeyStroke(gST->ConIn, &key) != EFI_SUCCESS) {
+            continue;
+        }
+
+        // Enter avslutar raden
+        if (key.UnicodeChar == CHAR_CARRIAGE_RETURN) {
+            buffer[idx] = L'\0';
+            // Skriv newline på skärmen
+            gST->ConOut->OutputString(gST->ConOut, L"\r\n");
+            break;
+        }
+
+        // Backspace
+        if (key.UnicodeChar == CHAR_BACKSPACE && idx > 0) {
+            idx--;
+            gST->ConOut->OutputString(gST->ConOut, L"\b \b"); // ta bort tecken visuellt
+            continue;
+        }
+
+        // Spara tecken i bufferten och skriv på skärmen
+        buffer[idx++] = key.UnicodeChar;
+
+        CHAR16 tmp[2] = { key.UnicodeChar, L'\0' };
+        gST->ConOut->OutputString(gST->ConOut, tmp);
+    }
+
+    // Null-terminator om max_len uppnådd utan enter
+    if (idx == max_len - 1) {
+        buffer[idx] = L'\0';
+    }
+}
+
+static void PrintHex(UINT8 *data, UINTN len)
+{
+    CHAR16 out[3];
+    out[2] = L'\0';
+
+    for (UINTN i = 0; i < len; i++) {
+        UINT8 v = data[i];
+
+        CHAR16 hi = (v >> 4) & 0xF;
+        CHAR16 lo = v & 0xF;
+
+        out[0] = (hi < 10) ? (L'0' + hi) : (L'a' + (hi - 10));
+        out[1] = (lo < 10) ? (L'0' + lo) : (L'a' + (lo - 10));
+
+        gST->ConOut->OutputString(gST->ConOut, out);
+    }
+}
+
+UINTN wcslen(const CHAR16 *s);
+extern void ShowFMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected);
+
+EFI_STATUS sha256(void)
+{
+    clear_screen();
+
+    CHAR16 input[256];
+    UINT8 hash[32];
+
+    gST->ConOut->OutputString(gST->ConOut, L"Write what you want to hash (UTF-16LE Encoding, 256 buffer): ");
+
+    fgets(input, 256);
+
+    // Convert CHAR16 string to raw bytes (UTF-16)
+    UINTN len = wcslen(input) * sizeof(CHAR16);
+
+    ComputeSha256(
+        (const uint8_t *)input,
+        len,
+        hash
+    );
+
+    gST->ConOut->OutputString(gST->ConOut, L"\r\nSHA256: ");
+    PrintHex(hash, 32);
+    gST->ConOut->OutputString(gST->ConOut, L"\r\n");
+
+    printf(L"\r\nPress any key to go back...\r\n");
+    get_key();
+    ShowFMenu(cout, 14);
+    return EFI_SUCCESS;
+}
+// END
+
 // =========================================================
 // Show Menu Function
 // =========================================================
@@ -46,6 +139,7 @@ void ShowFMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
         L"Change boot variables",
         L"CoreSys Terminal",
         L"GUI",
+        L"Hashing (SHA256, CSC (CoreSys Cryptography))",
         L"Back to main menu"
     };
     const UINTN optionCount = sizeof(options) / sizeof(options[0]);
@@ -68,7 +162,7 @@ void ShowFMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
 void fmain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
     UINTN selected = 0;
     EFI_INPUT_KEY key;
-    const UINTN optionCount = 15;
+    const UINTN optionCount = 16;
 
     ShowFMenu(cout, selected);
 
@@ -99,7 +193,8 @@ void fmain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
                     case 11: change_boot_variables(); break;
                     case 12: cmd(ImageHandle, SystemTable); break;
                     case 13: gmain(); break;
-                    case 14: return; break; // Back to main menu
+                    case 14: sha256(); break;
+                    case 15: return; break; // Back to main menu
                 }
                 break;
             }
@@ -134,6 +229,17 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable
     return EFI_SUCCESS;
 }
 
+void ShowCSMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected);
+
+EFI_STATUS cr() {
+    clear_screen();
+    printf(L"Thanks to Queso Fuego (parts of code), elevatorguy (parts of code), Cyber::Boot (fork), Terry A. Davis (TempleOS), Ankit Kumar (Polaris OS), Neptune650 (Polaris OS), MishaTy (Polaris OS), redmine4404 (Polaris OS), AnalogFeelings (Polaris), 1010101001010101 (tinycrypt), chris-morrison (tinycrypt), mczraf (tinycrypt), Ipereira (tinycrypt), malsbat (tinycrypt), rob-brown (tinycrypt), haukepetersen (tinycrypt), mped-oticon (tinycrypt), thoh-ot (tinycrypt), daor-oti (tinycrypt), winnietwo (tinycrypt), sfblackl-intel (tinycrypt), every person on the EDK II team and many more for the inspiration and help in making this project possible! RIP Terry A. Davis!\r\n");
+    printf(L"\r\nPress any key to go back...\r\n");
+    get_key();
+    ShowCSMenu(cout, 1);
+    return EFI_SUCCESS;
+}
+
 // =========================================================
 // Show CS Menu Function
 // =========================================================
@@ -147,6 +253,7 @@ void ShowCSMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
 
     const CHAR16* options[] = {
         L"CoreSys OS",
+        L"Credits",
         L"Hardware Version",
         L"Back to Main Menu"
     };
@@ -170,7 +277,7 @@ void ShowCSMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
 void cs_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
     UINTN selected = 0;
     EFI_INPUT_KEY key;
-    const UINTN optionCount = 3;
+    const UINTN optionCount = 4;
 
     ShowCSMenu(cout, selected);
 
@@ -188,8 +295,9 @@ void cs_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
                 case L'\r':  // Enter
                 switch (selected) {
                     case 0: cs_init(ImageHandle, SystemTable); break; // extern Function
-                    case 1: hw_main(ImageHandle, SystemTable); break; // extern Function
-                    case 2: bmain_main(ImageHandle, SystemTable); break;
+                    case 1: cr(); break; // extern Function
+                    case 2: hw_main(ImageHandle, SystemTable); break; // extern Function
+                    case 3: bmain_main(ImageHandle, SystemTable); break;
                 }
                 break;
             }
@@ -277,6 +385,7 @@ void ShowMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
         L"CoreSys OS",
         L"Other OS",
         L"Recovery",
+        L"Exit",
         L"Shutdown"
     };
     const UINTN optionCount = sizeof(options) / sizeof(options[0]);
@@ -299,7 +408,7 @@ void ShowMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
 void bmain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
     UINTN selected = 0;
     EFI_INPUT_KEY key;
-    const UINTN optionCount = 4;
+    const UINTN optionCount = 5;
 
     ShowMenu(cout, selected);
 
@@ -319,7 +428,8 @@ void bmain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
                     case 0: cs_main(ImageHandle, SystemTable); break;
                     case 1: o_main(ImageHandle, SystemTable); break;
                     case 2: req_main(ImageHandle, SystemTable); break;
-                    case 3: shutdown(); break;
+                    case 3: ExitApp(ImageHandle, SystemTable); break; // Exit
+                    case 4: shutdown(); break;
                 }
                 break;
             }

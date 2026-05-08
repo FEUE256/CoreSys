@@ -46,6 +46,7 @@ static void execute_command(const char *cmd, kargs* args)
             "ii (Prints ASCII table)\n"
             "rax (Print the rax register)\n"
             "reboot (Reboots the system)\n"
+            "cr (Shows credits)\n"
             "run (Runs the system call test program)\n"
             // "cfg (Prints kernel configuration)\n"
         );
@@ -133,6 +134,10 @@ static void execute_command(const char *cmd, kargs* args)
         sys_write(buffer);
         sys_write("\n");
     } DONT WORK */
+    else if (cmd[0] == 'c' && cmd[1] == 'r')
+    {
+        kprint("Thanks to Queso Fuego (parts of code), elevatorguy (parts of code), Cyber::Boot (fork), Terry A. Davis (TempleOS), Ankit Kumar (Polaris OS), Neptune650 (Polaris OS), MishaTy (Polaris OS), redmine4404 (Polaris OS), AnalogFeelings (Polaris), 1010101001010101 (tinycrypt), chris-morrison (tinycrypt), mczraf (tinycrypt), Ipereira (tinycrypt), malsbat (tinycrypt), rob-brown (tinycrypt), haukepetersen (tinycrypt), mped-oticon (tinycrypt), thoh-ot (tinycrypt), daor-oti (tinycrypt), winnietwo (tinycrypt), sfblackl-intel (tinycrypt), every person on the EDK II team and many more for the inspiration and help in making this project possible! RIP Terry A. Davis!\r\n");
+    }
     else if (cmd[0] == 'i' && cmd[1] == 'i')
     {
         kprint("ASCII TABLE (0–127)\n");

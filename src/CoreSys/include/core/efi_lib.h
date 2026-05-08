@@ -2509,3 +2509,10 @@ void set_runtime_address_map(Memory_Map_Info *mmap) {
     if (EFI_ERROR(status)) error(0, u"0x0202000000000100000100010000000A0000000000000000000000000B01\r\n");
 }
 
+UINTN wcslen(const CHAR16 *s)
+{
+    UINTN i = 0;
+    while (s[i] != 0)
+        i++;
+    return i;
+}

@@ -1825,6 +1825,13 @@ typedef EFI_STATUS (EFIAPI *EFI_START_IMAGE)(
     CHAR16** ExitData
 );
 
+typedef EFI_STATUS (EFIAPI *EFI_EXIT)(
+    IN EFI_HANDLE ImageHandle,
+    IN EFI_STATUS ExitStatus,
+    IN UINTN ExitDataSize,
+    IN CHAR16 *ExitData OPTIONAL
+);
+
 typedef EFI_STATUS (EFIAPI *EFI_UNLOAD_IMAGE)(
     EFI_HANDLE ImageHandle
 );
@@ -1876,7 +1883,7 @@ typedef struct {
     //
     EFI_LOAD_IMAGE         LoadImage;
     EFI_START_IMAGE        StartImage;
-    void*                  Exit;
+    EFI_EXIT               Exit;
     EFI_UNLOAD_IMAGE       UnloadImage;
     EFI_EXIT_BOOT_SERVICES ExitBootServices;
 

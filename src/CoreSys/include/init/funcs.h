@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GUI/main.h>
+#include <crypto/main.h>
 
 #define DEFAULT_FG_COLOR EFI_YELLOW
 #define DEFAULT_BG_COLOR EFI_BLUE
@@ -1734,4 +1735,15 @@ void fgets(CHAR16 *buffer, UINTN max_len) {
     if (idx == max_len - 1) {
         buffer[idx] = L'\0';
     }
+}
+
+EFI_STATUS EFIAPI ExitApp(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable) {
+    // Perform any final operations before exit, like cleanup or logging
+    systemTable->ConOut->OutputString(gST->ConOut, L"Exiting application...\r\n");
+
+    // Exit the application gracefully
+    gBS->Exit(imageHandle, EFI_SUCCESS, 0, NULL);
+
+    // Normally, we wouldn't reach here, but if you want to return an EFI_STATUS
+    return EFI_SUCCESS;
 }
