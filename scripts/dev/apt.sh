@@ -16,6 +16,7 @@ packages=(
     llvm
     clang
     lld
+    git-lfs
     python-is-python3
     gcc-mingw-w64
     g++-mingw-w64
@@ -53,6 +54,8 @@ for pkg in "${packages[@]}"; do
         echo "Warning: Failed to install $pkg, skipping."
     fi
 done
+
+git lfs install
 
 echo "Done installing packages."
 

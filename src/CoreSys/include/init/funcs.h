@@ -1697,46 +1697,6 @@ EFI_STATUS change_boot_variables(void) {
     return EFI_SUCCESS;
 }
 
-void fgets(CHAR16 *buffer, UINTN max_len) {
-    if (!buffer || max_len == 0) return;
-
-    UINTN idx = 0;
-    EFI_INPUT_KEY key;
-
-    while (idx < max_len - 1) { // reservera plats för null
-        // Vänta på tangenttryck
-        if (gST->ConIn->ReadKeyStroke(gST->ConIn, &key) != EFI_SUCCESS) {
-            continue;
-        }
-
-        // Enter avslutar raden
-        if (key.UnicodeChar == CHAR_CARRIAGE_RETURN) {
-            buffer[idx] = L'\0';
-            // Skriv newline på skärmen
-            gST->ConOut->OutputString(gST->ConOut, L"\r\n");
-            break;
-        }
-
-        // Backspace
-        if (key.UnicodeChar == CHAR_BACKSPACE && idx > 0) {
-            idx--;
-            gST->ConOut->OutputString(gST->ConOut, L"\b \b"); // ta bort tecken visuellt
-            continue;
-        }
-
-        // Spara tecken i bufferten och skriv på skärmen
-        buffer[idx++] = key.UnicodeChar;
-
-        CHAR16 tmp[2] = { key.UnicodeChar, L'\0' };
-        gST->ConOut->OutputString(gST->ConOut, tmp);
-    }
-
-    // Null-terminator om max_len uppnådd utan enter
-    if (idx == max_len - 1) {
-        buffer[idx] = L'\0';
-    }
-}
-
 EFI_STATUS EFIAPI ExitApp(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable) {
     // Perform any final operations before exit, like cleanup or logging
     systemTable->ConOut->OutputString(gST->ConOut, L"Exiting application...\r\n");

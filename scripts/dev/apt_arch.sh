@@ -54,6 +54,6 @@ for pkg in "${packages[@]}"; do
     fi
 done
 
-pip install -r ../../python/req.txt --break-system-packages
+git lfs install
 
 echo "Done installing packages."

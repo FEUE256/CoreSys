@@ -319,7 +319,6 @@ void ShowOMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
     const CHAR16* options[] = {
         L"Other OS",
         L"Cyber::Boot",
-        L"Funcs",
         L"Back to Main Menu"
     };
     const UINTN optionCount = sizeof(options) / sizeof(options[0]);
@@ -342,7 +341,7 @@ void ShowOMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
 void o_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
     UINTN selected = 0;
     EFI_INPUT_KEY key;
-    const UINTN optionCount = 4;
+    const UINTN optionCount = 3;
 
     ShowOMenu(cout, selected);
 
@@ -361,8 +360,7 @@ void o_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
                 switch (selected) {
                     case 0: o_init(ImageHandle, SystemTable); break; // extern Function
                     case 1: cb(ImageHandle, SystemTable); break; // extern Function
-                    case 2: efi_main(ImageHandle, SystemTable); break; // extern Function
-                    case 3: bmain_main(ImageHandle, SystemTable); break;
+                    case 2: bmain_main(ImageHandle, SystemTable); break;
                 }
                 break;
             }
@@ -386,6 +384,7 @@ void ShowMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
         L"Other OS",
         L"Recovery",
         L"Exit",
+        L"Extra functions",
         L"Shutdown"
     };
     const UINTN optionCount = sizeof(options) / sizeof(options[0]);
@@ -408,7 +407,7 @@ void ShowMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
 void bmain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
     UINTN selected = 0;
     EFI_INPUT_KEY key;
-    const UINTN optionCount = 5;
+    const UINTN optionCount = 6;
 
     ShowMenu(cout, selected);
 
@@ -429,7 +428,8 @@ void bmain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
                     case 1: o_main(ImageHandle, SystemTable); break;
                     case 2: req_main(ImageHandle, SystemTable); break;
                     case 3: ExitApp(ImageHandle, SystemTable); break; // Exit
-                    case 4: shutdown(); break;
+                    case 4: efi_main(ImageHandle, SystemTable); break; // Extra functions 
+                    case 5: shutdown(); break;
                 }
                 break;
             }
