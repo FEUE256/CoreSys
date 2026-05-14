@@ -1,0 +1,25 @@
+name: Feature Request
+description: Propose a kernel / OS feature
+title: "[FEATURE] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: feature
+    attributes:
+      label: Feature Description
+      description: What should be added?
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this needed in CoreSys?
+
+  - type: textarea
+    id: design
+    attributes:
+      label: Suggested Design
+      description: Architecture, APIs, or implementation ideas
+      
