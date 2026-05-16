@@ -9,13 +9,16 @@ mc:
 CONFIG_FILE := ../../.config/build.cfg
 MODE_FILE   := ../../.config/config.cfg
 
-all: mc clean subdirs
+all: vm mc clean subdirs
 
 ifneq ("$(wildcard $(CONFIG_FILE))","")
 include $(CONFIG_FILE)
 else
 $(error Missing config file: $(CONFIG_FILE))
 endif
+
+vm:
+	@mkdir -p $(HOME)/CoreSysVM
 
 # -------- Subdirectories --------
 subdirs:

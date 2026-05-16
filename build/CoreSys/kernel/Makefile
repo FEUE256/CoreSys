@@ -39,13 +39,12 @@ $(BUILD_DIR)/lib/MdePkg/Library/%.o: $(SRC_DIR)/lib/MdePkg/Library/%.c
 # Object lists
 # =====================
 K_SRCS := $(wildcard $(K_DIR)/*.c) $(wildcard $(K_DIR)/drivers/intr/*.c)
-ALL_OBJS := $(patsubst $(K_DIR)/%.c,$(BUILD_DIR)/%.o,$(K_SRCS)) $(LIB_OBJS)
+ALL_OBJS := $(patsubst $(K_DIR)/%.c,$(BUILD_DIR)/%.o,$(K_SRCS)) 
 
 # =====================
 # Link EFI
 # =====================
 $(BUILD_K_EFI): $(ALL_OBJS) | $(BIN_DIR)
-	@echo "ALL_OBJS = $(ALL_OBJS)"
 	@echo "Linking CoreSys EFI..."
 	$(CC) $(ALL_OBJS) $(K_LDFLAGS) -o $@
 	@echo "Built EFI: $@"
@@ -66,6 +65,6 @@ FORCE:
 # =====================
 clean: 
 	rm -fr "$(BUILD_DIR)/lib"
-	rm -f "$(ALL_OBJS)" "$(BUILD_K_EFI)" "$(SRC_DIR/main.o)" "$(BUILD_DIR)/main.o" "$(SRC_DIR)/init/main.o" "$(BUILD_K_EFI_NE)"
+	rm -f $(ALL_OBJS) "$(BUILD_K_EFI)" "$(SRC_DIR/main.o)" "$(BUILD_DIR)/main.o" "$(SRC_DIR)/init/main.o" "$(BUILD_K_EFI_NE)"
 	@echo "Cleaned build artifacts"
 	

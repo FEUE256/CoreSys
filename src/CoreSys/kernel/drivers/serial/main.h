@@ -1,9 +1,9 @@
 #pragma once
 
-#include <init/kargs.h>
 #include <stdint.h>
 #include <drivers/task/main.h>       // Task management functions
-
+#include <stdarg.h>
+#include <drivers/halt/main.h>       // For halt() function
 
 typedef unsigned char u8;
 typedef unsigned short u16;
@@ -104,12 +104,18 @@ static inline void kprint(const char *s)
         serial_write_char(*s++);
 }
 
+static inline void kprint_char(char c)
+{
+    while (!serial_is_transmit_empty());
+    outb(COM1, (u8)c);
+}
+
 static inline int serial_received(void)
 {
     return inb(COM1 + 5) & 1;
 }
 
-char serial_read_char()
+char serial_read_char(void)
 {
     while (serial_received() == 0)
         ;
@@ -158,6 +164,168 @@ static inline void kclear(void)
 void k_clear(cs_task* self) {
     (void)self; // Unused parameter
     serial_write("\x1B[2J\x1B[H");
+}
+
+void kprint_u64(uint64_t v)
+{
+    char buf[32];
+    char *p = buf + 31;
+    *p = 0;
+
+    do {
+        *--p = '0' + (v % 10);
+        v /= 10;
+    } while (v);
+
+    kprint(p);
+}
+
+static int kstrlen(const char *s)
+{
+    int i = 0;
+    while (s && s[i]) i++;
+    return i;
+}
+
+static void kprint_str(const char *s)
+{
+    if (!s) { kprint("(null)"); return; }
+    kprint(s);
+}
+
+static void kprint_uint(unsigned long long v, unsigned base)
+{
+    char buf[32];
+    const char *digits = "0123456789abcdef";
+    int i = 0;
+
+    if (v == 0)
+    {
+        kprint_char('0');
+        return;
+    }
+
+    while (v > 0)
+    {
+        buf[i++] = digits[v % base];
+        v /= base;
+    }
+
+    while (i--)
+        kprint_char(buf[i]);
+}
+
+static void kprint_int(long long v)
+{
+    if (v < 0)
+    {
+        kprint_char('-');
+        kprint_uint((unsigned long long)(-v), 10);
+    }
+    else
+    {
+        kprint_uint((unsigned long long)v, 10);
+    }
+}
+
+void kprint_u8(uint8_t v)
+{
+    char buf[4];
+
+    buf[0] = '0' + (v / 10);
+    buf[1] = '0' + (v % 10);
+    buf[2] = '\n';
+    buf[3] = 0;
+
+    kprint(buf);
+}
+
+int kprintf(const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+
+    int count = 0;
+
+    for (int i = 0; fmt && fmt[i]; i++)
+    {
+        if (fmt[i] != '%')
+        {
+            kprint_char(fmt[i]);
+            count++;
+            continue;
+        }
+
+        i++;
+        char c = fmt[i];
+
+        switch (c)
+        {
+            case 's':
+            {
+                const char *s = va_arg(ap, const char *);
+                kprint_str(s);
+                count += kstrlen(s ? s : "(null)");
+                break;
+            }
+
+            case 'c':
+            {
+                char ch = (char)va_arg(ap, int);
+                kprint_char(ch);
+                count++;
+                break;
+            }
+
+            case 'd':
+            case 'i':
+            {
+                long long v = va_arg(ap, int);
+                kprint_int(v);
+                break;
+            }
+
+            case 'u':
+            {
+                unsigned long long v = va_arg(ap, unsigned int);
+                kprint_uint(v, 10);
+                break;
+            }
+
+            case 'x':
+            {
+                unsigned long long v = va_arg(ap, unsigned int);
+                kprint_uint(v, 16);
+                break;
+            }
+
+            case 'p':
+            {
+                void *p = va_arg(ap, void *);
+                kprint("0x");
+                kprint_uint((uintptr_t)p, 16);
+                break;
+            }
+
+            case '%':
+            {
+                kprint_char('%');
+                count++;
+                break;
+            }
+
+            default:
+            {
+                kprint_char('%');
+                kprint_char(c);
+                count += 2;
+                break;
+            }
+        }
+    }
+
+    va_end(ap);
+    return count;
 }
 
 // ==============================

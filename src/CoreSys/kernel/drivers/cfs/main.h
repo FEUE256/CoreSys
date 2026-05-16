@@ -2,6 +2,7 @@
 
 #include <drivers/page/main.h>
 #include <stdint.h>
+#include <drivers/task/main.h>
 
 // CoreSys Filesystem (cfs) – minimal kernel design skeleton
 
@@ -142,7 +143,8 @@ uint8_t* cfs_read(cfs_node* file, uint64_t* size_out) {
 
 // ---------------- INIT / DEINIT FILESYSTEM ----------------
 
-void cfs_init() {
+void cfs_init(cs_task* self) {
+    (void)self; // Unused parameter
     cfs_root = cfs_create_node("/", cfs_DIR);
 
     cfs_node* sys_dir = cfs_mkdir(cfs_root, "sys");
@@ -155,7 +157,17 @@ void cfs_init() {
     cfs_write(kernel_cfg_file, kernel_cfg_data, sizeof(kernel_cfg_data));
 }
 
-void cfs_deinit() {
+/*
+File stucture:
+/
+├── sys
+    ├── kernel
+       ├── kernel.cfg
+    ├── system
+*/
+
+void cfs_deinit(cs_task* self) {
+    (void)self; // Unused parameter
     if (!cfs_root) return;
 
     cfs_destroy_node(cfs_root);

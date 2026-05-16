@@ -1800,6 +1800,16 @@ typedef struct {
     void *QueryVariableInfo;
 } EFI_RUNTIME_SERVICES;
 
+EFI_GUID gEfiLoadedImageProtocolGuid =
+{
+    0x5B1B31A1,          // TimeLow
+    0x9562,              // TimeMid
+    0x11D2,              // TimeHighAndVersion
+    0x8E,                // ClockSeqHighAndReserved
+    0x3F,                // ClockSeqLow
+    {0x00, 0xA0, 0xC9, 0x69, 0x72, 0x3B} // Node[6]
+};
+
 typedef struct _EFI_LOADED_IMAGE EFI_LOADED_IMAGE;
 
 typedef EFI_STATUS (EFIAPI *EFI_LOAD_IMAGE)(
@@ -1834,6 +1844,12 @@ typedef EFI_STATUS (EFIAPI *EFI_EXIT)(
 
 typedef EFI_STATUS (EFIAPI *EFI_UNLOAD_IMAGE)(
     EFI_HANDLE ImageHandle
+);
+
+typedef EFI_STATUS (EFIAPI *EFI_HANDLE_PROTOCOL)(
+    IN EFI_HANDLE Handle,
+    IN EFI_GUID *Protocol,
+    OUT VOID **Interface
 );
 
 // EFI_BOOT_SERVICES: UEFI Spec 2.10 section 4.4.1
@@ -1871,7 +1887,7 @@ typedef struct {
     void* InstallProtocolInterface;
     void* ReinstallProtocolInterface;
     void* UninstallProtocolInterface;
-    void* HandleProtocol;
+    EFI_HANDLE_PROTOCOL HandleProtocol;
     VOID* Reserved;
     void* RegisterProtocolNotify;
     void* LocateHandle;

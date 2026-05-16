@@ -12,6 +12,8 @@
 #include <drivers/sys/main.h>
 #include <drivers/syscalls/main.h>
 #include <drivers/cfs/main.h>
+#include <drivers/led/main.h>
+#include <drivers/reg/main.h>
 #include <program/syscall_test/main.c>
 #include <stddef.h>
 #include <stdint.h>
@@ -23,13 +25,12 @@ void sys_init(void);
 void sys_clear(void);
 static inline void reboot(void);
 static inline void shutdown(void);
-extern void tty_loop(kargs* args);
+extern void tty_loop(int debug);
 extern void tty_write(const char *s);
 extern void k_sf(const char *s);
 
-static void execute_command(const char *cmd, kargs* args)
+static void execute_command(const char *cmd, int debug)
 {
-    (void)args;
     // HELP
     if (cmd[0] == 'h' && cmd[1] == 'e' && cmd[2] == 'l' && cmd[3] == 'p')
     {
@@ -48,6 +49,8 @@ static void execute_command(const char *cmd, kargs* args)
             "reboot (Reboots the system)\n"
             "cr (Shows credits)\n"
             "run (Runs the system call test program)\n"
+            "led (Flashes the keyboard LEDs)\n"
+            "reg (Print Register dump (Debug mode only))\n"
             // "cfg (Prints kernel configuration)\n"
         );
     }
@@ -137,6 +140,16 @@ static void execute_command(const char *cmd, kargs* args)
     else if (cmd[0] == 'c' && cmd[1] == 'r')
     {
         kprint("Thanks to Queso Fuego (parts of code), elevatorguy (parts of code), Cyber::Boot (fork), Terry A. Davis (TempleOS), Ankit Kumar (Polaris OS), Neptune650 (Polaris OS), MishaTy (Polaris OS), redmine4404 (Polaris OS), AnalogFeelings (Polaris), 1010101001010101 (tinycrypt), chris-morrison (tinycrypt), mczraf (tinycrypt), Ipereira (tinycrypt), malsbat (tinycrypt), rob-brown (tinycrypt), haukepetersen (tinycrypt), mped-oticon (tinycrypt), thoh-ot (tinycrypt), daor-oti (tinycrypt), winnietwo (tinycrypt), sfblackl-intel (tinycrypt), every person on the EDK II team and many more for the inspiration and help in making this project possible! RIP Terry A. Davis!\r\n");
+    }
+    else if (cmd[0] == 'l' && cmd[1] == 'e' && cmd[2] == 'd') {
+        led_demo();
+    }
+    else if (cmd[0] == 'r' && cmd[1] == 'e' && cmd[2] == 'g') {
+        if (debug == 1) {
+            print_regs();
+        } else {
+            k_warning("Enable Debug mode for this feature\n");
+        }
     }
     else if (cmd[0] == 'i' && cmd[1] == 'i')
     {

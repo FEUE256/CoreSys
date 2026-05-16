@@ -54,6 +54,10 @@ NOTE: This docs can be outdated, if you find any outdated information please rep
 
 * [CoreSys Filetypes Cheat Sheet](CFCS/README.md)
 
+## UEFI docs
+
+* [UEFI docs](UEFI/README.md)
+
 ## Full docs for the CoreSys history
 
 * [Full docs for the CoreSys history](history/README.md)

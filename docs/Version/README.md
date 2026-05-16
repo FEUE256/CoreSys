@@ -1,11 +1,11 @@
 # CoreSys & Co Version
 
-- CoreSys Version: 0.4.2v Dev
+- CoreSys Version: 0.4.3v Dev
 - MC Version: 1.1v Release
 - GPT Tool Version: 2.5 Release
 - Project (Everything around CoreSyS including website etc.) 0.4.2v
 
-CSC Version: 0.1.2.0v
+CSC Version: 0.1.2.1v
 (For Devs remember to change CS_VER in include/kernel/version.h and docs/history update)
 
 CSC (CoreSys & Co)

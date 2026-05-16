@@ -20,6 +20,7 @@ cp $BIOS_PATH $HOME/CoreSysVM/bios64.bin
 # --- run QEMU ---
 qemu-system-x86_64 \
   -drive format=raw,file="$HOME/CoreSysVM/CoreSys.img" \
+  -drive file=$HOME/CoreSysVM/disk.img,format=raw,if=ide \
   -bios "$HOME/CoreSysVM/bios64.bin" \
   -m 256M \
   -machine q35 \

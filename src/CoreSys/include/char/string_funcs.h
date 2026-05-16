@@ -15,6 +15,18 @@ char* itoa16(int64_t val, char* buf) {
     return ptr;
 }
 
+void *memset_(void *dst, int c, UINTN size)
+{
+    UINT8 *p = (UINT8*)dst;
+
+    while (size--)
+    {
+        *p++ = (UINT8)c;
+    }
+
+    return dst;
+}
+
 // Converts unsigned int to hex string
 char* utoa16(uint64_t val, char* buf) {
     char* ptr = buf + 16;

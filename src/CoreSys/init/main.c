@@ -16,7 +16,7 @@
 #include <protocols/ACPI.h>
 #include <project/compGUID.h>
 #include <stdbool.h>
-#include <init/kargs.h>
+#include <kernel/mem.h>
 #include <init/headers.h>
 #include <API/CoreSys.h> // CoreSys API
 
@@ -127,146 +127,15 @@ cleanup_file:
 }
 
 // -------------------------------
-// FIXED memory map
+// Jump to kernel (NO ARGS)
 // -------------------------------
-EFI_STATUS get_memory_map_km(EFI_SYSTEM_TABLE *SystemTable, kargs *Args)
+EFI_STATUS kjump(EFI_SYSTEM_TABLE *SystemTable, EFI_HANDLE LoadedImage)
 {
-    EFI_STATUS Status;
-
-    EFI_MEMORY_DESCRIPTOR *MemoryMap = NULL;
-    UINTN MemoryMapSize = 0;
-    UINTN MapKey;
-    UINTN DescriptorSize;
-    UINT32 DescriptorVersion;
-
-    Status = SystemTable->BootServices->GetMemoryMap(
-        &MemoryMapSize,
+    return SystemTable->BootServices->StartImage(
+        LoadedImage,
         NULL,
-        &MapKey,
-        &DescriptorSize,
-        &DescriptorVersion
+        NULL
     );
-
-    if (Status != EFI_BUFFER_TOO_SMALL)
-        return Status;
-
-    Status = SystemTable->BootServices->AllocatePool(
-        EfiLoaderData,
-        MemoryMapSize,
-        (void**)&MemoryMap
-    );
-
-    if (EFI_ERROR(Status))
-        return Status;
-
-    Status = SystemTable->BootServices->GetMemoryMap(
-        &MemoryMapSize,
-        MemoryMap,
-        &MapKey,
-        &DescriptorSize,
-        &DescriptorVersion
-    );
-
-    if (EFI_ERROR(Status))
-    {
-        SystemTable->BootServices->FreePool(MemoryMap);
-        return Status;
-    }
-
-    Args->MemoryMap = MemoryMap;
-    Args->MemoryMapSize = MemoryMapSize;
-    Args->DescriptorSize = DescriptorSize;
-    Args->DescriptorVersion = DescriptorVersion;
-    Args->MapKey = MapKey;
-
-    return EFI_SUCCESS;
-}
-
-// -------------------------------
-// Framebuffer
-// -------------------------------
-EFI_STATUS get_framebuffer(EFI_SYSTEM_TABLE *SystemTable, kargs *Args)
-{
-    EFI_GRAPHICS_OUTPUT_PROTOCOL *GOP;
-
-    EFI_STATUS Status = SystemTable->BootServices->LocateProtocol(
-        (EFI_GUID*)&gEfiGraphicsOutputProtocolGuid,
-        NULL,
-        (void**)&GOP
-    );
-
-    if (EFI_ERROR(Status))
-        return Status;
-
-    Args->FramebufferBase   = (VOID*)GOP->Mode->FrameBufferBase;
-    Args->FramebufferWidth  = GOP->Mode->Info->HorizontalResolution;
-    Args->FramebufferHeight = GOP->Mode->Info->VerticalResolution;
-
-    Args->FramebufferBPP =
-        (GOP->Mode->Info->PixelFormat == PixelBlueGreenRedReserved8BitPerColor ||
-         GOP->Mode->Info->PixelFormat == PixelRedGreenBlueReserved8BitPerColor)
-        ? 32 : 0;
-
-    Args->FramebufferPitch =
-        GOP->Mode->Info->PixelsPerScanLine * (Args->FramebufferBPP / 8);
-
-    return EFI_SUCCESS;
-}
-
-// -------------------------------
-// ACPI RSDP
-// -------------------------------
-EFI_STATUS get_acpi_rsdp(EFI_SYSTEM_TABLE *SystemTable, kargs *Args)
-{
-    EFI_CONFIGURATION_TABLE *ConfigTable = SystemTable->ConfigurationTable;
-    UINTN NumTables = SystemTable->NumberOfTableEntries;
-
-    for (UINTN i = 0; i < NumTables; i++)
-    {
-        if (CompareGuid(&ConfigTable[i].VendorGuid, &gEfiAcpi20TableGuid))
-        {
-            Args->Rsdp = ConfigTable[i].VendorTable;
-            return EFI_SUCCESS;
-        }
-
-        if (CompareGuid(&ConfigTable[i].VendorGuid, &gEfiAcpi10TableGuid))
-        {
-            Args->Rsdp = ConfigTable[i].VendorTable;
-            return EFI_SUCCESS;
-        }
-    }
-
-    Args->Rsdp = NULL;
-    return EFI_NOT_FOUND;
-}
-
-// -------------------------------
-// Jump to kernel
-// -------------------------------
-EFI_STATUS kjump(EFI_SYSTEM_TABLE *SystemTable, EFI_HANDLE LoadedImage, int DAUDA, int safe)
-{
-    kargs Args = {0};
-    EFI_STATUS Status;
-
-    Status = get_memory_map_km(SystemTable, &Args);
-    if (EFI_ERROR(Status))
-        return Status;
-
-    Status = get_framebuffer(SystemTable, &Args);
-    if (EFI_ERROR(Status))
-        return Status;
-
-    Status = get_acpi_rsdp(SystemTable, &Args);
-
-    Args.DAUDA = DAUDA;
-    Args.safe = safe;
-
-    static CHAR16 cmdline[256] = {0};
-    Args.CmdLine = cmdline;
-
-    Args.SystemTable = SystemTable;
-
-    return SystemTable->BootServices->StartImage(LoadedImage, NULL, (VOID*)&Args);
 }
 
 // -------------------------------
@@ -280,7 +149,11 @@ EFI_STATUS unload_efi(EFI_HANDLE LoadedImage, EFI_SYSTEM_TABLE *SystemTable)
 // -------------------------------
 // Boot helper
 // -------------------------------
-EFI_STATUS kboot(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, CHAR16* name, int DAUDA, int safe)
+EFI_STATUS kboot(
+    EFI_HANDLE ImageHandle,
+    EFI_SYSTEM_TABLE* SystemTable,
+    CHAR16* name
+)
 {
     EFI_HANDLE LoadedImage = NULL;
 
@@ -288,10 +161,10 @@ EFI_STATUS kboot(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, CHAR16* 
     if (EFI_ERROR(Status))
         goto cleanup;
 
-    Status = kjump(SystemTable, LoadedImage, DAUDA, safe);
+    Status = kjump(SystemTable, LoadedImage);
 
 cleanup:
-    printf(L"Returned from kernel (Press enter again to test again it should work). Press any key to continue...\r\n");
+    printf(L"Returned from kernel (Press any key to continue...)\r\n");
     get_key();
 
     if (LoadedImage)
@@ -300,10 +173,18 @@ cleanup:
     return Status;
 }
 
+void mem_write(int debug) {
+    volatile uint8_t *slot = (volatile uint8_t*)KDI;
+    *slot = (uint8_t)debug;
+
+    volatile EFI_SYSTEM_TABLE **slot1 = (volatile EFI_SYSTEM_TABLE **)KSP;
+    *slot1 = gST;
+}
+
 // -------------------------------
 // Kernel entry UI
 // -------------------------------
-void kernel(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, int DAUDA, int safe)
+void kernel(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, int debug)
 {
     clear_screen();
 
@@ -327,7 +208,13 @@ void kernel(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, int DAUDA, in
         return;
     }
 
-    EFI_STATUS Status = kboot(ImageHandle, SystemTable, L"\\EFI\\FEUE\\KERNEL.RE", DAUDA, safe);
+    mem_write(debug);
+
+    EFI_STATUS Status = kboot(
+        ImageHandle,
+        SystemTable,
+        L"\\EFI\\FEUE\\KERNEL.RE"
+    );
 
     printf(L"Kernel returned: 0x%llx\r\n", (unsigned long long)Status);
 }
@@ -345,23 +232,18 @@ void ShowMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected)
     cout->OutputString(cout, L"W/S navigation, ENTER select\r\n\r\n");
 
     CHAR16* options[] =
-        {
-            L"CoreSys (Normal)",
-            L"CoreSys (DAUDA)",
-            L"CoreSys (Safe Mode)",
-            L"Shutdown"
-        };
+    {
+        L"CoreSys Kernel (Normal)",
+        L"CoreSys Kernel (Debug)",
+        L"Shutdown"
+    };
 
     for (UINTN i = 0; i < 4; i++)
     {
         if (i == selected)
-        {
             cout->OutputString(cout, L"> ");
-        }
         else
-        {
             cout->OutputString(cout, L"  ");
-        }
 
         cout->OutputString(cout, options[i]);
         cout->OutputString(cout, L"\r\n");
@@ -397,10 +279,9 @@ void imain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
                     break;
 
                 case L'\r':
-                    if (selected == 0) kernel(ImageHandle, SystemTable, 0, 0);
-                    if (selected == 1) kernel(ImageHandle, SystemTable, 1, 0);
-                    if (selected == 2) kernel(ImageHandle, SystemTable, 0, 1);
-                    if (selected == 3) shutdown();
+                    if (selected == 0) kernel(ImageHandle, SystemTable, 0);
+                    if (selected == 1) kernel(ImageHandle, SystemTable, 1);
+                    if (selected == 2) shutdown();
                     break;
             }
         }
