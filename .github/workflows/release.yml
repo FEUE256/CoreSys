@@ -16,6 +16,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Download deps
+        run: bash scripts/dev/apt.sh
+
       - name: Build (force rebuild)
         run: make -C build/master all -B
 
