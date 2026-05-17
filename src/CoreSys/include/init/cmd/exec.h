@@ -195,7 +195,7 @@ void rmain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
                     break;
                 case L'\r':  // Enter
                 switch (selected) {
-                    case 0: bboot(ImageHandle, SystemTable, L"\\OWN\\C.RE"); break;
+                    case 0: bboot(ImageHandle, SystemTable, L"\\PU\\C.RE"); break; // PU = Power User
                     case 1: return; break; // Back to main menu
                 }
                 break;
