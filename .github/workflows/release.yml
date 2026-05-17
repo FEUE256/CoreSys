@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - '*'
 
 jobs:
   release:
@@ -27,4 +27,3 @@ jobs:
       - name: Delete Out
         run: |
           rm -rf out/
-          
