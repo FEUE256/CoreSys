@@ -5,6 +5,9 @@ on:
     tags:
       - '*'
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -13,17 +16,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build
+      - name: Build (force rebuild)
+        run: make -C build/master all -B
+
+      - name: Setup Git LFS
         run: |
-          mkdir out
-          echo "CoreSys build" > out/CoreSys.txt
+          git lfs install
+          git lfs pull
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            out/CoreSys.txt
+            dist/CoreSys.img
+            dist/CyberBoot.img
 
-      - name: Delete Out
-        run: |
-          rm -rf out/
+      - name: Cleanup build (after release)
+        run: make -C build/master clean -B
