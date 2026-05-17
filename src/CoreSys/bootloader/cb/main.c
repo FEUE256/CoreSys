@@ -12,7 +12,7 @@ EFI_STATUS EFIAPI cb(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
     init(ImageHandle, SystemTable);
     clear_screen();
 
-    printf(L"Download Cyber::Boot at CoreSys website!\r\n");
+    printf(L"Download Cyber::Boot at CoreSys website! (If boot error use git lfs install, git lfs pull in root dir then you have CyberBoot.img in dist/\r\n");
     printf(L"Press any key to continue...\r\n\r\n");
     get_key();
 
