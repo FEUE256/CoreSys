@@ -17,8 +17,196 @@
 #include <API/CoreSys.h>       // CoreSys API
 
 EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable);
+void cl(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable);
 
 #include <init/cmd/exec.h> // cmd();
+
+// -------------------------------
+// Load EFI image
+// -------------------------------
+EFI_STATUS l_load_efi(
+    EFI_HANDLE ImageHandle,
+    EFI_SYSTEM_TABLE *SystemTable,
+    CHAR16 *FilePath,
+    EFI_HANDLE *OutImage
+)
+{
+    EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *Fs;
+    EFI_FILE_PROTOCOL *Root = NULL, *File = NULL;
+    EFI_STATUS Status;
+    void *Buffer = NULL;
+    EFI_FILE_INFO *Info = NULL;
+
+    UINTN FileSize;
+    UINTN InfoSize = sizeof(EFI_FILE_INFO) + 200;
+
+    Status = SystemTable->BootServices->LocateProtocol(
+        &gEfiSimpleFileSystemProtocolGuid,
+        NULL,
+        (void**)&Fs
+    );
+    if (EFI_ERROR(Status)) return Status;
+
+    Status = Fs->OpenVolume(Fs, &Root);
+    if (EFI_ERROR(Status)) return Status;
+
+    Status = Root->Open(Root, &File, FilePath, EFI_FILE_MODE_READ, 0);
+    if (EFI_ERROR(Status)) return Status;
+
+    Status = SystemTable->BootServices->AllocatePool(
+        EfiLoaderData,
+        InfoSize,
+        (void**)&Info
+    );
+    if (EFI_ERROR(Status)) goto cleanup_file;
+
+    Status = File->GetInfo(File, &gEfiFileInfoGuid, &InfoSize, Info);
+    if (EFI_ERROR(Status)) goto cleanup_info;
+
+    FileSize = (UINTN)Info->FileSize;
+
+    if (FileSize <= 2)
+    {
+        Status = EFI_INVALID_PARAMETER;
+        goto cleanup_info;
+    }
+
+    Status = SystemTable->BootServices->AllocatePool(
+        EfiLoaderData,
+        FileSize,
+        &Buffer
+    );
+    if (EFI_ERROR(Status)) goto cleanup_info;
+
+    Status = File->Read(File, &FileSize, Buffer);
+    if (EFI_ERROR(Status)) goto cleanup_buffer;
+
+    UINT8 *Raw = (UINT8 *)Buffer;
+    UINT8 *Adjusted = Raw + 2;
+    UINTN AdjustedSize = FileSize - 2;
+
+    EFI_HANDLE LoadedImage = NULL;
+
+    Status = SystemTable->BootServices->LoadImage(
+        FALSE,
+        ImageHandle,
+        NULL,
+        Adjusted,
+        AdjustedSize,
+        &LoadedImage
+    );
+
+    if (EFI_ERROR(Status)) goto cleanup_buffer;
+
+    *OutImage = LoadedImage;
+
+cleanup_buffer:
+    if (Buffer) SystemTable->BootServices->FreePool(Buffer);
+
+cleanup_info:
+    if (Info) SystemTable->BootServices->FreePool(Info);
+
+cleanup_file:
+    if (File) File->Close(File);
+
+    return Status;
+}
+
+// -------------------------------
+// Jump to image
+// -------------------------------
+EFI_STATUS ljump(EFI_SYSTEM_TABLE *SystemTable, EFI_HANDLE LoadedImage)
+{
+    return SystemTable->BootServices->StartImage(LoadedImage, NULL, NULL);
+}
+
+// -------------------------------
+// Unload EFI image
+// -------------------------------
+EFI_STATUS l_unload_efi(EFI_HANDLE LoadedImage, EFI_SYSTEM_TABLE *SystemTable)
+{
+    return SystemTable->BootServices->UnloadImage(LoadedImage);
+}
+
+// -------------------------------
+// Boot helper
+// -------------------------------
+EFI_STATUS lboot(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, CHAR16* name)
+{
+    EFI_HANDLE LoadedImage = NULL;
+
+    EFI_STATUS Status = l_load_efi(ImageHandle, SystemTable, name, &LoadedImage);
+    if (EFI_ERROR(Status))
+        goto cleanup;
+
+    Status = ljump(SystemTable, LoadedImage);
+
+cleanup:
+    printf(L"Return. Press any key...\r\n");
+    get_key();
+
+    if (LoadedImage)
+        l_unload_efi(LoadedImage, SystemTable);
+
+    return Status;
+}
+
+void cl(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
+    if (!SystemTable) return;
+
+    clear_screen();
+    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Jump to CoreSys Linux (via GRUB) layer\r\n");
+    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"In the GRUB CLI run configfile (hd0,gpt1)/EFI/GRUB/GRUB.CFG to come to the GRUB mneu there you can press enter to boot CoreSys Linux!\n");
+    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"QEMU GUI ONLY (Maybe on hardware (not expect to work)");
+    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Press the ESC key to exit...\r\n");
+    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Press any other key to continue...\r\n");
+
+    // Wait for key
+    EFI_INPUT_KEY key;
+    UINTN index;
+
+    SystemTable->BootServices->WaitForEvent(
+        1,
+        &SystemTable->ConIn->WaitForKey,
+        &index
+    );
+
+    SystemTable->ConIn->ReadKeyStroke(SystemTable->ConIn, &key);
+
+    // ESC handling (ScanCode, not Unicode)
+    if (key.ScanCode == SCANCODE_ESC) {
+        SystemTable->ConOut->OutputString(SystemTable->ConOut, L"ESC pressed. Returning...\r\n");
+        bmain_main(ImageHandle, SystemTable);
+        return;
+    }
+
+    // Continue normally
+    EFI_STATUS Status = lboot(ImageHandle, SystemTable, L"\\EFI\\GRUB\\GRUBX64.RE");
+
+    if (EFI_ERROR(Status)) {
+        SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Boot failed\r\n");
+        SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Press any key to continue...\r\n");
+
+        // wait again
+        SystemTable->BootServices->WaitForEvent(
+            1,
+            &SystemTable->ConIn->WaitForKey,
+            &index
+        );
+        SystemTable->ConIn->ReadKeyStroke(SystemTable->ConIn, &key);
+
+        bmain_main(ImageHandle, SystemTable);
+    }
+
+    // Cleanup (safe but currently unused)
+    EFI_FILE_PROTOCOL *File = NULL;
+    void *Buffer = NULL;
+    EFI_FILE_INFO *Info = NULL;
+
+    if (Buffer) SystemTable->BootServices->FreePool(Buffer);
+    if (Info) SystemTable->BootServices->FreePool(Info);
+    if (File) File->Close(File);
+}
 
 // START DONT NOT COPY TO funcs.h
 void fgets(CHAR16 *buffer, UINTN max_len) {
@@ -319,6 +507,7 @@ void ShowOMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
     const CHAR16* options[] = {
         L"Other OS",
         L"Cyber::Boot",
+        L"CoreSys Linux",
         L"Back to Main Menu"
     };
     const UINTN optionCount = sizeof(options) / sizeof(options[0]);
@@ -341,7 +530,7 @@ void ShowOMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
 void o_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
     UINTN selected = 0;
     EFI_INPUT_KEY key;
-    const UINTN optionCount = 3;
+    const UINTN optionCount = 4;
 
     ShowOMenu(cout, selected);
 
@@ -360,7 +549,8 @@ void o_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
                 switch (selected) {
                     case 0: o_init(ImageHandle, SystemTable); break; // extern Function
                     case 1: cb(ImageHandle, SystemTable); break; // extern Function
-                    case 2: bmain_main(ImageHandle, SystemTable); break;
+                    case 2: cl(ImageHandle, SystemTable); break;
+                    case 3: bmain_main(ImageHandle, SystemTable); break;
                 }
                 break;
             }
