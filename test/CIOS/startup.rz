@@ -1,0 +1,5 @@
+o+ "C:/Users/nefve/OneDrive/Code/CoreSys/test/CIOS/cios.img"
+r 4M
+s 0x3ffff0
+wa "mov al, 0x48" "out 0xe9, al" "mov al, 0x69" "out 0xe9, al" "hlt" 
+q!!

@@ -12,6 +12,9 @@ packages=(
     clang
     llvm
     lld
+    binutils
+    gzip
+    cpio
     make
 
     python

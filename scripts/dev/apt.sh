@@ -14,6 +14,9 @@ packages=(
     gcc
     g++
     llvm
+    binutils
+    gzip 
+    cpio
     clang
     lld
     git-lfs

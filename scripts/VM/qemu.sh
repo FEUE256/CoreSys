@@ -30,9 +30,8 @@ qemu-system-x86_64 \
   -device usb-tablet \
   -device usb-kbd \
   -rtc base=localtime \
-  -netdev user,id=n0 \
-  -device rtl8139,netdev=n0 \
-  -nographic \
+  -netdev tap,id=net0,ifname=tap0,script=no,downscript=no \
+  -device e1000,netdev=net0 \
   -serial mon:stdio \
-  -audiodev wav,id=audio0,path="$HOME/CoreSysVM/sound.wav"
-  
+  -audiodev wav,id=audio0,path="$HOME/CoreSysVM/sound.wav" # \
+  # -nographic 

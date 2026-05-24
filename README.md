@@ -61,6 +61,10 @@ Before building CoreSys, ensure you have the following installed:
 - See in docs/req.md
 - **Linux environment** (Ubuntu, WSL2, or similar)
 
+## Problems
+
+If the problem isen´t defined in the docs use ChatGPT
+
 ---
 
 ## NOTICE

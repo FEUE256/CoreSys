@@ -2,6 +2,9 @@
 
 This documataion starts at: `2026-02-20`. This document will have big steps and normal updateds also. This can also be like a little blog for CoreSys. It's Nils Efverman that have writen all of this:
 
+## 0.1.2.4v (2026-05-24)
+	Added lua and busybox to CoreSys linux. Added mini CIOS testing test/ 
+
 ## 0.1.2.3 (0.1.2.2, 2026-05-17)
 	Added Project changes and small src/ update
 
