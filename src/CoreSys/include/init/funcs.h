@@ -1,7 +1,9 @@
 #pragma once
 
+#include <core/efi.h>
 #include <GUI/main.h>
 #include <crypto/main.h>
+#include <project/codes.h>
 
 #define DEFAULT_FG_COLOR EFI_YELLOW
 #define DEFAULT_BG_COLOR EFI_BLUE
@@ -852,9 +854,11 @@ EFI_STATUS test_network(void) {
     EFI_STATUS status = bs->LocateProtocol(&netGuid, NULL, (VOID**)&netProtocol);
     if(EFI_ERROR(status)) {
         printf_c16(u"ERROR: Network protocol(s) not found.\r\n");
+        printf(L"Press enter to continue...");
     }
     else {
         printf_c16(u"Network protocol(s) found.\r\n");
+        printf(L"Press enter to continue...");
     }
     get_key();
     return status;

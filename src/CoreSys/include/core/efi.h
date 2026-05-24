@@ -1274,6 +1274,10 @@ EFI_STATUS
 #define EFI_OPEN_PROTOCOL_BY_DRIVER           0x00000010
 #define EFI_OPEN_PROTOCOL_EXCLUSIVE           0x00000020
 
+#ifndef EFI_ALREADY_STARTED
+#define EFI_ALREADY_STARTED 0x00000003
+#endif
+
 // EFI_RESET_TYPE: UEFI Spec 2.10 section 8.5.1
 typedef enum {
     EfiResetCold,

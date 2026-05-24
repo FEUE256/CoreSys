@@ -1,6 +1,6 @@
 #pragma once 
 
-#define EFI_NOT_READY 0x80000007
+#define EFI_NOT_READY 0x80000006
 #define SCAN_NULL       0x0000
 #define SCAN_UP         0x0001
 #define SCAN_DOWN       0x0002

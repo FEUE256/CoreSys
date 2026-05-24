@@ -79,8 +79,7 @@ const CHAR16 *EFI_ERROR_STRINGS[MAX_EFI_ERROR] = {
 // =========================================================
 // Custom printf
 // =========================================================
-bool printf(const CHAR16 *format, ...)
-{
+bool printf(const CHAR16 *format, ...) {
     UINTN row = gST->ConOut->Mode->CursorRow;
     gST->ConOut->SetCursorPosition(gST->ConOut, 0, row);
 
@@ -90,202 +89,136 @@ bool printf(const CHAR16 *format, ...)
     CHAR16 buffer[1024];
     UINTN buf_index = 0;
 
-    while (*format && buf_index < (sizeof(buffer) / sizeof(CHAR16) - 1)) {
-
+    while (*format && buf_index < sizeof(buffer)/sizeof(CHAR16) - 1) {
         if (*format == L'%') {
-            format++;
+            format++; // skip '%'
 
-            // %% literal
-            if (*format == L'%') {
-                buffer[buf_index++] = L'%';
-                format++;
-                continue;
-            }
-
-            // %04x
-            if (*format == L'0' && *(format + 1) == L'4' && *(format + 2) == L'x') {
+            // Special case: %04x
+            if (*format == L'0' && *(format+1) == L'4' && *(format+2) == L'x') {
                 format += 3;
-
                 unsigned int val = va_arg(args, unsigned int);
-
-                CHAR16 tmp[5];
-                tmp[4] = L'\0';
-
+                CHAR16 numbuf[5];
+                numbuf[4] = L'\0';
                 static const CHAR16 hexchars[] = L"0123456789abcdef";
-
                 for (int i = 3; i >= 0; i--) {
-                    tmp[i] = hexchars[val & 0xF];
+                    numbuf[i] = hexchars[val & 0xF];
                     val >>= 4;
                 }
-
-                for (int i = 0; i < 4 && buf_index < (sizeof(buffer) / sizeof(CHAR16) - 1); i++) {
-                    buffer[buf_index++] = tmp[i];
-                }
-
+                for (int i = 0; numbuf[i] && buf_index < sizeof(buffer)/sizeof(CHAR16) - 1; i++)
+                    buffer[buf_index++] = numbuf[i];
                 continue;
             }
 
-            // %llx
-            if (*format == L'l' && *(format + 1) == L'l' && *(format + 2) == L'x') {
+            // Special case: %llx
+            if (*format == L'l' && *(format+1) == L'l' && *(format+2) == L'x') {
                 format += 3;
-
                 unsigned long long val = va_arg(args, unsigned long long);
-
-                CHAR16 tmp[17];
-                tmp[16] = L'\0';
-
+                CHAR16 numbuf[17];
+                numbuf[16] = L'\0';
                 static const CHAR16 hexchars[] = L"0123456789abcdef";
-
                 for (int i = 15; i >= 0; i--) {
-                    tmp[i] = hexchars[val & 0xF];
+                    numbuf[i] = hexchars[val & 0xF];
                     val >>= 4;
                 }
-
                 int start = 0;
-                while (start < 15 && tmp[start] == L'0') start++;
-
-                for (int i = start; i < 16 && buf_index < (sizeof(buffer) / sizeof(CHAR16) - 1); i++) {
-                    buffer[buf_index++] = tmp[i];
-                }
-
+                while (start < 15 && numbuf[start] == L'0') start++;
+                for (int i = start; numbuf[i] && buf_index < sizeof(buffer)/sizeof(CHAR16) - 1; i++)
+                    buffer[buf_index++] = numbuf[i];
                 continue;
             }
 
-            // %lx (FIXED EFI_STATUS SUPPORT)
-            if (*format == L'l' && *(format + 1) == L'x') {
-                format += 2;
-
-                unsigned long val = va_arg(args, unsigned long);
-
-                CHAR16 tmp[17];
-                tmp[16] = L'\0';
-
-                static const CHAR16 hexchars[] = L"0123456789abcdef";
-
-                for (int i = 15; i >= 0; i--) {
-                    tmp[i] = hexchars[val & 0xF];
-                    val >>= 4;
-                }
-
-                int start = 0;
-                while (start < 15 && tmp[start] == L'0') start++;
-
-                if (start == 16) start = 15; // ensure at least 0
-
-                for (int i = start; i < 16 && buf_index < (sizeof(buffer) / sizeof(CHAR16) - 1); i++) {
-                    buffer[buf_index++] = tmp[i];
-                }
-
-                continue;
-            }
-
-            if (*format == L'0' && *(format + 1) == L'2' && *(format + 2) == L'x') {
-                format += 3;
-
-                unsigned int val = va_arg(args, unsigned int);
-
-                CHAR16 tmp[3];
-                tmp[2] = L'\0';
-
-                static const CHAR16 hex[] = L"0123456789abcdef";
-
-                tmp[0] = hex[(val >> 4) & 0xF];
-                tmp[1] = hex[val & 0xF];
-
-                buffer[buf_index++] = tmp[0];
-                buffer[buf_index++] = tmp[1];
-
-                continue;
-            }
-
+            // Standard formats
             switch (*format) {
-
                 case L's': {
                     CHAR16 *str = va_arg(args, CHAR16 *);
-                    while (*str && buf_index < (sizeof(buffer) / sizeof(CHAR16) - 1))
+                    while (*str && buf_index < sizeof(buffer)/sizeof(CHAR16) - 1)
                         buffer[buf_index++] = *str++;
                     break;
                 }
-
+                case L'a': {
+                    char *astr = va_arg(args, char *);
+                    while (*astr && buf_index < sizeof(buffer)/sizeof(CHAR16) - 1)
+                        buffer[buf_index++] = (CHAR16)(*astr++);
+                    break;
+                }
                 case L'd': {
                     int val = va_arg(args, int);
-                    CHAR16 tmp[32];
-                    itow(val, tmp);
-
-                    for (CHAR16 *p = tmp; *p && buf_index < (sizeof(buffer) / sizeof(CHAR16) - 1); p++)
+                    CHAR16 numbuf[20];
+                    itow(val, numbuf);
+                    for (CHAR16 *p = numbuf; *p && buf_index < sizeof(buffer)/sizeof(CHAR16) - 1; p++)
                         buffer[buf_index++] = *p;
                     break;
                 }
-
                 case L'u': {
                     unsigned int val = va_arg(args, unsigned int);
-                    CHAR16 tmp[32];
-                    utow(val, tmp);
-
-                    for (CHAR16 *p = tmp; *p && buf_index < (sizeof(buffer) / sizeof(CHAR16) - 1); p++)
+                    CHAR16 numbuf[20];
+                    utow(val, numbuf);
+                    for (CHAR16 *p = numbuf; *p && buf_index < sizeof(buffer)/sizeof(CHAR16) - 1; p++)
                         buffer[buf_index++] = *p;
                     break;
                 }
-
                 case L'n': {
                     UINTN val = va_arg(args, UINTN);
-                    CHAR16 tmp[32];
-
-#if defined(__x86_64__) || defined(_M_X64)
-                    ultow((unsigned long long)val, tmp);
-#else
-                    utow((unsigned int)val, tmp);
-#endif
-
-                    for (CHAR16 *p = tmp; *p && buf_index < (sizeof(buffer) / sizeof(CHAR16) - 1); p++)
+                    CHAR16 numbuf[32];
+                #if defined(__x86_64__) || defined(_M_X64)
+                    ultow((unsigned long long)val, numbuf);
+                #else
+                    utow((unsigned int)val, numbuf);
+                #endif
+                    for (CHAR16 *p = numbuf; *p && buf_index < sizeof(buffer)/sizeof(CHAR16) - 1; p++)
                         buffer[buf_index++] = *p;
                     break;
                 }
-
-                case L'c': {
-                    buffer[buf_index++] = (CHAR16)va_arg(args, int);
+                case L'l': {
+                    format++;
+                    if (*format == L'u') {
+                        unsigned long val = va_arg(args, unsigned long);
+                        CHAR16 numbuf[32];
+                        ultow(val, numbuf);
+                        for (CHAR16 *p = numbuf; *p && buf_index < sizeof(buffer)/sizeof(CHAR16) - 1; p++)
+                            buffer[buf_index++] = *p;
+                        format++; // skip 'u'
+                    } else {
+                        buffer[buf_index++] = L'%';
+                        buffer[buf_index++] = L'l';
+                    }
                     break;
                 }
-
-
+                case L'c': {
+                    CHAR16 ch = (CHAR16)va_arg(args, int);
+                    buffer[buf_index++] = ch;
+                    break;
+                }
+                case L'%':
+                    buffer[buf_index++] = L'%';
+                    break;
                 case L'x': {
                     unsigned int val = va_arg(args, unsigned int);
-
-                    CHAR16 tmp[9];
-                    tmp[8] = L'\0';
-
+                    CHAR16 numbuf[9];
+                    numbuf[8] = L'\0';
                     static const CHAR16 hexchars[] = L"0123456789abcdef";
-
                     for (int i = 7; i >= 0; i--) {
-                        tmp[i] = hexchars[val & 0xF];
+                        numbuf[i] = hexchars[val & 0xF];
                         val >>= 4;
                     }
-
-                    for (int i = 0; i < 8 && buf_index < (sizeof(buffer) / sizeof(CHAR16) - 1); i++) {
-                        buffer[buf_index++] = tmp[i];
-                    }
-
+                    for (int i = 0; numbuf[i] && buf_index < sizeof(buffer)/sizeof(CHAR16) - 1; i++)
+                        buffer[buf_index++] = numbuf[i];
                     break;
                 }
-
                 default:
                     buffer[buf_index++] = L'%';
                     buffer[buf_index++] = *format;
                     break;
             }
-
         } else {
             buffer[buf_index++] = *format;
         }
-
         format++;
     }
 
     buffer[buf_index] = L'\0';
-
     va_end(args);
 
-    gST->ConOut->OutputString(gST->ConOut, buffer);
-
+    cout->OutputString(cout, buffer);
     return true;
 }
