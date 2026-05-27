@@ -46,7 +46,11 @@ make -n all
 ```
 This command will perform a dry run of the build process, showing the commands that would be executed without actually running them. This is useful for previewing the build steps and ensuring that the correct commands will be executed when you run the actual build.
 
-8. Notes
+8. CIOS QEMU
+Run:
+`make qc -B` for starting cios qemu. This can be combined with others like `clean`, `all`, etc.
+
+9. Notes
 Ensure config files exist:
 - `../../.config/build.cfg`
 - `../../.config/config.cfg`
@@ -61,6 +65,10 @@ Required environment variables:
 Build flags:
 - `-B` forces rebuild even if targets are up-to-date.
 
-9. Qemu
+10. Qemu
 Run:
 `make qemu -B` for starting qemu. This can be combined with others like `clean`, `all`, etc.
+
+11. CIOS only
+Run
+`make cios -B` to only run cios compilation. This can be combined with others like `clean`, `all`, `qc`, etc.

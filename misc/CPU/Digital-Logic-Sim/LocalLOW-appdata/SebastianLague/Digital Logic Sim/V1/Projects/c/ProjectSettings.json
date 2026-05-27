@@ -1,0 +1,15 @@
+{
+  "ProjectName": "c",
+  "BuildVersion": "1.0.2",
+  "CreationTime": "2026-05-25T15:38:28.2137497+02:00",
+  "AllCreatedChips": null,
+  "StarredChips": [
+    "AND",
+    "NOT"
+  ],
+  "DisplayOptions": {
+    "MainChipPinNameDisplayMode": 1,
+    "SubChipPinNameDisplayMode": 1,
+    "ShowCursorGuide": 0
+  }
+}

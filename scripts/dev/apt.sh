@@ -15,6 +15,8 @@ packages=(
     g++
     llvm
     binutils
+    coreutils
+    vim-common
     gzip 
     cpio
     clang

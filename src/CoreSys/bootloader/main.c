@@ -2,6 +2,7 @@
 // FÈUE File CoreSys Bootloader
 // Contains code of the project
 // CyberBoot by FÈUE
+// BOOTLOADER / OS
 // --------------------------------
 
 #include <core/efi.h>          // Basic UEFI types

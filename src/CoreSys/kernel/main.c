@@ -2,6 +2,7 @@
 // FÈUE File CoreSys Kernel
 // Contains code of the project
 // CyberBoot by FÈUE
+// KERNEL / OS
 // --------------------------------
 
 #include <stdint.h>             // Standard integer types

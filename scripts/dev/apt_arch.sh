@@ -17,6 +17,9 @@ packages=(
     cpio
     make
 
+    vim
+    coreutils
+
     python
     python-pip
 

@@ -101,5 +101,9 @@ cd Path/to/CoreSys/build/master
 make clean
 ```
  
+## Other
+
+For maximum support use a ThinkPad T15 G2 16 GB RAM 512 GB with 11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz and Intel Iris Graphics
+
 Read more in the docs/ folder.
 [Docs](docs/README.md)

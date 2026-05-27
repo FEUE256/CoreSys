@@ -2,6 +2,7 @@
 // FÈUE File CoreSys Init
 // Contains code of the project
 // CyberBoot by FÈUE
+// INIT / OS
 // --------------------------------
 
 #include <core/efi.h>

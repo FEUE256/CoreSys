@@ -1,0 +1,168 @@
+{
+    "name": "",
+    "creationIndex": 0,
+    "colour": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+    },
+    "nameColour": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+    },
+    "sevenSegmentDisp": 1,
+    "componentNameList": [
+        "SIGNAL IN",
+        "RAND",
+        "CLOCK",
+        "KEY",
+        "7SEG DISP",
+        "SYMB"
+    ],
+    "savedComponentChips": [
+        {
+            "chipName": "SIGNAL IN",
+            "posX": -7.709,
+            "posY": 2.2,
+            "inputPins": [],
+            "outputPinNames": [
+                "CLOCK"
+            ]
+        },
+        {
+            "chipName": "RAND",
+            "posX": -3.9775,
+            "posY": -1.4624,
+            "inputPins": [
+                {
+                    "name": "In",
+                    "parentChipIndex": -1,
+                    "parentChipOutputIndex": -1,
+                    "isCylic": false
+                }
+            ],
+            "outputPinNames": [
+                "Out"
+            ]
+        },
+        {
+            "chipName": "CLOCK",
+            "posX": -3.9775,
+            "posY": -1.9424,
+            "inputPins": [],
+            "outputPinNames": [
+                "OUT"
+            ]
+        },
+        {
+            "chipName": "CLOCK",
+            "posX": -3.9775,
+            "posY": -2.4224,
+            "inputPins": [],
+            "outputPinNames": [
+                "OUT"
+            ]
+        },
+        {
+            "chipName": "KEY",
+            "posX": -1.819,
+            "posY": -1.7496,
+            "inputPins": [],
+            "outputPinNames": [
+                "OUT",
+                "OUT",
+                "OUT",
+                "OUT",
+                "OUT",
+                "OUT",
+                "OUT",
+                "OUT"
+            ]
+        },
+        {
+            "chipName": "7SEG DISP",
+            "posX": 0.6701,
+            "posY": -0.9837,
+            "inputPins": [
+                {
+                    "name": "A",
+                    "parentChipIndex": -1,
+                    "parentChipOutputIndex": -1,
+                    "isCylic": false
+                },
+                {
+                    "name": "B",
+                    "parentChipIndex": -1,
+                    "parentChipOutputIndex": -1,
+                    "isCylic": false
+                },
+                {
+                    "name": "C",
+                    "parentChipIndex": -1,
+                    "parentChipOutputIndex": -1,
+                    "isCylic": false
+                },
+                {
+                    "name": "D",
+                    "parentChipIndex": -1,
+                    "parentChipOutputIndex": -1,
+                    "isCylic": false
+                },
+                {
+                    "name": "E",
+                    "parentChipIndex": -1,
+                    "parentChipOutputIndex": -1,
+                    "isCylic": false
+                },
+                {
+                    "name": "F",
+                    "parentChipIndex": -1,
+                    "parentChipOutputIndex": -1,
+                    "isCylic": false
+                },
+                {
+                    "name": "G",
+                    "parentChipIndex": -1,
+                    "parentChipOutputIndex": -1,
+                    "isCylic": false
+                }
+            ],
+            "outputPinNames": []
+        },
+        {
+            "chipName": "SYMB",
+            "posX": 2.1846,
+            "posY": -0.9749,
+            "inputPins": [
+                {
+                    "name": "A",
+                    "parentChipIndex": -1,
+                    "parentChipOutputIndex": -1,
+                    "isCylic": false
+                },
+                {
+                    "name": "B",
+                    "parentChipIndex": -1,
+                    "parentChipOutputIndex": -1,
+                    "isCylic": false
+                },
+                {
+                    "name": "A",
+                    "parentChipIndex": -1,
+                    "parentChipOutputIndex": -1,
+                    "isCylic": false
+                },
+                {
+                    "name": "A",
+                    "parentChipIndex": -1,
+                    "parentChipOutputIndex": -1,
+                    "isCylic": false
+                }
+            ],
+            "outputPinNames": []
+        }
+    ]
+}

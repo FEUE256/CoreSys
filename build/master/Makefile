@@ -47,6 +47,19 @@ qemu:
 	@bash ../../scripts/VM/qemu.sh
 	@echo "\n\nRan QEMU"
 
+# -------- CIOS Qemu ---------
+qc:
+	@echo "Running CIOS QEMU..."
+	@if [ ! -f ../../scripts/VM/qemu_cios.sh ]; then \
+		echo "Error: QEMU script not found at ../../scripts/VM/qemu_cios.sh"; \
+		exit 1; \
+	fi
+	@bash ../../scripts/VM/qemu_cios.sh
+	@echo "\n\nRan CIOS QEMU"
+
+cios:
+	$(MAKE) -C ../CIOS/ all -B
+
 # -------- Clean --------
 clean:
 	@echo "Cleaning subdirectories..."
