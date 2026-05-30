@@ -1,10 +1,13 @@
-CC = gcc
-CFLAGS = -static -O2 -Wno-unused-result
-ROOT = ../../
-AS = as
-SRC = $(ROOT)src/linux/
-NE_MODE = Release
-GRUB_MODE = Release
+# =====================
+# Config files
+# =====================
+CONFIG_FILE := ../../.config/linux.cfg
+
+ifneq ("$(wildcard $(CONFIG_FILE))","")
+include $(CONFIG_FILE)
+else
+$(error Missing config file: $(CONFIG_FILE))
+endif
 
 all: clean init cpio
 

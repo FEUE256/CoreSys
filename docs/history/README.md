@@ -1,68 +1,237 @@
-# History for major Changes
+# History
 
-This documataion starts at: `2026-02-20`. This document will have big steps and normal updateds also. This can also be like a little blog for CoreSys. It's Nils Efverman that have writen all of this:
+This documentation starts at `2026-02-20`.
+
+This document contains major milestones, normal updates, and development progress for CoreSys. It also works as a small development blog for the project.
+
+All entries were written by Nils Efverman.
+
+---
+
+## 0.1.2.5v (2026-05-30)
+
+Small update.
+
+### Build Performance
+
+Build executed via the root Makefile using WSL2:
+
+```bash
+time make all
+```
+
+#### Build Timing
+
+* Real: `20.609s`
+* User: `8.352s`
+* Sys: `1.778s`
+
+---
 
 ## 0.1.2.4v (2026-05-24)
-	Added lua and busybox to CoreSys linux. Added mini CIOS testing test/ 
 
-## 0.1.2.3 (0.1.2.2, 2026-05-17)
-	Added Project changes and small src/ update
+Added Lua and BusyBox to CoreSys Linux.
+
+Also added a small CIOS testing directory:
+
+```text
+test/
+```
+
+---
+
+## 0.1.2.3 / 0.1.2.2 (2026-05-17)
+
+* Added project changes
+* Small `src/` update
+
+---
 
 ## 0.1.2.1v (2026-05-16)
-	Added some small thing to the kernel and init
 
-## 0.1.2.0v (Forgot the date)
-	Added CSE (CoreSys Encryption (SHA256))
+Added small updates to the kernel and init system.
 
-## Added Core Kernel features (2026-05-03)
-	Added:
-    - Task creation
-    - System Calls
+---
 
-## Small thing (2026-05-03)
-	My computer has not been working etc that for the delay.
-	Added bpkg to the kernel. Chaged ne.cfg to be right. Added pyyaml and pip to deps list. Added Arch linux support.
+## 0.1.2.0v (Date Unknown)
+
+Added CSE:
+
+```text
+CoreSys Encryption (SHA256)
+```
+
+---
+
+## Added Core Kernel Features (2026-05-03)
+
+Added:
+
+* Task creation
+* System calls
+
+---
+
+## Small Things (2026-05-03)
+
+My computer has not been working correctly, which caused delays.
+
+Changes:
+
+* Added `bpkg` to the kernel
+* Fixed `ne.cfg`
+* Added `pyyaml` and `pip` to dependency lists
+* Added Arch Linux support
+
+---
+
+### Disclaimer
+
+Build times are measured via SSH on a Raspberry Pi 4 with 4 GB RAM.
+
+---
 
 ## 12.0 CSC (2026-04-24)
-	New mimiual GUI stucture (This will not be more developt entill a notice.) Build Time: 33.666s real (user: 5.547s, sys: 1.750s)
+
+Added a new minimal GUI structure.
+
+This system will not receive major GUI development until further notice.
+
+### Build Timing
+
+* Real: `33.666s`
+* User: `5.547s`
+* Sys: `1.750s`
+
+---
 
 ## 11.0 CSC (2026-04-24)
-	The 11.0 CSC Release. This is the release with a fully new kernel design and new documantion and scripts and YAML to the config. Updated dist/CoreSys.img. Build Time: 27.979s real (user: 5.436s, sys: 1.714s)
+
+The 11.0 CSC release introduced:
+
+* A completely new kernel design
+* New documentation
+* New scripts
+* YAML configuration support
+* Updated `dist/CoreSys.img`
+
+### Build Timing
+
+* Real: `27.979s`
+* User: `5.436s`
+* Sys: `1.714s`
+
+---
 
 ## API (2026-04-19)
-	Fix CoreSys API
+
+Fixed the CoreSys API.
+
+---
 
 ## ExitBootServices (2026-04-09)
-	Makeed sure exitbootservices and kernel works
 
-## UEFI Shell and Recovery (2026-04-08 - 2026-04-09)
-	Fixed the recovery part of the CoreSys bootloader
+Verified that `ExitBootServices()` and the kernel work correctly together.
 
-## Small fixes (2026-04-07)
-  Just some small fixes
+---
 
-## Big update comming (2026-03-09 - The commit after cd3f594 Release)
-	First Sorry for long wait for thing. Time of writing: 2026-03-27. I has been sick. My computer as been crazy etc etc. Now its have been I long time but also many many behind the scens stuff fot the OS env. Big things:
-	- New Error Code system
-	- src/ new file structure 
-	- Many Many more things.
+## UEFI Shell and Recovery (2026-04-08 → 2026-04-09)
+
+Fixed the recovery system in the CoreSys bootloader.
+
+---
+
+## Small Fixes (2026-04-07)
+
+Small maintenance fixes and improvements.
+
+---
+
+## Big Update Coming (2026-03-09 → After cd3f594 Release)
+
+First, sorry for the long wait.
+
+Time of writing: `2026-03-27`
+
+I have been sick, and my computer has also been unstable. Despite the delays, there has been a lot of behind-the-scenes work for the CoreSys environment.
+
+Major changes:
+
+* New error code system
+* New `src/` file structure
+* Many additional internal improvements
+
+---
 
 ## Things (2026-03-09)
-    Just some chill thing. IDR what I have done, but chill things.
 
-## Some quick updates (2026-03-07)
-	Today I have done just some minor changes to the repo on GitHub. This includes: 
-	- Some Admin Stuff for Legal Purposes.
-	- Other Small changes to the public site.
-	- Also updated the gitignore file.
-	- Updated Docs
-	- Updated Clarty in the file sructure.
+Just some smaller and more relaxed development work.
+
+I honestly do not remember everything added here, but some small improvements were made.
+
+---
+
+## Some Quick Updates (2026-03-07)
+
+Minor repository and GitHub updates, including:
+
+* Administrative/legal updates
+* Public site improvements
+* Updated `.gitignore`
+* Documentation updates
+* Improved file structure clarity
+
+---
 
 ## First EDK Headers Working (2026-02-21)
-	Today has been an big day we have use EDK headers in CoreSys (See the source code with the EDK Headers at CoreSys/src/CoreSys/efi.c). This is like the same happynes as `Hello, World`. Now we can focus on a working bootloader!
+
+Today was a major day for CoreSys.
+
+We successfully used EDK headers inside CoreSys.
+
+Example source:
+
+```text
+CoreSys/src/CoreSys/efi.c
+```
+
+This feels similar to a "Hello, World" moment for the project.
+
+Now we can focus on developing a working bootloader.
+
+---
 
 ## Added EDK Header Support (2026-02-21)
-	Today we added support for headers from `EDK II` 86_64x arch to CoreSys. We are very happy for this new revolution to CoreSys; so we can build a working bootloader to boot CoreSys and other UEFI apps from! 
+
+Added support for `EDK II` x86_64 headers in CoreSys.
+
+This is a major step toward building:
+
+* A working bootloader
+* UEFI applications
+* Better firmware integration
+
+---
 
 ## New LICENSE (2026-02-20)
-	As of today (2026-02-20) we has change our LICENSE to **FÈUE LICENSE V1** inseed of **MIT LICENSE**. See more `../../NOTICE.md` (The file "NOTICE.md" will be removed or changed to other topics; so don't be supprised if it don't work or if it not talking about the LICENSE topic, etc)
+
+As of `2026-02-20`, the project license changed from:
+
+```text
+MIT LICENSE
+```
+
+to:
+
+```text
+FÈUE LICENSE V1
+```
+
+See:
+
+```text
+../../NOTICE.md
+```
+
+Note:
+`NOTICE.md` may later be removed or repurposed for other topics.

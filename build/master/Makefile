@@ -3,13 +3,13 @@
 mc:
 	python3 ../../scripts/maintenance/parser.py
 
+all: vm mc clean subdirs
+
 # =====================
 # Config files
 # =====================
 CONFIG_FILE := ../../.config/build.cfg
 MODE_FILE   := ../../.config/config.cfg
-
-all: vm mc clean subdirs
 
 ifneq ("$(wildcard $(CONFIG_FILE))","")
 include $(CONFIG_FILE)
@@ -46,6 +46,16 @@ qemu:
 	fi
 	@bash ../../scripts/VM/qemu.sh
 	@echo "\n\nRan QEMU"
+
+# -------- Qemu with GDB ---------
+gdb:
+	@echo "Running QEMU with GDB..."
+	@if [ ! -f ../../scripts/VM/qemu_gdb.sh ]; then \
+		echo "Error: QEMU GDB script not found at $(QEMU_GDB_SCRIPT)"; \
+		exit 1; \
+	fi
+	@bash ../../scripts/VM/qemu_gdb.sh
+	@echo "\n\nRan QEMU with GDB"
 
 # -------- CIOS Qemu ---------
 qc:

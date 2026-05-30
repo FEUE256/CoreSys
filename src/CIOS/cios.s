@@ -11,9 +11,6 @@ start:
     mov al, "i"
     call printf
 
-    mov al, "!"
-    call printf
-
     hlt
 
 printf:

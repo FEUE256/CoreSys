@@ -72,3 +72,7 @@ Run:
 11. CIOS only
 Run
 `make cios -B` to only run cios compilation. This can be combined with others like `clean`, `all`, `qc`, etc.
+
+12. GDB
+Run
+`make gdb` to run run qemu in gdb mode.  This can be combined with others like `clean`, `all`, etc.

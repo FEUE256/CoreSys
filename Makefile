@@ -2,7 +2,7 @@ all:
 	$(MAKE) -C build/master all -B
 	
 run:
-	$(MAKE) -C build/master run -B
+	$(MAKE) -C build/master qemu -B
 
 clean:
 	$(MAKE) -C build/master clean -B
