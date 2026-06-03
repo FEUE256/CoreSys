@@ -20,6 +20,9 @@ packages=(
     vim
     coreutils
 
+    nodejs
+    npm
+
     python
     python-pip
 
@@ -49,6 +52,7 @@ packages=(
 
     mtools
     sleuthkit
+    squashfs-tools
 
     binutils
 )

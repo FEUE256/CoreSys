@@ -21,6 +21,9 @@ packages=(
     cpio
     clang
     lld
+    nodejs
+    npm
+    squashfs-tools
     git-lfs
     python-is-python3
     gcc-mingw-w64

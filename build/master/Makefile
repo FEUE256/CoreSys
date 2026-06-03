@@ -3,7 +3,7 @@
 mc:
 	python3 ../../scripts/maintenance/parser.py
 
-all: vm mc clean subdirs
+all: vm mc clean subdirs db
 
 # =====================
 # Config files
@@ -16,6 +16,9 @@ include $(CONFIG_FILE)
 else
 $(error Missing config file: $(CONFIG_FILE))
 endif
+
+db:
+	$(MAKE) -C ../db/ clean
 
 vm:
 	@mkdir -p $(HOME)/CoreSysVM

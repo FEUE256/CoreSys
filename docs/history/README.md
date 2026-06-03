@@ -8,6 +8,10 @@ All entries were written by Nils Efverman.
 
 ---
 
+## 0.1.2.6v (2026-06-03)
+
+Added CoreSys Dashboard (db)
+
 ## 0.1.2.5v (2026-05-30)
 
 Small update.

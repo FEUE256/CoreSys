@@ -34,6 +34,7 @@ jobs:
             dist/CoreSys.img
             dist/CyberBoot.img
             dist/cios.img
+            dist/db.exe
 
       - name: Cleanup build (after release)
         run: make -C build/master clean -B

@@ -1,15 +1,30 @@
-// Set current year in all elements with class 'year'
-document.querySelectorAll('.year').forEach(el => {
-    el.textContent = new Date().getFullYear();
-});
+/* FONT SWITCH */
+const fontSelector = document.getElementById("fontSelector");
 
-// Font selector logic
-const fontSelector = document.getElementById('fontSelector');
-fontSelector.addEventListener('change', () => {
-    document.body.style.fontFamily = fontSelector.value;
-});
+function applyFont(v) {
+  document.body.style.fontFamily = v;
+}
 
-// Optional: set initial font on page load
-document.addEventListener('DOMContentLoaded', () => {
-    document.body.style.fontFamily = fontSelector.value;
+fontSelector.addEventListener("change", e => applyFont(e.target.value));
+applyFont(fontSelector.value);
+
+/* NAV ACTIVE SCROLL */
+const sections = document.querySelectorAll("section");
+const links = document.querySelectorAll(".nav a");
+
+window.addEventListener("scroll", () => {
+  let current = "";
+
+  sections.forEach(sec => {
+    if (pageYOffset >= sec.offsetTop - 150) {
+      current = sec.id;
+    }
+  });
+
+  links.forEach(a => {
+    a.classList.remove("active");
+    if (a.getAttribute("href") === "#" + current) {
+      a.classList.add("active");
+    }
+  });
 });

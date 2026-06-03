@@ -1,128 +1,115 @@
-  /* CSS: style.css */
+
+:root {
+  --bg:#050607;
+  --panel:#0c0f12;
+  --text:#d7ffe6;
+  --muted:#8aa89a;
+  --accent:#39ff14;
+  --border:rgba(57,255,20,0.15);
+}
+
+* { box-sizing:border-box; }
+
 body {
-  margin: 0;
-  font-family: 'Audiowide', cursive, monospace;
-  background-color: #0a0a0a;
-  color: #00ffea;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  transition: background-color 0.4s, color 0.4s;
-  line-height: 1.6;
-  font-size: 18px;
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Share Tech Mono', monospace;
+  line-height:1.75;
+}
+
+.hero {
+  padding:5rem 2rem;
+  text-align:center;
+  border-bottom:1px solid var(--border);
+  background:radial-gradient(circle at top, #0f1a12, var(--bg));
+}
+
+.hero h1 {
+  font-size:3rem;
+  color:var(--accent);
+  margin-bottom:.5rem;
+}
+
+.hero h2 {
+  color:var(--muted);
+  font-weight:400;
+  margin-bottom:1rem;
+}
+
+.hero p { color:var(--muted); }
+
+.cta a {
+  display:inline-block;
+  margin:.5rem;
+  padding:.6rem 1rem;
+  border:1px solid var(--accent);
+  color:var(--accent);
+  text-decoration:none;
+}
+
+.cta a:hover {
+  background:var(--accent);
+  color:#000;
 }
 
 .nav {
-  display: flex;
-  justify-content: center;
-  background-color: #111;
-  padding: 0.8rem 0;
-  box-shadow: 0 0 12px 4px #39ff14aa;
+  position:sticky;
+  top:0;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:1rem;
+  padding:1rem;
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
 }
 
-.center {
-  width: 300px;
-  margin: 10px 30px 10px 30px;
-  padding: 30px;
+.nav a {
+  color:var(--text);
+  text-decoration:none;
 }
 
-.nav-container {
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+.nav a.active {
+  color:var(--accent);
 }
 
-.nav-container a {
-  color: #00ffea;
-  text-decoration: none;
-  font-weight: 600;
-  transition: color 0.3s, text-shadow 0.3s;
-}
-
-.nav-container a:hover,
-.nav-container a:focus-visible {
-  color: #39ff14;
-  text-shadow: 0 0 6px #39ff14cc;
-  outline: none;
-}
-
-/* header */
-header {
-  padding: 2rem;
-  text-align: center;
-  border-bottom: 3px solid #39ff14;
-  box-shadow: 0 0 12px 4px #39ff14aa;
-}
-
-/* main sections */
 main {
-  flex: 1;
-  padding: 2rem 1.5rem;
-  max-width: 700px;
-  margin: auto;
+  max-width:1000px;
+  margin:auto;
+  padding:2rem;
 }
 
 section {
-  margin-bottom: 2.5rem;
-  border-bottom: 3px solid #39ff14;
-  padding-bottom: 1rem;
+  margin-bottom:3rem;
+  padding:2rem;
+  background:var(--panel);
+  border:1px solid var(--border);
 }
 
-section h2 {
-  border-left: 6px solid #39ff14;
-  padding-left: 1rem;
-  font-weight: 700;
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  color: #39ff14;
-  text-shadow: 0 0 10px #39ff14cc;
+.chapter-title {
+  font-size:1.5rem;
+  color:var(--accent);
+  margin-bottom:1rem;
 }
 
-/* footer */
-footer {
-  text-align: center;
-  padding: 1rem 0;
-  font-size: 0.9rem;
-  color: #32FF00;
-  text-shadow: 0 0 7px #32FF00;
-  border-top: 3px solid #39ff14;
-  box-shadow: 0 0 14px #32FF00, 0 0 48px #32FF00, 0 0 36px #32FF00;
-  border-radius: 14px;
+p {
+  margin-bottom:1rem;
 }
 
-/* links */
-a {
-  color: #00ffea;
-  text-decoration: underline;
+/* expanded text flow style */
+.block {
+  margin-bottom:1.2rem;
 }
 
-a:hover,
-a:focus-visible {
-  color: #39ff14;
-  outline: none;
-  text-shadow: 0 0 6px #39ff14cc;
+.small {
+  color:var(--muted);
+  font-size:.9rem;
 }
 
-/* buttons and selects */
-button, select {
-  cursor: pointer;
-  background: none;
-  border: 2px solid #39ff14;
-  color: #39ff14;
-  padding: 0.7rem 1.3rem;
-  font-family: 'Audiowide', cursive, monospace;
-  font-weight: 700;
-  border-radius: 6px;
-  transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
-  text-shadow: 0 0 6px #39ff14cc;
-  margin-top: 0.6rem;
-  font-size: 1.1rem;
-}
-
-button:hover, select:hover {
-  background-color: #39ff1422;
-  box-shadow: 0 0 18px 6px #39ff14cc;
-  border-color: #39ff14;
-  color: #0a0a0a;
-  text-shadow: none;
+select {
+  background:#0b0f0c;
+  color:var(--accent);
+  border:1px solid var(--accent);
+  padding:.4rem;
 }

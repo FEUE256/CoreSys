@@ -14,6 +14,10 @@ NOTE: This docs can be outdated, if you find any outdated information please rep
 
 * [Dev Docs](dev/README.md)
 
+## Public
+
+* [Public](public/README.md)
+
 ## Drivers
 
 * [Drivers Docs](drivers/README.md)

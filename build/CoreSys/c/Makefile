@@ -28,7 +28,6 @@ $(BUILD_DIR)/%.o: $(C_DIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(C_CFLAGS) -c $< -o $@
 
-
 # =====================
 # Compile EDK2 libraries
 # =====================
@@ -58,7 +57,7 @@ $(BUILD_C_EFI_NE): $(BUILD_C_EFI) $(NE_TOOL)
 # =====================
 # All
 # =====================
-all: FORCE $(BUILD_C_EFI) $(BUILD_C_EFI_NE) gpt
+all: FORCE $(BUILD_C_EFI) $(BUILD_C_EFI_NE)
 
 FORCE:
 
@@ -66,5 +65,6 @@ FORCE:
 # Clean
 # =====================
 clean: 
-	rm -f "$(ALL_OBJS)" "$(BUILD_C_EFI)" "$(C_O_FILE)" "$(SRC_DIR/main.o)" "$(BUILD_DIR)/main.o"  "../../../dist/.smb*" "../../../dist/.__smb*"
+	rm -fr "$(BUILD_DIR)/lib"
+	rm -f "$(ALL_OBJS)" "$(BUILD_C_EFI)" "$(SRC_DIR/main.o)" "$(BUILD_DIR)/main.o" "$(SRC_DIR)/c/main.o" "$(BUILD_C_EFI_NE)"
 	@echo "Cleaned build artifacts"
