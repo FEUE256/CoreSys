@@ -15,6 +15,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Setup Git LFS
+        run: |
+          git lfs install
+          git lfs pull
 
       - name: Download deps
         run: bash scripts/dev/apt.sh
@@ -22,14 +30,18 @@ jobs:
       - name: Build (force rebuild)
         run: make -C build/master all -B
 
-      - name: Setup Git LFS
+      - name: Verify artifacts
         run: |
-          git lfs install
-          git lfs pull
+          ls -lah dist/
+          test -f dist/CoreSys.img
+          test -f dist/CyberBoot.img
+          test -f dist/cios.img
+          test -f dist/db.exe
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_name }}
           files: |
             dist/CoreSys.img
             dist/CyberBoot.img
@@ -37,4 +49,6 @@ jobs:
             dist/db.exe
 
       - name: Cleanup build (after release)
+        if: always()
         run: make -C build/master clean -B
+        
