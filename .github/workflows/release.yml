@@ -46,9 +46,8 @@ jobs:
             dist/CoreSys.img
             dist/CyberBoot.img
             dist/cios.img
-            dist/db.exe
+            src/db/dist/win-unpacked/db.exe
 
       - name: Cleanup build (after release)
         if: always()
         run: make -C build/master clean -B
-        
