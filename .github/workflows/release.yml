@@ -36,7 +36,7 @@ jobs:
           test -f dist/CoreSys.img
           test -f dist/CyberBoot.img
           test -f dist/cios.img
-          test -f dist/db.exe
+          test -f src/db/dist/win-unpacked/db.exe
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
