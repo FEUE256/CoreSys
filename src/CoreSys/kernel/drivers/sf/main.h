@@ -3,7 +3,6 @@
 #include <drivers/serial/main.h>
 #include <drivers/halt/main.h>       // Halt function
 #include <drivers/log/main.h>        // Logging functions
-#include <drivers/init/main.h>       // Initialization functions
 #include <drivers/task/main.h>       // Task management functions
 
 void k_sf(const char *s) {

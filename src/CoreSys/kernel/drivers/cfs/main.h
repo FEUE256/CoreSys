@@ -1,12 +1,10 @@
 #pragma once
 
-#include <drivers/page/main.h>
+#include <<drivers/page/main.h>
 #include <stdint.h>
-#include <drivers/task/main.h>
+#include <drivers/task/main.h>>
 
 // CoreSys Filesystem (cfs) – minimal kernel design skeleton
-
-#include <stdint.h>
 
 #define cfs_MAX_NAME 64
 #define cfs_MAX_CHILDREN 16

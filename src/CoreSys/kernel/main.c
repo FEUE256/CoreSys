@@ -5,20 +5,7 @@
 // KERNEL / OS
 // --------------------------------
 
-#include <stdint.h>             // Standard integer types
-#include <init/kargs.h>        // Kernel arguments structure
-#include <kernel/mem.h>        // KDI Defintion (Kernel Debug Int)
-#include <drivers/serial/main.h>   // Serial port functions
-#include <drivers/halt/main.h>       // Halt function
-#include <drivers/sf/main.h>         // System Failure functions
-#include <drivers/log/main.h>        // Logging functions
-#include <drivers/tty/main.h>        // TTY Terminal
-#include <drivers/ACPI/main.h>       // ACPI functions
-#include <drivers/page/main.h>       // Paging functions
-#include <drivers/init/main.h>       // Initialization functions
-#include <drivers/task/main.h>       // Task management functions
-#include <drivers/time/main.h>       // Time functions
-#include <drivers/reg/main.h>        // Register to int
+#include <CoreSys.h>                 // CoreSys Main Header
 
 // Do not include API/CoreSys.h it will cause k_sf()
 
@@ -31,9 +18,14 @@ Create your driver in drivers/..../main.h
 
 Use pragma once and then just C code for your driver and then just impiment a driver-brige in drivers/tty/cmd.h
 
+Remember to add a driver include to CoreSys.h
+
 */
 
 int kmain() {
+    CS_CORE core;
+    cs_init(&core);
+
     cs_task init_task = {
         .name = "Initialization Task",
         .source_header = "drivers/init/main.h",
@@ -69,7 +61,11 @@ int kmain() {
         k_log("FÈUE CoreSys Kernel Terminal");
     }
 
+    a_char_print('0');
+
     tty_loop(debug);
+
+    int cs_return_value = core.sys.null();
 
     cs_task deinit_task = {
         .name = "Deinitialization Task",
@@ -78,6 +74,8 @@ int kmain() {
     };
     task_run(&deinit_task); // Deinit Drivers
 
+    cs_deinit(&core);
+
     cs_task hlt_task = {
         .name = "Halt Task",
         .source_header = "drivers/halt/main.h",
@@ -85,5 +83,9 @@ int kmain() {
     };
 
     task_run(&hlt_task); // Halt the system
-    return 0; // dead code
+
+    // DEAD CODE |
+    //           v
+
+    return cs_return_value; // Can't use core.sys.null() because of cs_deinit has already happend
 }

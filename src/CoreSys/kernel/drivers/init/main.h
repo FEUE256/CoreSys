@@ -5,10 +5,12 @@
 #include <drivers/halt/main.h>       // Halt function
 #include <drivers/sf/main.h>         // System Failure functions
 #include <drivers/log/main.h>        // Logging functions
-#include <drivers/ACPI/main.h>       // ACPI functions
 #include <drivers/page/main.h>       // Paging functions
 #include <drivers/task/main.h>       // Task management functions
 #include <drivers/cfs/main.h>        // CoreSys Filesystem (cfs)
+#include <CoreSys.h>                 // CoreSys Main Header
+
+CS_CORE core = {0};
 
 void init(cs_task* self) {
     (void)self; // Unused parameter
@@ -20,6 +22,8 @@ void init(cs_task* self) {
     task_run(&init_serial_task); // init Serial Drivers
     k_log("Serial port initialized successfully.");
 
+    a_char_print('1');
+
     cs_task init_cfs_task = {
         .name = "CFS initialization Task",
         .source_header = "drivers/cfs/main.h",
@@ -27,6 +31,9 @@ void init(cs_task* self) {
     };
     task_run(&init_cfs_task); // init CFS
     k_log("CFS initialized successfully.");
+
+    cs_init(&core);
+    k_log("CS CORE initialized successfully.");
 
     k_log("All drivers in the bpkg (boot package) initialized successfully.");
 }
@@ -49,6 +56,7 @@ void deinit(cs_task* self) {
     };
     task_run(&deinit_cfs_task); // Deinit CFS
 
+    cs_deinit(&core);
 }
 
 void reinit() {

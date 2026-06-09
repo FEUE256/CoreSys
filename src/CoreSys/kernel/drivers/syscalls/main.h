@@ -2,29 +2,34 @@
 
 #include <stdint.h>
 
+#include <drivers/sys/main.h>
+
 #include <drivers/serial/main.h>
 #include <drivers/ACPI/main.h>
 #include <drivers/init/main.h>
 #include <drivers/task/main.h>
 #include <drivers/halt/main.h>
 #include <drivers/sf/main.h>
+#include <drivers/ret/main.h>
 
 // Syscall numbers (CoreSys ABI)
 enum syscalls {
-    SYS_READ     = 1,
-    SYS_WRITE    = 2,
-    SYS_SHUTDOWN = 3,
-    SYS_REBOOT   = 4,
-    SYS_INIT     = 5,
-    SYS_DEINIT   = 6,
-    SYS_CLEAR    = 7,
-    SYS_REINIT   = 8,
-    SYS_HALT     = 9,
-    SYS_SF       = 10,
+    SYS_DEV_NULL      = 0,
+    SYS_READ          = 1,
+    SYS_WRITE         = 2,
+    SYS_SHUTDOWN      = 3,
+    SYS_REBOOT        = 4,
+    SYS_INIT          = 5,
+    SYS_DEINIT        = 6,
+    SYS_CLEAR         = 7,
+    SYS_REINIT        = 8,
+    SYS_HALT          = 9,
+    SYS_SF            = 10,
 };
 
 // Driver functions (kernel layer)
-char kread(void); 
+int kret(void);
+char kread(void);
 void kprint(const char *s);
 void kshutdown(cs_task* self); // Task STD
 void kreboot(cs_task* self); // Task STD
@@ -42,19 +47,14 @@ typedef uint64_t (*syscall_fn)(
     uint64_t rdx
 );
 
-// Frame from CPU
-typedef struct {
-    uint64_t rax;
-    uint64_t rdi;
-    uint64_t rsi;
-    uint64_t rdx;
-} syscall_frame_t;
-
 // Dispatcher
 uint64_t syscall(syscall_frame_t* frame) {
     uint64_t id = frame->rax;
 
-    if (id == SYS_READ) {
+    if (id == SYS_DEV_NULL) {
+        return (int)kret();
+    }
+    else if (id == SYS_READ) {
         return (uint64_t)kread();
     }
     else if (id == SYS_WRITE) {

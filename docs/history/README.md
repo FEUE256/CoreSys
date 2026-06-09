@@ -6,7 +6,13 @@ This document contains major milestones, normal updates, and development progres
 
 All entries were written by Nils Efverman.
 
+For mini build time use NO_NPM=1 eg make all NO_NPM=1
+
 ---
+
+## 0.1.2.7v (2026-06-09)
+
+Added CoreSys.h and hal calls (Build time: 2m27.253s (real), (user: 9.225s, sys: 2.430s))
 
 ## 0.1.2.6v (2026-06-03)
 

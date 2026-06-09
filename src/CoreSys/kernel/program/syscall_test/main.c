@@ -1,35 +1,31 @@
-#include <stdint.h>
-#include <drivers/sys/main.h>
-
-void sys_write(const char* s);
-void sys_halt(void);
-char sys_read(void);
-void sys_init(void);
-void sys_clear(void);
+#include <CoreSys.h>
 
 static char buffer[128];
 static int text_index = 0;
 
 int syscall_test_main(void)
 {
-    sys_init();
-    sys_clear();
+    CS_CORE core;
+    cs_init(&core);
 
-    sys_write("Write what you want to print!\n");
+    core.sys.init();
+    core.sys.clear();
+
+    core.sys.write("Write what you want to print!\n");
 
     while (1)
     {
-        char c = sys_read();
+        char c = core.sys.read();
 
         if (c == '\r' || c == '\n')
         {
             buffer[text_index] = '\0';
 
-            sys_write("\nYou entered: ");
-            sys_write(buffer);
-            sys_write("\n");
+            core.sys.write("\nYou entered: ");
+            core.sys.write(buffer);
+            core.sys.write("\n");
 
-            sys_write("Write what you want to print!\n");
+            core.sys.write("Write what you want to print!\n");
 
             text_index = 0;
         }
@@ -38,7 +34,7 @@ int syscall_test_main(void)
             buffer[text_index++] = c;
 
             char tmp[2] = {c, '\0'};
-            sys_write(tmp);
+            core.sys.write(tmp);
         }
     }
 

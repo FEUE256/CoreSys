@@ -1,4 +1,5 @@
 # FÈUE CoreSys (CoreSystem)
+## The OS designed for no human errors
 
 **CoreSys** is a low-level operating system project designed for **UEFI-based systems**, written primarily in **C** and **TC**. The project explores modern firmware-native system design, minimal boot paths, and direct hardware interaction without relying on legacy BIOS layers or existing operating system kernels.
 

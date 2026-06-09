@@ -8,7 +8,7 @@
 extern void init(cs_task* self);
 extern void deinit(cs_task* self);
 
-static inline void shutdown(void)
+void shutdown(void)
 {
     cs_task deinit_task1 = {
         .name = "Deinitialization Task",
@@ -28,7 +28,7 @@ static inline void shutdown(void)
 
     task_run(&init_task); // Init Drivers
 
-    kprint("Error: QEMU/Bochs shutdown command issued. If the system does not power off, please shut down manually.\n");
+    k_sf("Error: QEMU/Bochs shutdown command issued. If the system does not power off, please shut down manually.\n");
 
     cs_task deinit_task2 = {
         .name = "Deinitialization Task",
@@ -46,7 +46,7 @@ static inline void shutdown(void)
     task_run(&hlt_task); // Halt Drivers
 }
 
-static inline void reboot(void)
+void reboot(void)
 {
     cs_task deinit_task3 = {
         .name = "Deinitialization Task",
@@ -66,7 +66,7 @@ static inline void reboot(void)
 
     task_run(&init_task); // Init Drivers
     
-    kprint("Error: QEMU/Bochs reboot command issued. If the system does not reboot, please restart manually.\n");
+    k_sf("Error: QEMU/Bochs reboot command issued. If the system does not reboot, please restart manually.\n");
 
     cs_task deinit_task4 = {
         .name = "Deinitialization Task",
@@ -106,7 +106,7 @@ void kshutdown(cs_task* self)
 
     task_run(&init_task); // Init Drivers
 
-    kprint("Error: QEMU/Bochs shutdown command issued. If the system does not power off, please shut down manually.\n");
+    k_sf("Error: QEMU/Bochs shutdown command issued. If the system does not power off, please shut down manually.\n");
 
     cs_task deinit_task2 = {
         .name = "Deinitialization Task",
@@ -145,7 +145,7 @@ void kreboot(cs_task* self)
 
     task_run(&init_task); // Init Drivers
     
-    kprint("Error: QEMU/Bochs reboot command issued. If the system does not reboot, please restart manually.\n");
+    k_sf("Error: QEMU/Bochs reboot command issued. If the system does not reboot, please restart manually.\n");
 
     cs_task deinit_task4 = {
         .name = "Deinitialization Task",

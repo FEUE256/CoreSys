@@ -66,6 +66,7 @@ clean:
 	@$(MAKE) -f $(K_MAKE) clean
 	@$(MAKE) -f $(I_MAKE) clean
 	@$(MAKE) -f $(C_MAKE) clean
+	rm -f ./main.o
 	@rm -f ./SEVI.TXT
 	@rm -f ../../dist/.__smb008C
 	@rm -f "$(FINAL_IMG)"

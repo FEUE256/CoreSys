@@ -75,6 +75,7 @@ K_CFLAGS:
   - "-nostdlib"
   - "$(INCLUDES)"
   - "-I$(ROOT_DIR)src/CoreSys/kernel/"
+  - "-I$(ROOT_DIR)src/CoreSys/kernel/include/"
   - "-fcommon"
 
 K_LDFLAGS:

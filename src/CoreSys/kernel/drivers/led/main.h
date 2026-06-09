@@ -1,7 +1,9 @@
+#pragma once
+
 #define KBD_STATUS 0x64
 #define KBD_DATA   0x60
 
-static void kbd_wait_input(void)
+void kbd_wait_input(void)
 {
     while (inb(KBD_STATUS) & 0x02); // wait input buffer clear
 }

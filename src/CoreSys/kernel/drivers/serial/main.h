@@ -9,9 +9,10 @@ typedef unsigned char u8;
 typedef unsigned short u16;
 
 // ==============================
-// COM1 base port
+// COM base port
 // ==============================
-#define COM1 0x3F8
+#define COM1 0x3F8 
+#define a_port 0x2E8
 
 // ==============================
 // Port I/O
@@ -48,6 +49,12 @@ static inline void serial_write_char(char c)
 {
     while (!serial_is_transmit_empty());
     outb(COM1, (u8)c);
+}
+
+static inline void a_char_print(char c)
+{
+    while (!serial_is_transmit_empty());
+    outb(a_port, (u8)c);
 }
 
 static inline void serial_write(const char *s)
@@ -351,6 +358,17 @@ static inline void initSerial(cs_task* self)
     outb(COM1 + 3, 0x03); // 8N1
     outb(COM1 + 2, 0xC7); // FIFO enable
     outb(COM1 + 4, 0x0B); // RTS/DSR + IRQ enable (safe default)
+
+    outb(a_port + 1, 0x00); // disable interrupts
+    outb(a_port + 3, 0x80); // DLAB on
+
+    // Baud rate 115200 (correct divisor = 1)
+    outb(a_port + 0, 0x01);
+    outb(a_port + 1, 0x00);
+
+    outb(a_port + 3, 0x03); // 8N1
+    outb(a_port + 2, 0xC7); // FIFO enable
+    outb(a_port + 4, 0x0B); // RTS/DSR + IRQ enable (safe default)
 }
 
 // ==============================

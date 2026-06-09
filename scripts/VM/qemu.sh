@@ -19,7 +19,7 @@ cp $BIOS_PATH $HOME/CoreSysVM/bios64.bin
 
 # --- run QEMU ---
 qemu-system-x86_64 \
-  -drive format=raw,file="$HOME/CoreSysVM/CoreSys.img" \
+  -drive format=raw,file="../../dist/CoreSys.img" \
   -drive file=$HOME/CoreSysVM/disk.img,format=raw,if=ide \
   -bios "$HOME/CoreSysVM/bios64.bin" \
   -m 256M \
@@ -30,6 +30,7 @@ qemu-system-x86_64 \
   -device usb-tablet \
   -device usb-kbd \
   -rtc base=localtime \
+  -boot order=c \
   -netdev tap,id=net0,ifname=tap0,script=no,downscript=no \
   -device e1000,netdev=net0 \
   -serial mon:stdio \

@@ -1,9 +1,9 @@
 .PHONY: all edk2 edk2_3 clean subdirs qemu
 
 mc:
-	python3 ../../scripts/maintenance/parser.py
+	python3 "../../scripts/maintenance/parser.py"
 
-all: vm mc clean subdirs db
+all: vm mc clean subdirs home
 
 # =====================
 # Config files
@@ -17,18 +17,25 @@ else
 $(error Missing config file: $(CONFIG_FILE))
 endif
 
-db:
-	$(MAKE) -C ../db/ clean
+ip:
+	@if ip link show tap0 > /dev/null 2>&1; then \
+		sudo ip link delete tap0; \
+	fi; \
+	sudo ip tuntap add dev tap0 mode tap; \
+	sudo ip link set tap0 up
 
 vm:
 	@mkdir -p $(HOME)/CoreSysVM
+
+home:
+	@cp ../../dist/CoreSys.img $(HOME)/CoreSysVM/CoreSys.img
 
 # -------- Subdirectories --------
 subdirs:
 	@for dir in $(SUBDIRS); do \
 		if [ -f $$dir/Makefile ]; then \
 			echo "[Make] Building in $$dir..."; \
-			$(MAKE) -C $$dir all -B; \
+			$(MAKE) -C $$dir all NO_NPM=$(NO_NPM) -B; \
 		else \
 			echo "[Make] No Makefile in $$dir, skipping"; \
 		fi \
@@ -70,8 +77,18 @@ qc:
 	@bash ../../scripts/VM/qemu_cios.sh
 	@echo "\n\nRan CIOS QEMU"
 
+# -------- A Qemu ---------
+a:
+	@echo "Running A QEMU..."
+	@if [ ! -f ../../scripts/VM/a.sh ]; then \
+		echo "Error: QEMU script not found at ../../scripts/VM/a.sh"; \
+		exit 1; \
+	fi
+	@sudo bash ../../scripts/VM/a.sh
+	@echo "\n\nRan CIOS QEMU"
+
 cios:
-	$(MAKE) -C ../CIOS/ all -B
+	$(MAKE) -C ../CIOS/ all 
 
 # -------- Clean --------
 clean:
@@ -79,7 +96,7 @@ clean:
 	@for dir in $(SUBDIRS); do \
 		if [ -f "$$dir/Makefile" ]; then \
 			echo "[Make] Cleaning in $$dir..."; \
-			$(MAKE) -C "$$dir" clean -B; \
+			$(MAKE) -C "$$dir" clean ; \
 		fi; \
 	done
 	@rm -f ./CoreSys.img ./SEVI.TXT ../../bin/Debug/CoreSys/kernel.re

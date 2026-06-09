@@ -23,13 +23,11 @@ void sys_halt(void);
 char sys_read(void);
 void sys_init(void);
 void sys_clear(void);
-static inline void reboot(void);
-static inline void shutdown(void);
 extern void tty_loop(int debug);
 extern void tty_write(const char *s);
 extern void k_sf(const char *s);
 
-static void execute_command(const char *cmd, int debug)
+void execute_command(const char *cmd, int debug)
 {
     // HELP
     if (cmd[0] == 'h' && cmd[1] == 'e' && cmd[2] == 'l' && cmd[3] == 'p')
@@ -100,7 +98,6 @@ static void execute_command(const char *cmd, int debug)
     }
     else if (cmd[0] == 'f' && cmd[1] == 's' && cmd[2] == 'i' && cmd[3] == 'n' && cmd[4] == 'f' && cmd[5] == 'o') {
         kprint("Filesystem: cfs\n");
-        kprint("cfs is no fs it just a name\n");
     }
     else if (cmd[0] == 'p' && cmd[1] == 's')
     {

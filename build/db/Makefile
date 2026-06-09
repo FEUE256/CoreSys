@@ -1,10 +1,14 @@
-# Makefile (project root)
+APP_DIR := ../../src/db
+MODE := Debug
 
-APP_DIR = ../../src/db
-MODE = Debug
+ifeq ($(NO_NPM),1)
+ALL_TARGET := nop
+else
+ALL_TARGET := install build cp
+endif
 
 install:
-	cd $(APP_DIR) && npm install 
+	cd $(APP_DIR) && npm install
 
 start:
 	cd $(APP_DIR) && npm start
@@ -26,10 +30,12 @@ win:
 linux:
 	cd $(APP_DIR) && npx electron-builder --linux
 
-cp: 
-	mv "$(APP_DIR)/dist/win-unpacked/DB App.exe" $(APP_DIR)/dist/win-unpacked/db.exe
+cp:
+	cp "$(APP_DIR)/dist/win-unpacked/DB App.exe" "$(APP_DIR)/dist/win-unpacked/db.exe"
 	cp "$(APP_DIR)/dist/win-unpacked/db.exe" ../../bin/$(MODE)/db/db.exe
 	cp ../../bin/$(MODE)/db/db.exe ../../dist/db.exe
 
-all: install build cp
+nop:
+	@echo "NO_NPM is set — skipping npm/build steps"
 
+all: $(ALL_TARGET)

@@ -1,11 +1,24 @@
-#pragma once 
+#pragma once
 
-#include <drivers/syscalls/main.h>
+#include <stdint.h>
+#include <stddef.h>
+
+#include <drivers/serial/main.h>
+#include <drivers/ret/main.h>
+
+// Syscall ABI frame
+typedef struct {
+    uint64_t rax;
+    uint64_t rdi;
+    uint64_t rsi;
+    uint64_t rdx;
+} syscall_frame_t;
 
 // Kernel syscall entry (extern)
 uint64_t syscall(syscall_frame_t* frame);
 
 // Syscall wrappers
+int sys_dev_null(void);
 char sys_read(void);
 void sys_write(const char* s);
 void sys_shutdown(void);
@@ -17,17 +30,6 @@ void sys_reinit(void);
 void sys_halt(void);
 void sys_sf(const char* s);
 
-#define SYS_READ     1
-#define SYS_WRITE    2
-#define SYS_SHUTDOWN 3
-#define SYS_REBOOT   4
-#define SYS_INIT     5
-#define SYS_DEINIT   6
-#define SYS_CLEAR    7
-#define SYS_REINIT   8
-#define SYS_HALT     9
-#define SYS_SF       10
-
 static inline uint64_t do_syscall(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx) {
     syscall_frame_t frame;
     frame.rax = rax;
@@ -37,42 +39,46 @@ static inline uint64_t do_syscall(uint64_t rax, uint64_t rdi, uint64_t rsi, uint
     return syscall(&frame);
 }
 
+int sys_dev_null(void) {
+    return (int)do_syscall(0, 0, 0, 0);
+}
+
 char sys_read(void) {
-    return (char)do_syscall(SYS_READ, 0, 0, 0);
+    return (char)do_syscall(1, 0, 0, 0);
 }
 
 void sys_write(const char* s) {
-    do_syscall(SYS_WRITE, (uint64_t)s, 0, 0);
+    do_syscall(2, (uint64_t)s, 0, 0);
 }
 
 void sys_shutdown(void) {
-    do_syscall(SYS_SHUTDOWN, 0, 0, 0);
+    do_syscall(3, 0, 0, 0);
 }
 
 void sys_reboot(void) {
-    do_syscall(SYS_REBOOT, 0, 0, 0);
+    do_syscall(4, 0, 0, 0);
 }
 
 void sys_init(void) {
-    do_syscall(SYS_INIT, 0, 0, 0);
+    do_syscall(5, 0, 0, 0);
 }
 
 void sys_deinit(void) {
-    do_syscall(SYS_DEINIT, 0, 0, 0);
+    do_syscall(6, 0, 0, 0);
 }
 
 void sys_clear(void) {
-    do_syscall(SYS_CLEAR, 0, 0, 0);
+    do_syscall(7, 0, 0, 0);
 }
 
 void sys_reinit(void) {
-    do_syscall(SYS_REINIT, 0, 0, 0);
+    do_syscall(8, 0, 0, 0);
 }
 
 void sys_halt(void) {
-    do_syscall(SYS_HALT, 0, 0, 0);
+    do_syscall(9, 0, 0, 0);
 }
 
 void sys_sf(const char* s) {
-    do_syscall(SYS_SF, (uint64_t)s, 0, 0);
+    do_syscall(10, (uint64_t)s, 0, 0);
 }

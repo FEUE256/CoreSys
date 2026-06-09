@@ -14,6 +14,10 @@ NOTE: This docs can be outdated, if you find any outdated information please rep
 
 * [Dev Docs](dev/README.md)
 
+## ABI
+
+* [ABI](abi/README.md)
+
 ## Public
 
 * [Public](public/README.md)
@@ -22,9 +26,18 @@ NOTE: This docs can be outdated, if you find any outdated information please rep
 
 * [Drivers Docs](drivers/README.md)
 
+## Arduino
+
+Power User only
+* [Arduino](a/README.md)
+
 ## System Calls
 
 * [System calls](syscalls/README.md)
+
+## Hal Calls
+
+* [HAL calls](halcalls/README.md)
 
 ## CPU rings
 
