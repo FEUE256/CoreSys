@@ -16,9 +16,11 @@ packages=(
     gzip
     cpio
     make
+    cmake
 
     vim
     coreutils
+    bear
 
     nodejs
     npm

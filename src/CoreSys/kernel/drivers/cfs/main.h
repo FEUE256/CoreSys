@@ -1,8 +1,8 @@
 #pragma once
 
-#include <<drivers/page/main.h>
+#include <drivers/page/main.h>
 #include <stdint.h>
-#include <drivers/task/main.h>>
+#include <drivers/task/main.h>
 
 // CoreSys Filesystem (cfs) – minimal kernel design skeleton
 
@@ -63,11 +63,11 @@ static void cfs_destroy_node(cfs_node* node) {
 
     // Free file data
     if (node->type == cfs_FILE && node->data) {
-        kfree(node->data);
+        kfree(sizeof(node));
         node->data = NULL;
     }
 
-    kfree(node);
+    kfree(sizeof(node));
 }
 
 // ---------------- DIRECTORY ADD ----------------

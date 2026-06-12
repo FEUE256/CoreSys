@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <drivers/task/main.h>
 
 static uint8_t *heap_start = (uint8_t*)0x100000;
 static size_t heap_offset = 0;
@@ -11,6 +12,16 @@ void kmalloc_init(uint8_t *start)
     heap_start = start;
     heap_offset = 0;
 }
+
+void kmalloc_deinit(cs_task *self)
+{
+    (void)self;
+
+    heap_start = NULL;
+    heap_offset = 0;
+}
+
+// LIFO order only
 
 void *kmalloc(size_t size)
 {
@@ -22,9 +33,14 @@ void *kmalloc(size_t size)
     return ptr;
 }
 
-void kfree(void *ptr)
+void kfree(size_t size)
 {
-    (void)ptr; // no-op (bump allocator)
+    size = (size + 15) & ~15;
+
+    if (size > heap_offset)
+        heap_offset = 0;
+    else
+        heap_offset -= size;
 }
 
 void *memcpy(void *dest, const void *src, size_t n)

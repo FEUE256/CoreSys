@@ -14,6 +14,8 @@ packages=(
     gcc
     g++
     llvm
+    cmake
+    bear
     binutils
     coreutils
     vim-common

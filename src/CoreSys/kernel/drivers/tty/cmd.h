@@ -14,7 +14,6 @@
 #include <drivers/cfs/main.h>
 #include <drivers/led/main.h>
 #include <drivers/reg/main.h>
-#include <program/syscall_test/main.c>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -26,6 +25,10 @@ void sys_clear(void);
 extern void tty_loop(int debug);
 extern void tty_write(const char *s);
 extern void k_sf(const char *s);
+
+int syscall_test_main(void) {
+    return 0;
+}
 
 void execute_command(const char *cmd, int debug)
 {

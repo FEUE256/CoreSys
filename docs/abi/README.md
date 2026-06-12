@@ -21,17 +21,62 @@ CoreSys uses a frame-based ABI rather than a traditional software interrupt inte
 * Little Endian
 * 64-bit pointers
 * LP64 data model
+* 64 bit system
 
-| Type     | Size    |
-| -------- | ------- |
-| char     | 8 bits  |
-| uint8_t  | 8 bits  |
-| uint16_t | 16 bits |
-| uint32_t | 32 bits |
-| uint64_t | 64 bits |
-| pointer  | 64 bits |
+When you follow the Core ABI use these types:
 
----
+Type        | Underlying Type | Size (x86_64)
+------------|----------------|----------------
+ret_t       | int            | 32 bits
+num_t       | int            | 32 bits
+set_t       | const (TBD)    | 64-bit pointer
+let_t       | char           | 8 bits
+nret_t      | void           | 0 bits
+unum8_t     | uint8_t        | 8 bits
+unum16_t    | uint16_t       | 16 bits
+unum32_t    | uint32_t       | 32 bits
+unum64_t    | uint64_t       | 64 bits
+num8_t      | int8_t         | 8 bits
+num16_t     | int16_t        | 16 bits
+num32_t     | int32_t        | 32 bits
+num64_t     | int64_t        | 64 bits
+con_t       | signed int     | 32 bits
+uncon_t     | unsigned int   | 32 bits
+cap_t       | size_t         | 64 bits
+pointer     | void*          | 64 bits
+vol_t       | volatile       | 0  bits
+
+(If the type dont have a core abi varient use the normal type)
+
+
+## Pointers
+
+We use 
+```c
+num_t *x;
+```
+not
+```c
+num_t* x;
+``` 
+
+## Functions
+
+We use 
+```c
+void ex() {
+
+}
+```
+not
+```c
+void ex() 
+{
+    
+}
+``` 
+
+Some drivers may use wrong because AI
 
 # Syscall ABI
 

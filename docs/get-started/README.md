@@ -21,4 +21,4 @@ make qemu -B
 ## Hardware
 WARNING: THIS WILL WIPE THE WHOLE DRIVE
 
-1. Go to google and search up how to use Rufus.
+1. Go to google and search up how to use Rufus with the disk image.

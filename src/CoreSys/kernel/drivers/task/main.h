@@ -4,7 +4,7 @@
 
 // If you are lazy set source_header to be NULL or empty string, but it's recommended to set it to the header file of the driver for better debugging and module origin tracking.
 
-#include <globe.h>
+#include <mod/globe.h>
 
 typedef struct cs_task {
     const char* name;              // logical task name

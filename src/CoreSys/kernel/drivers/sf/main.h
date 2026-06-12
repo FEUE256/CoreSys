@@ -24,11 +24,20 @@ void k_sf(const char *s) {
     serial_write("\r\nYour computer must shutdown now to prevent further damage.\r\n");
     serial_write("\r\nPress the power button to shutdown...");
     
+    status = CS_KSF_OK;
+
+    // ksf dont deinit
+
     cs_task hlt_task = {
         .name = "Halt Task",
         .source_header = "drivers/halt/main.h",
         .entry = hlt
     };
     task_run(&hlt_task); // Halt the system
+
+    // DEAD CODE |
+    //           v
+    
+    status = CS_HALT_OK;
 }
 

@@ -5,6 +5,8 @@
 #include <stdarg.h>
 #include <init/funcs.h>
 
+#define CORESYS_H_INCLUDED
+
 bool printf_c16(const CHAR16 *fmt, ...);
 void sf(char *file, int line, const char *func,
         EFI_STATUS status, const CHAR16 *fmt, ...);

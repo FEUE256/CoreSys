@@ -105,6 +105,29 @@ static inline void serial_write_ptr(const void *p)
     serial_write(buf);
 }
 
+static inline void outl(uint16_t port, uint32_t value)
+{
+    __asm__ volatile(
+        "outl %0,%1"
+        :
+        : "a"(value),
+          "Nd"(port)
+    );
+}
+
+static inline uint32_t inl(uint16_t port)
+{
+    uint32_t r;
+
+    __asm__ volatile(
+        "inl %1,%0"
+        : "=a"(r)
+        : "Nd"(port)
+    );
+
+    return r;
+}
+
 static inline void kprint(const char *s)
 {
     while (*s)
@@ -128,6 +151,109 @@ char serial_read_char(void)
         ;
 
     return inb(COM1);
+}
+
+static int is_digit(char c)
+{
+    return (c >= '0' && c <= '9');
+}
+
+static int str_to_int(const char *s)
+{
+    int result = 0;
+    int sign = 1;
+
+    if (*s == '-')
+    {
+        sign = -1;
+        s++;
+    }
+
+    while (*s)
+    {
+        if (!is_digit(*s))
+            break;
+
+        result = result * 10 + (*s - '0');
+        s++;
+    }
+
+    return result * sign;
+}
+
+/*
+    kscanf - minimal blocking console input from serial
+    supports:
+        %d  (int)
+        %u  (unsigned int)
+        %s  (string, whitespace terminated)
+*/
+int kscanf(const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+
+    char buffer[128];
+    int buf_i = 0;
+
+    for (int i = 0; fmt[i]; i++)
+    {
+        if (fmt[i] != '%')
+            continue;
+
+        char spec = fmt[++i];
+
+        /* clear buffer */
+        buf_i = 0;
+
+        /* read until newline / space */
+        while (1)
+        {
+            char c = serial_read_char();
+
+            /* echo */
+            serial_write_char(c);
+
+            if (c == '\r' || c == '\n' || c == ' ')
+                break;
+
+            if (buf_i < (int)sizeof(buffer) - 1)
+                buffer[buf_i++] = c;
+        }
+
+        buffer[buf_i] = '\0';
+
+        switch (spec)
+        {
+            case 'd':
+            {
+                int *out = va_arg(ap, int*);
+                *out = str_to_int(buffer);
+                break;
+            }
+
+            case 'u':
+            {
+                unsigned int *out = va_arg(ap, unsigned int*);
+                *out = (unsigned int)str_to_int(buffer);
+                break;
+            }
+
+            case 's':
+            {
+                char *out = va_arg(ap, char*);
+                for (int j = 0; j <= buf_i; j++)
+                    out[j] = buffer[j];
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+
+    va_end(ap);
+    return 0;
 }
 
 char kread(void)

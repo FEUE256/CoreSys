@@ -10,6 +10,7 @@
   "C_Cpp.intelliSenseEngine": "disabled",
   "C_Cpp.autocomplete": "disabled",
   "problems.decorations.enabled": false,
+  "C_Cpp.default.compileCommands": "${workspaceFolder}/.config/c2.json",
   "problems.autoReveal": false,
   "editor.renderValidationDecorations": "off",
   "C_Cpp_Runner.msvcBatchPath": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat",

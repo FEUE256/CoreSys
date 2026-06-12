@@ -158,7 +158,7 @@ void cl(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
     clear_screen();
     SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Jump to CoreSys Linux (via GRUB) layer\r\n");
     SystemTable->ConOut->OutputString(SystemTable->ConOut, L"In the GRUB CLI run configfile (hd0,gpt1)/EFI/GRUB/GRUB.CFG to come to the GRUB mneu there you can press enter to boot CoreSys Linux!\n");
-    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"QEMU GUI ONLY (Maybe on hardware (not expect to work)");
+    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"QEMU GUI ONLY (Maybe on hardware (not expect to work)\n");
     SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Press the ESC key to exit...\r\n");
     SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Press any other key to continue...\r\n");
 

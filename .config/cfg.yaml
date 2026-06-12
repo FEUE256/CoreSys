@@ -76,6 +76,8 @@ K_CFLAGS:
   - "$(INCLUDES)"
   - "-I$(ROOT_DIR)src/CoreSys/kernel/"
   - "-I$(ROOT_DIR)src/CoreSys/kernel/include/"
+  - "-I$(ROOT_DIR)src/CoreSys/kernel/include/mod/"
+  - "-I$(ROOT_DIR)src/CoreSys/kernel/include/mod/linux/"
   - "-fcommon"
 
 K_LDFLAGS:

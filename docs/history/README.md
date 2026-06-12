@@ -10,6 +10,10 @@ For mini build time use NO_NPM=1 eg make all NO_NPM=1
 
 ---
 
+## 0.1.2.8v (2026-06-12)
+
+Added AHCI PCI GPU support
+
 ## 0.1.2.7v (2026-06-09)
 
 Added CoreSys.h and hal calls (Build time: 2m27.253s (real), (user: 9.225s, sys: 2.430s))

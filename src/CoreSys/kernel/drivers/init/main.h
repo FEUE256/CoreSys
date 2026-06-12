@@ -8,7 +8,8 @@
 #include <drivers/page/main.h>       // Paging functions
 #include <drivers/task/main.h>       // Task management functions
 #include <drivers/cfs/main.h>        // CoreSys Filesystem (cfs)
-#include <CoreSys.h>                 // CoreSys Main Header
+#include <drivers/pci/main.h>        // PCI
+#include <cs.h>
 
 CS_CORE core = {0};
 
@@ -31,6 +32,22 @@ void init(cs_task* self) {
     };
     task_run(&init_cfs_task); // init CFS
     k_log("CFS initialized successfully.");
+
+    cs_task init_ahci_task = {
+        .name = "AHCI initialization Task",
+        .source_header = "drivers/pci/main.h",
+        .entry = ahci_init
+    };
+    task_run(&init_ahci_task); // init AHCI
+    k_log("AHCI initialized successfully.");
+
+    cs_task init_pci_task = {
+        .name = "PCI iGPU/GPU initialization Task",
+        .source_header = "drivers/pci/main.h",
+        .entry = pci_init
+    };
+    task_run(&init_pci_task); // init PCI
+    k_log("PCI iGPU/GPU initialized successfully.");
 
     cs_init(&core);
     k_log("CS CORE initialized successfully.");
@@ -55,6 +72,20 @@ void deinit(cs_task* self) {
         .entry = cfs_deinit
     };
     task_run(&deinit_cfs_task); // Deinit CFS
+
+    cs_task deinit_ahci_task = {
+        .name = "AHCI deinitialization Task",
+        .source_header = "drivers/ahci/main.h",
+        .entry = ahci_deinit
+    };
+    task_run(&deinit_ahci_task); // deinit AHCI
+
+    cs_task deinit_pci_task = {
+        .name = "PCI iGPU/GPU deinitialization Task",
+        .source_header = "drivers/pci/main.h",
+        .entry = pci_deinit
+    };
+    task_run(&deinit_pci_task); // deinit PCI
 
     cs_deinit(&core);
 }
