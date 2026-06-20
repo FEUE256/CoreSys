@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+contact_links:
+  - name: CoreSys Discussions
+    url: https://github.com/FEUE256/CoreSys/discussions
+    about: Ask architecture or design questions here.
+    

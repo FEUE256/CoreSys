@@ -1,0 +1,910 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lapi.o",
+      "lapi.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lapi.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lapi.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "lcode.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lcode.c"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lctype.o",
+      "lctype.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lctype.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lctype.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "ldebug.o",
+      "ldebug.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/ldebug.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/ldebug.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "ldo.o",
+      "ldo.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/ldo.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/ldo.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "ldump.o",
+      "ldump.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/ldump.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/ldump.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lfunc.o",
+      "lfunc.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lfunc.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lfunc.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lgc.o",
+      "lgc.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lgc.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lgc.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "llex.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/llex.c"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lmem.o",
+      "lmem.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lmem.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lmem.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lobject.o",
+      "lobject.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lobject.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lobject.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lopcodes.o",
+      "lopcodes.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lopcodes.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lopcodes.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "lparser.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lparser.c"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lstate.o",
+      "lstate.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lstate.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lstate.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lstring.o",
+      "lstring.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lstring.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lstring.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "ltable.o",
+      "ltable.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/ltable.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/ltable.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "ltm.o",
+      "ltm.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/ltm.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/ltm.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lundump.o",
+      "lundump.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lundump.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lundump.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lvm.o",
+      "lvm.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lvm.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lvm.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lzio.o",
+      "lzio.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lzio.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lzio.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lauxlib.o",
+      "lauxlib.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lauxlib.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lauxlib.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lbaselib.o",
+      "lbaselib.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lbaselib.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lbaselib.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lcorolib.o",
+      "lcorolib.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lcorolib.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lcorolib.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "ldblib.o",
+      "ldblib.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/ldblib.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/ldblib.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "liolib.o",
+      "liolib.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/liolib.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/liolib.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lmathlib.o",
+      "lmathlib.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lmathlib.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lmathlib.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "loadlib.o",
+      "loadlib.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/loadlib.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/loadlib.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "loslib.o",
+      "loslib.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/loslib.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/loslib.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lstrlib.o",
+      "lstrlib.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lstrlib.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lstrlib.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "ltablib.o",
+      "ltablib.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/ltablib.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/ltablib.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lutf8lib.o",
+      "lutf8lib.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lutf8lib.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lutf8lib.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "linit.o",
+      "linit.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/linit.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/linit.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "lua.o",
+      "lua.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/lua.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/lua.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=gnu99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "luac.o",
+      "luac.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/lua/src",
+    "file": "/mnt/e/Code/CoreSys/build/lua/src/luac.c",
+    "output": "/mnt/e/Code/CoreSys/build/lua/src/luac.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-O2",
+      "-Wno-unused-result",
+      "-c",
+      "-o",
+      "init.o",
+      "../../src/linux/init.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/linux",
+    "file": "/mnt/e/Code/CoreSys/src/linux/init.c",
+    "output": "/mnt/e/Code/CoreSys/build/linux/init.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-D",
+      "_POSIX_C_SOURCE=200809L",
+      "-std=c17",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-O2",
+      "-o",
+      "../../bin/Release/NE/ne.run",
+      "../../src/NE/main.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/NE",
+    "file": "/mnt/e/Code/CoreSys/src/NE/main.c",
+    "output": "/mnt/e/Code/CoreSys/bin/Release/NE/ne.run"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-O2",
+      "-Wall",
+      "-std=c11",
+      "-o",
+      "../../bin/Release/MC/mc2.run",
+      "../../src/MC/main.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/MC",
+    "file": "/mnt/e/Code/CoreSys/src/MC/main.c",
+    "output": "/mnt/e/Code/CoreSys/bin/Release/MC/mc2.run"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-D",
+      "_POSIX_C_SOURCE=200809L",
+      "-std=c17",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-O2",
+      "-o",
+      "../../bin/Release/GPT/write_gpt.run",
+      "../../src/GPT/main.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/GPT",
+    "file": "/mnt/e/Code/CoreSys/src/GPT/main.c",
+    "output": "/mnt/e/Code/CoreSys/bin/Release/GPT/write_gpt.run"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-w64-mingw32-gcc",
+      "-std=c17",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wpedantic",
+      "-ffreestanding",
+      "-fshort-wchar",
+      "-fno-exceptions",
+      "-fno-asynchronous-unwind-tables",
+      "-mno-red-zone",
+      "-m64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include/X64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include/X64",
+      "-fmax-errors=50",
+      "-fcommon",
+      "-c",
+      "-o",
+      "/mnt/e/Code/CoreSys/build/CoreSys/main.o",
+      "/mnt/e/Code/CoreSys/src/CoreSys/bootloader/main.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/CoreSys",
+    "file": "/mnt/e/Code/CoreSys/src/CoreSys/bootloader/main.c",
+    "output": "/mnt/e/Code/CoreSys/build/CoreSys/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-w64-mingw32-gcc",
+      "-std=c17",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wpedantic",
+      "-ffreestanding",
+      "-fshort-wchar",
+      "-fno-exceptions",
+      "-fno-asynchronous-unwind-tables",
+      "-mno-red-zone",
+      "-m64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include/X64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include/X64",
+      "-fmax-errors=50",
+      "-fcommon",
+      "-c",
+      "-o",
+      "/mnt/e/Code/CoreSys/build/CoreSys/boot/boot.o",
+      "/mnt/e/Code/CoreSys/src/CoreSys/bootloader/boot/boot.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/CoreSys",
+    "file": "/mnt/e/Code/CoreSys/src/CoreSys/bootloader/boot/boot.c",
+    "output": "/mnt/e/Code/CoreSys/build/CoreSys/boot/boot.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-w64-mingw32-gcc",
+      "-std=c17",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wpedantic",
+      "-ffreestanding",
+      "-fshort-wchar",
+      "-fno-exceptions",
+      "-fno-asynchronous-unwind-tables",
+      "-mno-red-zone",
+      "-m64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include/X64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include/X64",
+      "-fmax-errors=50",
+      "-fcommon",
+      "-c",
+      "-o",
+      "/mnt/e/Code/CoreSys/build/CoreSys/boot/os.o",
+      "/mnt/e/Code/CoreSys/src/CoreSys/bootloader/boot/os.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/CoreSys",
+    "file": "/mnt/e/Code/CoreSys/src/CoreSys/bootloader/boot/os.c",
+    "output": "/mnt/e/Code/CoreSys/build/CoreSys/boot/os.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-w64-mingw32-gcc",
+      "-std=c17",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wpedantic",
+      "-ffreestanding",
+      "-fshort-wchar",
+      "-fno-exceptions",
+      "-fno-asynchronous-unwind-tables",
+      "-mno-red-zone",
+      "-m64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include/X64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include/X64",
+      "-fmax-errors=50",
+      "-fcommon",
+      "-c",
+      "-o",
+      "/mnt/e/Code/CoreSys/build/CoreSys/hw/main.o",
+      "/mnt/e/Code/CoreSys/src/CoreSys/bootloader/hw/main.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/CoreSys",
+    "file": "/mnt/e/Code/CoreSys/src/CoreSys/bootloader/hw/main.c",
+    "output": "/mnt/e/Code/CoreSys/build/CoreSys/hw/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-w64-mingw32-gcc",
+      "-std=c17",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wpedantic",
+      "-ffreestanding",
+      "-fshort-wchar",
+      "-fno-exceptions",
+      "-fno-asynchronous-unwind-tables",
+      "-mno-red-zone",
+      "-m64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include/X64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include/X64",
+      "-fmax-errors=50",
+      "-fcommon",
+      "-c",
+      "-o",
+      "/mnt/e/Code/CoreSys/build/CoreSys/us/main.o",
+      "/mnt/e/Code/CoreSys/src/CoreSys/bootloader/us/main.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/CoreSys",
+    "file": "/mnt/e/Code/CoreSys/src/CoreSys/bootloader/us/main.c",
+    "output": "/mnt/e/Code/CoreSys/build/CoreSys/us/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-w64-mingw32-gcc",
+      "-std=c17",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wpedantic",
+      "-ffreestanding",
+      "-fshort-wchar",
+      "-fno-exceptions",
+      "-fno-asynchronous-unwind-tables",
+      "-mno-red-zone",
+      "-m64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include/X64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include/X64",
+      "-fmax-errors=50",
+      "-fcommon",
+      "-c",
+      "-o",
+      "/mnt/e/Code/CoreSys/build/CoreSys/req/main.o",
+      "/mnt/e/Code/CoreSys/src/CoreSys/bootloader/req/main.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/CoreSys",
+    "file": "/mnt/e/Code/CoreSys/src/CoreSys/bootloader/req/main.c",
+    "output": "/mnt/e/Code/CoreSys/build/CoreSys/req/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-w64-mingw32-gcc",
+      "-std=c17",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wpedantic",
+      "-ffreestanding",
+      "-fshort-wchar",
+      "-fno-exceptions",
+      "-fno-asynchronous-unwind-tables",
+      "-mno-red-zone",
+      "-m64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include/X64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include/X64",
+      "-fmax-errors=50",
+      "-fcommon",
+      "-c",
+      "-o",
+      "/mnt/e/Code/CoreSys/build/CoreSys/cb/main.o",
+      "/mnt/e/Code/CoreSys/src/CoreSys/bootloader/cb/main.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/CoreSys",
+    "file": "/mnt/e/Code/CoreSys/src/CoreSys/bootloader/cb/main.c",
+    "output": "/mnt/e/Code/CoreSys/build/CoreSys/cb/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-w64-mingw32-gcc",
+      "-std=c17",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wpedantic",
+      "-ffreestanding",
+      "-fshort-wchar",
+      "-fno-exceptions",
+      "-fno-asynchronous-unwind-tables",
+      "-mno-red-zone",
+      "-m64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include/X64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include/X64",
+      "-fcommon",
+      "-c",
+      "-o",
+      "/mnt/e/Code/CoreSys/build/CoreSys/main.o",
+      "/mnt/e/Code/CoreSys/src/CoreSys/init/main.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/CoreSys",
+    "file": "/mnt/e/Code/CoreSys/src/CoreSys/init/main.c",
+    "output": "/mnt/e/Code/CoreSys/build/CoreSys/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-w64-mingw32-gcc",
+      "-std=c17",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wpedantic",
+      "-ffreestanding",
+      "-fshort-wchar",
+      "-fno-exceptions",
+      "-fno-asynchronous-unwind-tables",
+      "-mno-red-zone",
+      "-mno-sse",
+      "-mno-mmx",
+      "-mno-avx",
+      "-mno-80387",
+      "-mno-fp-ret-in-387",
+      "-m64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include/X64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include/X64",
+      "-I../../src/CoreSys/kernel/",
+      "-I../../src/CoreSys/kernel/include/",
+      "-I../../src/CoreSys/kernel/include/mod/",
+      "-I../../src/CoreSys/kernel/include/mod/linux/",
+      "-fcommon",
+      "-c",
+      "-o",
+      "/mnt/e/Code/CoreSys/build/CoreSys/main.o",
+      "/mnt/e/Code/CoreSys/src/CoreSys/kernel/main.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/CoreSys",
+    "file": "/mnt/e/Code/CoreSys/src/CoreSys/kernel/main.c",
+    "output": "/mnt/e/Code/CoreSys/build/CoreSys/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-w64-mingw32-gcc",
+      "-std=c17",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Wpedantic",
+      "-ffreestanding",
+      "-fshort-wchar",
+      "-fno-exceptions",
+      "-fno-asynchronous-unwind-tables",
+      "-mno-red-zone",
+      "-m64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdePkg/Include/X64",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include",
+      "-I/mnt/e/Code/CoreSys/src/CoreSys/include/EDK/MdeModulePkg/Include/X64",
+      "-fcommon",
+      "-c",
+      "-o",
+      "/mnt/e/Code/CoreSys/build/CoreSys/main.o",
+      "/mnt/e/Code/CoreSys/src/CoreSys/c/main.c"
+    ],
+    "directory": "/mnt/e/Code/CoreSys/build/CoreSys",
+    "file": "/mnt/e/Code/CoreSys/src/CoreSys/c/main.c",
+    "output": "/mnt/e/Code/CoreSys/build/CoreSys/main.o"
+  }
+]

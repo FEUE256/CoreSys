@@ -1,0 +1,10 @@
+ENTRY(kmain)
+OUTPUT_FORMAT(pei-x86-64)
+SECTIONS {
+  . = 0x100000;
+  .text : { *(.text*) }
+  .rodata : { *(.rodata*) }
+  .data : { *(.data*) }
+  .bss : { *(.bss*) }
+  __heap_start__ = .;
+}

@@ -1,0 +1,16 @@
+name: System Failure / Kernel Panic Report
+description: Report fatal kernel crashes
+title: "[PANIC] "
+labels: ["kernel", "critical"]
+body:
+  - type: textarea
+    id: trace
+    attributes:
+      label: Crash / Register Dump
+      render: text
+
+  - type: textarea
+    id: context
+    attributes:
+      label: What was happening before the panic?
+      

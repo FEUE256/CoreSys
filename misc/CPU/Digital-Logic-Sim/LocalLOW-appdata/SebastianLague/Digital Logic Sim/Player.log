@@ -1,0 +1,23 @@
+Mono path[0] = 'C:/Users/nefve/Downloads/Digital Logic Sim/Digital Logic Sim/Digital Logic Sim_Data/Managed'
+Mono config path = 'C:/Users/nefve/Downloads/Digital Logic Sim/Digital Logic Sim/MonoBleedingEdge/etc'
+Initialize engine version: 2021.3.12f1 (8af3c3e441b1)
+[Subsystems] Discovering subsystems at path C:/Users/nefve/Downloads/Digital Logic Sim/Digital Logic Sim/Digital Logic Sim_Data/UnitySubsystems
+GfxDevice: creating device client; threaded=1; jobified=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: Intel(R) Iris(R) Xe Graphics (ID=0x9a49)
+    Vendor:   Intel
+    VRAM:     8051 MB
+    Driver:   32.0.101.7085
+Begin MonoManager ReloadAssembly
+- Completed reload, in  0.104 seconds
+<RI> Initializing input.
+New input system (experimental) initialized
+<RI> Initialized touch support.
+UnloadTime: 1.366100 ms
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 8.996500 ms
+Unloading 22 unused Assets to reduce memory usage. Loaded Objects now: 2489.
+Total: 1.388800 ms (FindLiveObjects: 0.184100 ms CreateObjectMapping: 0.096600 ms MarkObjects: 1.036600 ms  DeleteObjects: 0.071200 ms)
+
+Rebuild cycle data

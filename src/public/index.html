@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>CoreSys OS Edition | FÈUE</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+
+<header class="hero">
+  <h1>CoreSys OS Edition</h1>
+  <h2>Engineered for system-level demands</h2>
+  <p>UEFI-first 64-bit experimental operating system built for architectural research and low-level system design.</p>
+
+  <div class="cta">
+    <a href="#chapter1">Begin System</a>
+    <a href="#download">Download</a>
+    <a href="#docs">Documentation</a>
+  </div>
+
+  <div style="margin-top:1rem;">
+    <label>Font:</label>
+    <select id="fontSelector">
+      <option value="'Audiowide', cursive">Audiowide</option>
+      <option value="'Orbitron', monospace">Orbitron</option>
+      <option value="'Share Tech Mono', monospace" selected>Mono</option>
+    </select>
+  </div>
+</header>
+
+<nav class="nav">
+  <a href="#chapter1">Chapter I</a>
+  <a href="#chapter2">Chapter II</a>
+  <a href="#chapter3">Chapter III</a>
+  <a href="#chapter4">Chapter IV</a>
+  <a href="#download">Download</a>
+  <a href="#docs">Docs</a>
+  <a href="#legal">Legal</a>
+</nav>
+
+<main>
+
+<section id="chapter1">
+  <div class="chapter-title">Chapter I — System Genesis</div>
+
+  <p class="block">
+    CoreSys begins execution at the boundary between firmware and operating system logic. The first active environment is UEFI, which provides controlled entry into system memory, device enumeration, and boot services.
+  </p>
+
+  <p class="block">
+    From this point, execution transitions into a custom bootloader designed to remove legacy BIOS dependencies entirely. This ensures a deterministic boot path with no fallback to outdated compatibility layers.
+  </p>
+
+  <p class="block">
+    After initialization, control is transferred to the kernel through an explicit entry interface. At this stage, the system is no longer firmware-controlled; it becomes fully self-managed.
+  </p>
+
+  <p class="small">
+    Boot pipeline: UEFI → Bootloader → Init Layer → Kernel → User Mode
+  </p>
+</section>
+
+<section id="chapter2">
+  <div class="chapter-title">Chapter II — Boot Architecture</div>
+
+  <p class="block">
+    The boot architecture is responsible for constructing a stable execution environment before the kernel begins operation. This includes memory map acquisition, stack allocation, and interrupt policy initialization.
+  </p>
+
+  <p class="block">
+    The system deliberately avoids legacy boot structures and instead relies on a minimal initialization chain designed for predictability and reproducibility across UEFI-compliant hardware.
+  </p>
+
+  <p class="block">
+    Cyber::Boot exists as the historical foundation of this system. Its concepts have been restructured into CoreSys initialization routines, forming a cleaner separation between boot logic and kernel logic.
+  </p>
+</section>
+
+<section id="chapter3">
+  <div class="chapter-title">Chapter III — Kernel Model</div>
+
+  <p class="block">
+    The CoreSys kernel operates within a flat 64-bit address space. All memory regions are explicitly managed, with no implicit kernel-user blending or legacy compatibility assumptions.
+  </p>
+
+  <p class="block">
+    System calls are routed through a minimal experimental API layer. This layer is intentionally small, focusing on extensibility and research flexibility rather than compatibility with existing operating systems.
+  </p>
+
+  <p class="block">
+    Traditional POSIX interfaces are not implemented. This design decision removes historical constraints and allows direct exploration of alternative system abstractions.
+  </p>
+</section>
+
+<section id="chapter4">
+  <div class="chapter-title">Chapter IV — System Philosophy</div>
+
+  <p class="block">
+    CoreSys is not designed as a consumer operating system. It is structured as a research environment for understanding how operating systems behave at the lowest abstraction levels.
+  </p>
+
+  <p class="block">
+    Every subsystem is replaceable, and every interface is treated as experimental. This allows the system to evolve without architectural lock-in or backward compatibility constraints.
+  </p>
+
+  <p class="block">
+    The goal is not usability, but clarity: exposing the full structure of system design from firmware entry to user-space execution.
+  </p>
+</section>
+
+<section id="download">
+  <div class="chapter-title">Distribution Layer</div>
+
+  <p class="block">
+    CoreSys is distributed as raw disk images intended for UEFI-based execution environments. These images contain bootloader, kernel, and early system components.
+  </p>
+
+  <a href="#">CoreSys.img</a>
+  <a href="#">CyberBoot.img</a>
+</section>
+
+<section id="docs">
+  <div class="chapter-title">Documentation Layer</div>
+
+  <p class="block">
+    System documentation is structured hierarchically, reflecting the actual execution model of the operating system.
+  </p>
+
+  <p class="block">
+    It begins at firmware interaction, proceeds through boot initialization, continues into kernel execution, and ends at user-mode system interfaces.
+  </p>
+
+  <p class="block">
+    Full documentation is available in the repository and is continuously updated as the system evolves.
+  </p>
+
+  <a href="https://feue256.github.io/CoreSys/docs/README.md">Open Documentation</a>
+</section>
+
+<section id="legal"> 
+  <div class="chapter-title">
+    Legal
+  </div>
+  <p>
+    CoreSys is an experimental operating system developed by FÈUE. The project does not currently implement the operating system age-signal interface required under .
+
+    Because of this, CoreSys is not intended to be distributed or used within the State of California, United States. Users in California should not download or run this software until the project provides compliance support or the regulatory framework changes.
+  </p>
+</section>
+
+</main>
+
+<script src="./js/script.js"></script>
+
+</body>
+</html>

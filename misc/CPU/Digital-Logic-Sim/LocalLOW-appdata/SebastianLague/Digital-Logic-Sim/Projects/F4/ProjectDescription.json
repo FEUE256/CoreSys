@@ -1,0 +1,138 @@
+{
+  "ProjectName": "F4",
+  "DLSVersion_LastSaved": "2.1.6",
+  "DLSVersion_EarliestCompatible": "2.0.0",
+  "CreationTime": "2026-05-25T19:02:15.662+02:00",
+  "LastSaveTime": "2026-05-26T15:31:46.254+02:00",
+  "Prefs_MainPinNamesDisplayMode": 0,
+  "Prefs_ChipPinNamesDisplayMode": 2,
+  "Prefs_GridDisplayMode": 1,
+  "Prefs_Snapping": 1,
+  "Prefs_StraightWires": 0,
+  "Prefs_SimPaused": false,
+  "Prefs_SimTargetStepsPerSecond": 1000,
+  "Prefs_SimStepsPerClockTick": 250,
+  "AllCustomChipNames":[
+    "NOT",
+    "AND",
+    "OR",
+    "NOR",
+    "XOR",
+    "XNOR",
+    "HA",
+    "FA",
+    "4b-A",
+    "ALU",
+    "SR",
+    "DS",
+    "DL",
+    "Reg",
+    "MS DL",
+    "MS Reg",
+    "F4",
+    "4AND",
+    "CU",
+    "TFF",
+    "PC",
+    "OP"
+  ],
+  "StarredList":[
+    {
+      "Name":"IN/OUT",
+      "IsCollection":true
+    },
+    {
+      "Name":"NOT",
+      "IsCollection":false
+    },
+    {
+      "Name":"AND",
+      "IsCollection":false
+    },
+    {
+      "Name":"OR",
+      "IsCollection":false
+    },
+    {
+      "Name":"4b-A",
+      "IsCollection":false
+    },
+    {
+      "Name":"ALU",
+      "IsCollection":false
+    },
+    {
+      "Name":"SR",
+      "IsCollection":false
+    },
+    {
+      "Name":"MS DL",
+      "IsCollection":false
+    },
+    {
+      "Name":"MS Reg",
+      "IsCollection":false
+    },
+    {
+      "Name":"F4",
+      "IsCollection":false
+    },
+    {
+      "Name":"4AND",
+      "IsCollection":false
+    },
+    {
+      "Name":"CU",
+      "IsCollection":false
+    },
+    {
+      "Name":"TFF",
+      "IsCollection":false
+    },
+    {
+      "Name":"PC",
+      "IsCollection":false
+    },
+    {
+      "Name":"OP",
+      "IsCollection":false
+    }
+  ],
+  "ChipCollections":[
+    {
+      "Chips":["NAND","CLOCK","PULSE","KEY","3-STATE BUFFER"],
+      "IsToggledOpen":true,
+      "Name":"BASIC"
+    },
+    {
+      "Chips":["IN-1","IN-4","IN-8","OUT-1","OUT-4","OUT-8"],
+      "IsToggledOpen":false,
+      "Name":"IN/OUT"
+    },
+    {
+      "Chips":["1-4BIT","1-8BIT","4-8BIT","4-1BIT","8-4BIT","8-1BIT"],
+      "IsToggledOpen":true,
+      "Name":"MERGE/SPLIT"
+    },
+    {
+      "Chips":["BUS-1","BUS-4","BUS-8"],
+      "IsToggledOpen":true,
+      "Name":"BUS"
+    },
+    {
+      "Chips":["7-SEGMENT","DOT DISPLAY","RGB DISPLAY","LED"],
+      "IsToggledOpen":false,
+      "Name":"DISPLAY"
+    },
+    {
+      "Chips":["ROM 256×16"],
+      "IsToggledOpen":false,
+      "Name":"MEMORY"
+    },
+    {
+      "Chips":["BUZZER","NOT","AND","OR","NOR","XOR","XNOR","HA","FA","4b-A","ALU","SR","DS","DL","Reg","MS DL","MS Reg","F4","4AND","CU","TFF","PC","OP"],
+      "IsToggledOpen":true,
+      "Name":"OTHER"
+    }
+  ]
+}

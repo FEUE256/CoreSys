@@ -1,0 +1,37 @@
+name: Bug Report
+description: Report a kernel, bootloader, or driver issue
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What went wrong?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Provide exact reproduction steps
+      placeholder: |
+        1. Boot CoreSys
+        2. Load driver X
+        3. Kernel panic occurs
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Output
+      render: text
+
+  - type: input
+    id: environment
+    attributes:
+      label: UEFI / Hardware Environment
+      placeholder: "OVMF / QEMU / bare metal / CPU architecture"
+      

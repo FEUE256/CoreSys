@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download deps
+        run: bash scripts/dev/apt.sh
+
+      - name: Build (force rebuild)
+        run: make -C build/master all -B
+
+      - name: Setup Git LFS
+        run: |
+          git lfs install
+          git lfs pull
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/CoreSys.img
+            dist/CyberBoot.img
+            dist/cios.img
+
+      - name: Cleanup build (after release)
+        run: make -C build/master clean -B
