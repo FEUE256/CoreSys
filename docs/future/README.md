@@ -4,4 +4,4 @@ This doc come not be 100 % real thing that will come to CoreSys! This doc will a
 
 ## PLAN 
 
-nothing to be here
+Read the TODO comments in kmain()

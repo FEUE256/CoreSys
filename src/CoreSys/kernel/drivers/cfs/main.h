@@ -7,31 +7,33 @@
 #include <kernel/mem.h>
 #include <drivers/serial/main.h>
 
-// CoreSys Filesystem (cfs) – minimal kernel design skeleton
+// CoreSys Filesystem (cfs)
 
-// Defined in globe.h
-// #define cfs_MAX_NAME 64
-// #define cfs_MAX_CHILDREN 16
+// cfs_MAX_NAME, cfs_MAX_CHILDREN, cfs_type and cfs_node is all defined in mod/globe.h
 
-// Defined in globe.h
-// typedef enum {
-//     cfs_FILE,
-//     cfs_DIR
-// } cfs_type;
+typedef enum {
+    CFS_KRN_CFG_DEF = 0,
+    CFS_KRN_CFG_DBG,
+    CFS_KRN_CFG_SLT
+} cfs_krn_cfg_e;
 
-// Defined in globe.h
-// typedef struct cfs_node {
-//     char name[cfs_MAX_NAME];
-//     cfs_type type;
-
-//     uint64_t size;
-//     uint8_t* data;
-
-//     struct cfs_node* parent;
-
-//     struct cfs_node* children[cfs_MAX_CHILDREN];
-//     uint32_t child_count;
-// } cfs_node;
+void cfs_krn_cfg(cfs_krn_cfg_e cfg, char buf[]) {
+    switch (cfg)
+        {
+        case CFS_KRN_CFG_DEF:
+            strcpy(buf, "cs_default");
+            break;
+        case CFS_KRN_CFG_DBG:
+            strcpy(buf, "cs_debug");
+            break;
+        case CFS_KRN_CFG_SLT:
+            strcpy(buf, "cs_silent");
+            break;
+        default:
+            strcpy(buf, "cs_unknown");
+            break;
+        }
+}
 
 // ---------------- CREATE ----------------
 
@@ -159,10 +161,14 @@ void cfs_init(cs_task* self) {
     static char kernel_cfg_data[4092];
     static char debug_cfg_data[256];
 
+    char buf[64] = {0};
+    cfs_krn_cfg_e cfg = (cfs_krn_cfg_e)dn;
+    cfs_krn_cfg(cfg, buf);
+
     // Buffer max: 4092
     snprintf(kernel_cfg_data, sizeof(kernel_cfg_data),
-        "kernel_config=cs_default\n debug=%d\n",
-        dn);
+        "kernel_config=%s debug=%d",
+        buf, dn);
 
     cfs_write(kernel_cfg_file,
             (uint8_t*)kernel_cfg_data,

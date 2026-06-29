@@ -24,3 +24,10 @@ typedef enum {
 } CS_SUBSYS_STATUS_T;
 
 // For both STATUS systems if eg status = CS_TTY_OK then all statuses before it will be OK exeption: CS_KSF_OK 
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#define CS_SUCCESS 0 // Normal Success
+#define CS_FAIL 1 // FAIL
+#define CS_ERROR 1 // ERROR
+#define CS_KSF 2 // Kernel System Failure
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -531,6 +531,66 @@ int kprintf(const char *fmt, ...)
     return count;
 }
 
+#include <stdint.h>
+
+void int_to_ascii(int n, char *out)
+{
+    int i = 0;
+    int sign = 0;
+
+    if (n == 0) {
+        out[i++] = '0';
+        out[i] = '\0';
+        return;
+    }
+
+    if (n < 0) {
+        sign = 1;
+        n = -n;
+    }
+
+    while (n > 0) {
+        out[i++] = (n % 10) + '0';
+        n /= 10;
+    }
+
+    if (sign) {
+        out[i++] = '-';
+    }
+
+    out[i] = '\0';
+
+    // reverse string
+    for (int j = 0, k = i - 1; j < k; j++, k--) {
+        char tmp = out[j];
+        out[j] = out[k];
+        out[k] = tmp;
+    }
+}
+
+char* strcpy(char* dest, const char* src)
+{
+    char* start = dest;
+
+    while (*src)
+    {
+        *dest = *src;
+        dest++;
+        src++;
+    }
+
+    *dest = '\0';
+
+    return start;
+}
+
+static inline void insw(uint16_t port, void *addr, uint32_t count) {
+    __asm__ volatile ("rep insw"
+        : "+D"(addr), "+c"(count)
+        : "d"(port)
+        : "memory");
+}
+
 // ==============================
 // Init
 // ==============================

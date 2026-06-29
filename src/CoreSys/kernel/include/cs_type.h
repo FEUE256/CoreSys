@@ -56,6 +56,10 @@
 #include <mod/assert.h>
 #include <mod/status.h>
 
+#include <asm/global.h>
+
+#include <drivers/vga/main.h>
+
 #include <drivers/ret/main.h>
 #include <drivers/status/main.h>
 #include <drivers/pci/main.h>

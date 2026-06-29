@@ -29,7 +29,7 @@ Type        | Underlying Type | Size (x86_64)
 ------------|----------------|----------------
 ret_t       | int            | 32 bits
 num_t       | int            | 32 bits
-set_t       | const (TBD)    | 64-bit pointer
+set_t       | const          | 64-bit pointer
 let_t       | char           | 8 bits
 nret_t      | void           | 0 bits
 unum8_t     | uint8_t        | 8 bits
@@ -43,8 +43,11 @@ num64_t     | int64_t        | 64 bits
 con_t       | signed int     | 32 bits
 uncon_t     | unsigned int   | 32 bits
 cap_t       | size_t         | 64 bits
-pointer     | void*          | 64 bits
 vol_t       | volatile       | 0  bits
+aut_t       | auto           | 0  bits
+reg_t       | register       | 0  bits
+str_t       | struct         | 0  bits
+sta_t       | static         | 0  bits
 
 (If the type dont have a core abi varient use the normal type)
 
@@ -104,6 +107,8 @@ Return value:
 
 ```c
 return uint64_t;
+
+rax
 ```
 
 ---
@@ -523,6 +528,16 @@ or:
 ```
 
 ---
+
+# ASM ABI
+
+## Asm format
+
+In CoreSys we use .s or .S files and no .asm files and we use gcc or nasm
+
+## ASM syscall in the kernel
+
+Use extern sys_* from drivers/sys/main.h in your .s file
 
 # CoreSys ABI Stability
 

@@ -176,7 +176,7 @@ cleanup:
 
 void mem_write(int debug) {
     volatile uint8_t *slot = (volatile uint8_t*)KDI;
-    *slot = (uint8_t)debug;
+    *slot = (uint8_t)debug; 
 
     volatile EFI_SYSTEM_TABLE **slot1 = (volatile EFI_SYSTEM_TABLE **)KSP;
     *slot1 = gST;
@@ -236,6 +236,7 @@ void ShowMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected)
     {
         L"CoreSys Kernel (Normal)",
         L"CoreSys Kernel (Debug)",
+        L"CoreSys Kernel (Silent)",
         L"Shutdown"
     };
 
@@ -282,7 +283,8 @@ void imain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
                 case L'\r':
                     if (selected == 0) kernel(ImageHandle, SystemTable, 0);
                     if (selected == 1) kernel(ImageHandle, SystemTable, 1);
-                    if (selected == 2) shutdown();
+                    if (selected == 2) kernel(ImageHandle, SystemTable, 2);
+                    if (selected == 3) shutdown();
                     break;
             }
         }

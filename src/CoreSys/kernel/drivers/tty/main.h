@@ -7,7 +7,7 @@
 
 void tty_putc(char c);
 void tty_write(const char *s);
-void tty_loop(int debug);
+void tty_loop();
 
 // You already have this somewhere
 extern void serial_write_char(char c);
@@ -28,9 +28,13 @@ void tty_write(const char *s)
         tty_putc(*s++);
 }
 
-void tty_loop(int debug)
+void tty_loop()
 {
-    tty_write("[LOG] CoreSys Terminal Ready (type help for Help)\r\n/sys/system/> ");
+    reg_t vol_t unum8_t *slot = (vol_t unum8_t*)KDI;
+    reg_t unum8_t debug = (num_t)(*slot);
+
+    if (debug != 2) { tty_write("[LOG] CoreSys Terminal Ready (type help for Help)\r\n/sys/system/> "); }
+    if (debug == 2) { tty_write("/sys/system/> "); }
 
     while (1)
     {

@@ -1,5 +1,5 @@
 # FÈUE CoreSys (CoreSystem)
-## The OS designed for no human errors
+## The OS designed for no human errors, in C
 
 **CoreSys** is a low-level operating system project designed for **UEFI-based systems**, written primarily in **C** and **TC**. The project explores modern firmware-native system design, minimal boot paths, and direct hardware interaction without relying on legacy BIOS layers or existing operating system kernels.
 
@@ -104,7 +104,7 @@ make clean
  
 ## Other
 
-For maximum support use a ThinkPad T15 G2 16 GB RAM 512 GB with 11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz and Intel Iris Graphics
+For maximum support use a 512 MB RAM 
 
 Read more in the docs/ folder.
 [Docs](docs/README.md)

@@ -19,11 +19,19 @@ FÈUE shall not be liable for any damages arising from the use of CoreSys.
 Your rights under this Agreement terminate automatically if you fail to comply with its terms. Upon termination, cease all use of CoreSys.
 
 7. GOVERNING LAW
-This Agreement is governed by the laws of the Republic of Sweden.
+This Agreement is governed by the laws of the Kingdom of Sweden.
 
 8. Regional Restrictions
 CoreSys does not currently implement the operating system age-signal interface required under California Assembly Bill 1043 (Digital Age Assurance Act). Accordingly, the software is not offered for use, distribution, or operation within the State of California, United States.
 
 By downloading, installing, or using CoreSys, you confirm that you are not located in California and that your use of the software complies with all applicable local laws and regulations. FÈUE reserves the right to restrict access to CoreSys in jurisdictions where legal requirements cannot currently be satisfied.
+
+Neither the name of Intel Corporation nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+
+Neither the name of Microsoft Corporation nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
 
 BY INSTALLING OR USING COREYSYS, YOU ACKNOWLEDGE THAT YOU HAVE READ THIS AGREEMENT, UNDERSTAND IT, AND AGREE TO BE BOUND BY ITS TERMS.

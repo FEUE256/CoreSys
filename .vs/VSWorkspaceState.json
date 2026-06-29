@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\CIOS",
+    "\\src\\CoreSys",
+    "\\src\\CoreSys\\c",
+    "\\src\\CoreSys\\kernel",
+    "\\src\\CoreSys\\kernel\\asm"
+  ],
+  "SelectedNode": "\\src\\CIOS\\cios.s",
+  "PreviewInSolutionExplorer": false
+}

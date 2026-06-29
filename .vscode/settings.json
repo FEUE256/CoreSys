@@ -2,13 +2,23 @@
   "files.exclude": {
     "../": true
   },
+  "clangd.arguments": [
+    "-I../src/CoreSys/include",
+    "-I../src/CoreSys/kernel",
+    "-I../src/CoreSys/kernel/include",
+    "-I../src/CoreSys/kernel/include/mod",
+    "-I../src/CoreSys/kernel/include/mod/linux",
+    "-I../src/CoreSys/init",
+    "-I../src/CoreSys/c",
+    "-I../src/CoreSys/bootloader",
+    "--background-index"
+  ],
   "C_Cpp.files.exclude": {
     "../**": true
   },
   "C_Cpp.errorSquiggles": "disabled",
   "C_Cpp.dimInactiveRegions": false,
   "C_Cpp.intelliSenseEngine": "disabled",
-  "C_Cpp.autocomplete": "disabled",
   "problems.decorations.enabled": false,
   "C_Cpp.default.compileCommands": "${workspaceFolder}/.config/c2.json",
   "problems.autoReveal": false,

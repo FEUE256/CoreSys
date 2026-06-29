@@ -1,9 +1,11 @@
 #pragma once
 
+#include <mod/status.h>
+
 int ret(int code) {
     return code;
 }
 
 int kret(void) {
-    return 0;
+    return CS_SUCCESS;
 }

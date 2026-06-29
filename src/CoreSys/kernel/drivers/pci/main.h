@@ -103,12 +103,12 @@ void pci_scan(void)
 
                 if (pci_get_pcie_link(bus, dev, fn, &speed, &width) == 0)
                 {
-                    kprintf("PCIe Gen=%u width=x%u\n",
+                    kprintf("PCIe Gen=%u width=x%u\n\n",
                             speed, width);
                 }
                 else
                 {
-                    kprintf("(no PCIe link info)\n");
+                    kprintf("(no PCIe link info)\n\n");
                 }
 
                 /*

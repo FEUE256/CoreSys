@@ -89,7 +89,7 @@ K_LDFLAGS:
   - "-Wl,--emit-relocs"
   - "-Wl,--section-alignment,4096"
   - "-Wl,--file-alignment,4096"
-  - "-Wl,-entry,kmain"
+  - "-Wl,--entry,kmain"
   - "-Wl,--allow-multiple-definition"
 
 SRCS: "$(wildcard $(SRC_DIR)/*.c)"

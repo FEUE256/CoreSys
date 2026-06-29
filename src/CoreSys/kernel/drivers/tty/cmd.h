@@ -23,7 +23,7 @@ void sys_halt(void);
 char sys_read(void);
 void sys_init(void);
 void sys_clear(void);
-extern void tty_loop(int debug);
+extern void tty_loop();
 extern void tty_write(const char *s);
 extern void k_sf(const char *s);
 
@@ -38,24 +38,26 @@ void execute_command(const char *cmd, int debug)
     {
         tty_write(
             "Commands:\n"
-            "  help      - Show this help box\n"
-            "  clear/cls - Clear the terminal\n"
-            "  echo      - Print text\n"
-            "  shutdown  - Shut down the system\n"
-            "  reboot    - Reboot the system\n"
-            "  hlt       - Halt the CPU\n"
-            "  sf        - Trigger system failure test\n"
-            "  ver       - Show system version\n"
-            "  fsinfo    - Filesystem information (CFS)\n"
-            "  ps        - List processes\n"
-            "  ii        - ASCII table (0–127)\n"
-            "  rax       - Print RAX register value\n"
-            "  run       - Run syscall test program\n"
-            "  led       - Keyboard LED demo\n"
-            "  reg       - Print register dump (debug only)\n"
-            "  cfg       - Print kernel configuration\n"
-            "  cr        - Show credits\n"
-            "  debug     - Shows Debug int\n"
+            " help      - Show help\n"
+            " clear     - Clear terminal\n"
+            " cls       - Alias for clear\n"
+            " echo      - Print text\n"
+            " shutdown  - Shut down system\n"
+            " reboot    - Reboot system\n"
+            " hlt       - Halt CPU\n"
+            " sf        - System failure test\n"
+            " ver       - Show version\n"
+            " fsinfo    - Filesystem info\n"
+            " ps        - List processes\n"
+            " ii        - ASCII table\n"
+            " rax       - Print RAX\n"
+            " run       - Run syscall test\n"
+            " cfg       - Show kernel config\n"
+            " cr        - Show credits\n"
+            " led       - Keyboard LED demo\n"
+            " ata       - ATA dump\n"
+            " debug     - Show debug value\n"
+            " reg       - Register dump\n"
         );
     }
     // CLEAR / CLS
@@ -95,7 +97,7 @@ void execute_command(const char *cmd, int debug)
     }
     else if (cmd[0] == 's' && cmd[1] == 'f')
     {
-        k_sf("Tested System Failure via CMD");
+        k_sf("Tested System Failure via CMD"); // TEST 
     }
     else if (cmd[0] == 'v' && cmd[1] == 'e' && cmd[2] == 'r') {
         kprint("FÈUE CoreSys Kernel Version: ");
@@ -158,7 +160,6 @@ void execute_command(const char *cmd, int debug)
         memcpy(buffer, kernel_cfg, size);
         buffer[size] = '\0';
 
-        sys_write("Kernel Configuration:\n");
         sys_write(buffer);
         sys_write("\n");
     }
@@ -173,7 +174,7 @@ void execute_command(const char *cmd, int debug)
         hexdump_512_all();
     }
     else if (cmd[0] == 'd' && cmd[1] == 'e' && cmd[2] == 'b' && cmd[3] == 'u' && cmd[4] == 'g') {
-        kprintf("%d", debug);
+        kprintf("%d\n", debug);
     }
     else if (cmd[0] == 'r' && cmd[1] == 'e' && cmd[2] == 'g') {
         if (debug == 1) {

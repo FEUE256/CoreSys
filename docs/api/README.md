@@ -36,7 +36,7 @@ CS_CORE
 │   │   Return: num_t  
 │   │  
 │   ├── HAL_TTY_LOOP  
-│   │   Args: nret_t  
+│   │   Args: null
 │   │   Return: nret_t  
 │   │  
 │   ├── HAL_TTY_WRITE  

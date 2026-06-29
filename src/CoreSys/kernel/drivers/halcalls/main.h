@@ -6,7 +6,7 @@
 
 void tty_putc(char c);
 void tty_write(const char *s);
-void tty_loop(int debug);
+void tty_loop();
 void serial_write_char(char c);
 char serial_read_char();
 void execute_command(const char *cmd, int debug);
@@ -37,7 +37,7 @@ uint64_t halcall(hal_frame_t* frame)
         return 0;
     }
     else if (id == HAL_TTY_LOOP) {
-        tty_loop((int)frame->rdi);
+        tty_loop();
         return 0;
     }
     else if (id == HAL_TTY_WRITE) {

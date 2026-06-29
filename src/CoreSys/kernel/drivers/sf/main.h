@@ -22,7 +22,9 @@ void k_sf(const char *s) {
     
     status = CS_KSF_OK;
 
-    hlt(NULL);
+    for (;;) {
+        hlt(NULL);
+    }
 
     // DEAD CODE |
     //           v

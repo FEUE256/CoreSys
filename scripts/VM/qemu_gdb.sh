@@ -17,10 +17,14 @@ mkdir -p $HOME/CoreSysVM
 cp ../../dist/CoreSys.img $HOME/CoreSysVM/CoreSys.img
 cp $BIOS_PATH $HOME/CoreSysVM/bios64.bin
 
+# dd if=/dev/zero bs=4M count=1 | tr '\000' '\356' > ../../misc/disk/disk.img
+
 # --- run QEMU ---
 qemu-system-x86_64 \
   -drive format=raw,file="$HOME/CoreSysVM/CoreSys.img" \
-  -drive file=$HOME/CoreSysVM/disk.img,format=raw,if=ide \
+  -drive file=../../misc/disk/disk.img,format=raw,if=none,id=disk1 \
+  -device ahci,id=ahci0 \
+  -device ide-hd,drive=disk1,bus=ahci0.0 \
   -bios "$HOME/CoreSysVM/bios64.bin" \
   -m 256M \
   -machine q35 \

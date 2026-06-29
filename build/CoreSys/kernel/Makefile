@@ -24,15 +24,30 @@ $(BIN_DIR):
 	mkdir -p $@				
 
 # CoreSys source files
-$(BUILD_DIR)/%.o: $(K_DIR)/%.c
+K_SRCS   := $(wildcard $(K_DIR)/*.c) $(wildcard $(K_DIR)/drivers/intr/*.c)
+ASM_SRCS := $(wildcard $(K_DIR)/asm/*.s)
+
+# =====================
+# Objects
+# =====================
+C_OBJS := $(patsubst $(K_DIR)/%.c,$(BUILD_DIR)/%.o,$(K_SRCS))
+ASM_OBJS := $(patsubst $(K_DIR)/asm/%.s,$(BUILD_DIR)/asm/%.o,$(ASM_SRCS))
+
+ALL_OBJS := $(C_OBJS) $(ASM_OBJS)
+
+# =====================
+# Compile C
+# =====================
+$(BUILD_DIR)/%.o: $(K_DIR)/%.c | $(BUILD_DIR)
 	@mkdir -p $(dir $@)
 	$(CC) $(K_CFLAGS) -c $< -o $@
-	
+
 # =====================
-# Object lists
+# Compile ASM
 # =====================
-K_SRCS := $(wildcard $(K_DIR)/*.c) $(wildcard $(K_DIR)/drivers/intr/*.c)
-ALL_OBJS := $(patsubst $(K_DIR)/%.c,$(BUILD_DIR)/%.o,$(K_SRCS)) 
+$(BUILD_DIR)/asm/%.o: $(K_DIR)/asm/%.s | $(BUILD_DIR)/asm
+	@mkdir -p $(dir $@)
+	nasm -f win64 $< -o $@
 
 # =====================
 # Link EFI

@@ -1,0 +1,2 @@
+DISK_SIZE=37785600
+ABF, Offical CoreSys Image

@@ -9,7 +9,7 @@
 
 void tty_putc(char c);
 void tty_write(const char *s);
-void tty_loop(int debug);
+void tty_loop();
 void serial_write_char(char c);
 char serial_read_char();
 void execute_command(const char *cmd, int debug);

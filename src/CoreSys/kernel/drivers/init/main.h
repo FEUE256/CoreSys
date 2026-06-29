@@ -9,19 +9,26 @@
 #include <drivers/task/main.h>       // Task management functions
 #include <drivers/cfs/main.h>        // CoreSys Filesystem (cfs)
 #include <drivers/pci/main.h>        // PCI
+#include <kernel/mem.h>
 #include <cs.h>
 
 CS_CORE core = {0};
 
+// bpkg includes all drivers that you can init and CS_CORE
+
 void init(cs_task* self) {
     (void)self; // Unused parameter
+
+    reg_t vol_t unum8_t *slot = (vol_t unum8_t*)KDI;
+    reg_t unum8_t debug = (num_t)(*slot);
+
     cs_task init_serial_task = {
         .name = "Serial initialization Task",
         .source_header = "drivers/serial/main.h",
         .entry = initSerial
     };
     task_run(&init_serial_task); // init Serial Drivers
-    k_log("Serial port initialized successfully.");
+    if (debug != 2) { k_log("Serial port initialized successfully."); }
 
     a_char_print('1');
 
@@ -31,7 +38,7 @@ void init(cs_task* self) {
         .entry = cfs_init
     };
     task_run(&init_cfs_task); // init CFS
-    k_log("CFS initialized successfully.");
+    if (debug != 2) { k_log("CFS initialized successfully."); }
 
     cs_task init_ahci_task = {
         .name = "AHCI initialization Task",
@@ -39,7 +46,7 @@ void init(cs_task* self) {
         .entry = ahci_init
     };
     task_run(&init_ahci_task); // init AHCI
-    k_log("AHCI initialized successfully.");
+    if (debug != 2) { k_log("AHCI initialized successfully."); }
 
     cs_task init_pci_task = {
         .name = "PCI iGPU/GPU initialization Task",
@@ -47,17 +54,22 @@ void init(cs_task* self) {
         .entry = pci_init
     };
     task_run(&init_pci_task); // init PCI
-    k_log("PCI iGPU/GPU initialized successfully.");
+    if (debug != 2) { k_log("PCI iGPU/GPU initialized successfully."); }
 
+    // For extra safty
     cs_init(&core);
-    k_log("CS CORE initialized successfully.");
+    if (debug != 2) { k_log("CS CORE initialized successfully."); }
 
-    k_log("All drivers in the bpkg (boot package) initialized successfully.");
+    if (debug != 2) { k_log("All drivers and utils in the bpkg (boot package) initialized successfully."); }
 }
 
 void deinit(cs_task* self) {
     (void)self; // Unused parameter
-    k_log("All drivers in the bpkg (boot package) may deinitialized successfully.");
+
+    reg_t vol_t unum8_t *slot = (vol_t unum8_t*)KDI;
+    reg_t unum8_t debug = (num_t)(*slot);
+
+    if (debug != 2) { k_log("All drivers in the bpkg (boot package) may deinitialized successfully."); }
 
     cs_task deinit_serial_task = {
         .name = "Serial Deinitialization Task",

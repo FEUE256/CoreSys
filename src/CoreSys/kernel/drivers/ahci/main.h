@@ -1,6 +1,10 @@
 #pragma once
 
 #include <drivers/pci/main.h>
+#include <mod/types.h>
+#include <kernel/mem.h>
+
+#define ATA_CMD_READ_DMA_EXT 0x25
 
 /*
     GET AHCI MMIO BASE
@@ -297,6 +301,9 @@ void ahci_port_start(hba_port_t* port)
 
 void ahci_init_ports(uintptr_t base)
 {
+    reg_t vol_t unum8_t *slot = (vol_t unum8_t*)KDI;
+    reg_t unum8_t debug = (num_t)(*slot);
+
     hba_mem_t* hba = (hba_mem_t*)base;
 
     uint32_t ports = hba->pi;
@@ -308,7 +315,7 @@ void ahci_init_ports(uintptr_t base)
             hba_port_t* port =
                 (hba_port_t*)((uint8_t*)hba + 0x100 + (i * 0x80));
 
-            kprintf("Init AHCI port %d\n", i);
+            if (debug != 2) { kprintf("Init AHCI port %d\n", i); }
 
             ahci_port_start(port);
         }
@@ -580,8 +587,6 @@ void print_disk_name(hba_port_t* port)
     }
 }
 
-
-
 void ahci_print_all_disk_names(uintptr_t ahci_base)
 {
     hba_mem_t* hba = (hba_mem_t*)ahci_base;
@@ -621,4 +626,138 @@ void ahci_print_all_disks(void)
     }
 
     ahci_print_all_disk_names(base);
+}
+
+static void ahci_dump512(uint8_t *buf)
+{
+    for (int i = 0; i < 512; i += 16)
+    {
+        kprintf("%04x: ", i);
+
+        for (int j = 0; j < 16; j++)
+        {
+            kprintf("%02x ", buf[i + j]);
+        }
+
+        kprintf(" | ");
+
+        for (int j = 0; j < 16; j++)
+        {
+            uint8_t c = buf[i + j];
+            kprintf("%c", (c >= 32 && c <= 126) ? c : '.');
+        }
+
+        kprintf("\n");
+    }
+}
+
+static int ahci_read_lba1(hba_port_t *port, void *buf)
+{
+    if (!port || !buf)
+        return -1;
+
+    // stop command engine
+    port->cmd &= ~HBA_PxCMD_ST;
+    port->cmd &= ~HBA_PxCMD_FRE;
+
+    typedef struct
+    {
+        uint8_t  cfis[64];
+        uint8_t  acmd[16];
+        uint8_t  rsv[48];
+        uint32_t prdt[4];
+    } cmd_table_t;
+
+    typedef struct
+    {
+        uint16_t flags;
+        uint16_t prdtl;
+        uint32_t prdbc;
+        uint64_t ctba;
+        uint64_t ctbau;
+        uint32_t reserved[4];
+    } cmd_hdr_t;
+
+    int slot = 0;
+
+    cmd_hdr_t *hdr = (cmd_hdr_t*)(uintptr_t)port->clb;
+    cmd_hdr_t *h   = &hdr[slot];
+
+    memset(h, 0, sizeof(cmd_hdr_t));
+
+    cmd_table_t *tbl = (cmd_table_t*)kmalloc(sizeof(cmd_table_t));
+    memset(tbl, 0, sizeof(cmd_table_t));
+
+    h->ctba = (uint64_t)(uintptr_t)tbl;
+    h->prdtl = 1;
+
+    // FIS
+    uint8_t *fis = tbl->cfis;
+    fis[0] = 0x27;
+    fis[1] = 1 << 7; // command
+    fis[2] = ATA_CMD_READ_DMA_EXT;
+
+    uint64_t lba = 1;
+
+    fis[4]  = (uint8_t)lba;
+    fis[5]  = (uint8_t)(lba >> 8);
+    fis[6]  = (uint8_t)(lba >> 16);
+    fis[7]  = 0;
+
+    fis[8]  = (uint8_t)(lba >> 24);
+    fis[9]  = (uint8_t)(lba >> 32);
+    fis[10] = (uint8_t)(lba >> 40);
+
+    fis[12] = 1; // sector count
+
+    // PRDT
+    uint64_t addr = (uint64_t)(uintptr_t)buf;
+
+    tbl->prdt[0] = (uint32_t)addr;
+    tbl->prdt[1] = 0;
+    tbl->prdt[2] = 511;
+    tbl->prdt[3] = 0;
+
+    // issue
+    port->ci = 1 << slot;
+
+    if (port->tfd & 1)
+        return -2;
+
+    return 0;
+}
+
+void ahci_dump_all_lba1(uintptr_t base)
+{
+    hba_mem_t *hba = (hba_mem_t*)base;
+    uint32_t ports = hba->pi;
+
+    for (int i = 0; i < 32; i++)
+    {
+        if (!(ports & (1U << i)))
+            continue;
+
+        hba_port_t *port =
+            (hba_port_t*)((uint8_t*)hba + 0x100 + (i * 0x80));
+
+        uint8_t *buf = (uint8_t*)kmalloc(512);
+        memset(buf, 0, 512);
+
+        kprintf("\n=== AHCI PORT %d LBA1 ===\n", i);
+
+        if (ahci_read_lba1(port, buf) == 0)
+        {
+            ahci_dump512(buf);
+        }
+        else
+        {
+            kprintf("Read failed\n");
+        }
+    }
+}
+
+void ahci_d512al1b() {
+    uintptr_t base = ahci_get_base(0, 31, 2);
+
+    ahci_dump_all_lba1(base);
 }

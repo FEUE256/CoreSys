@@ -10,6 +10,13 @@ For mini build time use NO_NPM=1 eg make all NO_NPM=1
 
 ---
 
+## 0.1.3.0v (2026-06-29)
+
+Added VGA driver kernel/include/asm Chaged drivers everyone exept irq led status and time changed readme EULA cpppropites (new) CONTRIBITING.md int layer efi.h qemu scripts misc etc build time: 
+real    0m32.269s
+user    0m9.891s
+sys     0m2.419s
+
 ## 0.1.2.8v (2026-06-12)
 
 Added AHCI PCI GPU support

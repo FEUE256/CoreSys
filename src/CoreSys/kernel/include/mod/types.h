@@ -17,7 +17,13 @@ typedef int64_t num64_t; // signed number 64
 typedef unsigned uncon_t; // Unsiged
 typedef signed con_t; // Signed 
 typedef size_t cap_t; // Capacity
+typedef uintptr_t unumarr_t; // Arrow (like on a map its an Pointer to it)
+typedef intptr_t numarr_t; // Arrow (like on a map its an Pointer to it)
 
-#define set_t const
-#define nret_t void // No Return
 #define vol_t volatile // Voliatile
+#define set_t const // Set'ed
+#define nret_t void // No Return
+#define aut_t auto // Auto
+#define reg_t register // Register
+#define str_t struct // Struct
+#define sta_t static // Static

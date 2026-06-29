@@ -3,7 +3,7 @@
 void execute_command(const char *cmd, int debug);
 void tty_putc(char c);
 void tty_write(const char *s);
-void tty_loop(int debug);
+void tty_loop();
 void outb(uint16_t port, uint8_t val);
 uint8_t inb(uint16_t port);
 void outw(uint16_t port, uint16_t val);
