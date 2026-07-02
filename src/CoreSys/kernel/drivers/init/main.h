@@ -30,6 +30,12 @@ void init(cs_task* self) {
     task_run(&init_serial_task); // init Serial Drivers
     if (debug != 2) { k_log("Serial port initialized successfully."); }
 
+    pmm_init(
+        0x100000,
+        512 * 1024 * 1024
+    );
+    if (debug != 2) { k_log("Heap alloction initialized successfully."); }
+
     a_char_print('1');
 
     cs_task init_cfs_task = {

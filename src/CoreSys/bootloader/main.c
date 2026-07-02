@@ -1,9 +1,10 @@
-// --------------------------------
+// -------------------------------------------------
 // FÈUE File CoreSys Bootloader
 // Contains code of the project
 // CyberBoot by FÈUE
 // BOOTLOADER / OS
-// --------------------------------
+// Namespace io.feue.coresys.bootloader.bmain
+// -------------------------------------------------
 
 #include <core/efi.h>          // Basic UEFI types
 #include <core/efi_lib.h>      // Simple EFI lib

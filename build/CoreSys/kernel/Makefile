@@ -6,13 +6,13 @@
 
 # THE PATHS IS IN THIS CONFIG FILE!
 
-CONFIG_FILE := ../../.config/config.cfg
+CONFIG_FILE ?= ../../.config/config.cfg
 
-ifneq ("$(wildcard $(CONFIG_FILE))","")
-include $(CONFIG_FILE)
-else
+ifeq ("$(wildcard $(CONFIG_FILE))","")
 $(error Missing config file: $(CONFIG_FILE))
 endif
+
+include $(CONFIG_FILE)
 
 # =====================
 # Ensure build dirs exist

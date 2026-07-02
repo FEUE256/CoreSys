@@ -10,6 +10,10 @@ For mini build time use NO_NPM=1 eg make all NO_NPM=1
 
 ---
 
+## 0.1.3.1v (2026-07-02)
+
+Added NVMe to kernel
+
 ## 0.1.3.0v (2026-06-29)
 
 Added VGA driver kernel/include/asm Chaged drivers everyone exept irq led status and time changed readme EULA cpppropites (new) CONTRIBITING.md int layer efi.h qemu scripts misc etc build time: 

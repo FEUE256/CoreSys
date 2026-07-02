@@ -1,9 +1,10 @@
-// --------------------------------
+// ------------------------------------------
 // FÈUE File CoreSys Kernel
 // Contains code of the project
 // CyberBoot by FÈUE
 // KERNEL / OS
-// --------------------------------
+// Namespace io.feue.coresys.kernel.kmain
+// ------------------------------------------
 
 // Includes / "Include"
 #include <CoreSys.h>                 // CoreSys Main Header
@@ -106,6 +107,9 @@ ret_t kmain() {
         // Prints the iGPU/GPU Info
         pci_igpu_info();
 
+        // Print NVMe scan
+        nvme_scan(); 
+
         // Tests pointers
         num_t x = 5;
         kprintf("Test addesses: %d @ %p\n", x, &x);
@@ -150,8 +154,6 @@ ret_t kmain() {
         framebuffer[i] = 0xFFFF0000;
         VGA_GRAPHICS[i] = 4; // red palette index
     }
-    
-
 
     // Sets up tty_task task
     cs_task tty_task = {

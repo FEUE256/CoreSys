@@ -22,9 +22,8 @@ cp $BIOS_PATH $HOME/CoreSysVM/bios64.bin
 # --- run QEMU ---
 qemu-system-x86_64 \
   -drive format=raw,file="$HOME/CoreSysVM/CoreSys.img" \
-  -drive file=../../misc/disk/disk.img,format=raw,if=none,id=disk1 \
-  -device ahci,id=ahci0 \
-  -device ide-hd,drive=disk1,bus=ahci0.0 \
+  -drive file=../../misc/disk/disk.img,if=none,id=nvmedisk,format=raw \
+  -device nvme,drive=nvmedisk,serial=DISK001,physical_block_size=512,logical_block_size=512 \
   -bios "$HOME/CoreSysVM/bios64.bin" \
   -m 256M \
   -machine q35 \

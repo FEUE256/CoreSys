@@ -37,11 +37,18 @@ void cfs_krn_cfg(cfs_krn_cfg_e cfg, char buf[]) {
 
 // ---------------- CREATE ----------------
 
-cfs_node* cfs_create_node(const char* name, cfs_type type) {
-    cfs_node* node = (cfs_node*)kmalloc(sizeof(cfs_node));
+cfs_node* cfs_create_node(const char* name, cfs_type type)
+{
+    void* mem = kmalloc(sizeof(cfs_node));
+    if (!mem)
+        return 0;
 
-    for (int i = 0; i < cfs_MAX_NAME - 1 && name[i]; i++)
+    cfs_node* node = (cfs_node*)mem;
+
+    for (int i = 0; i < cfs_MAX_NAME - 1 && name && name[i]; i++)
         node->name[i] = name[i];
+
+    node->name[cfs_MAX_NAME - 1] = '\0';
 
     node->type = type;
     node->size = 0;
@@ -52,26 +59,33 @@ cfs_node* cfs_create_node(const char* name, cfs_type type) {
     return node;
 }
 
-static void cfs_destroy_node(cfs_node* node) {
-    if (!node) return;
+static void cfs_destroy_node(cfs_node* node)
+{
+    if (!node)
+        return;
 
     // Free children first
-    if (node->type == cfs_DIR) {
-        for (int i = 0; i < cfs_MAX_CHILDREN; i++) {
-            if (node->children[i]) {
+    if (node->type == cfs_DIR)
+    {
+        for (int i = 0; i < cfs_MAX_CHILDREN; i++)
+        {
+            if (node->children[i])
+            {
                 cfs_destroy_node(node->children[i]);
-                node->children[i] = NULL;
+                node->children[i] = 0;
             }
         }
     }
 
     // Free file data
-    if (node->type == cfs_FILE && node->data) {
-        kfree(sizeof(node));
-        node->data = NULL;
+    if (node->type == cfs_FILE && node->data)
+    {
+        kfree(node->data);
+        node->data = 0;
     }
 
-    kfree(sizeof(node));
+    // Free the node itself
+    kfree(node);
 }
 
 // ---------------- DIRECTORY ADD ----------------

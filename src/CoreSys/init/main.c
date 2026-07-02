@@ -1,9 +1,10 @@
-// --------------------------------
+// -----------------------------------------
 // FÈUE File CoreSys Init
 // Contains code of the project
 // CyberBoot by FÈUE
 // INIT / OS
-// --------------------------------
+// Namespace io.feue.coresys.init.imain
+// -----------------------------------------
 
 #include <core/efi.h>
 #include <core/efi_lib.h>

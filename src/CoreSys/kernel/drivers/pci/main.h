@@ -55,6 +55,23 @@ uint16_t pci_device(uint8_t bus,
     PCI SCANNER
 */
 
+void pci_write(uint8_t bus,
+               uint8_t device,
+               uint8_t func,
+               uint8_t offset,
+               uint32_t value)
+{
+    uint32_t address =
+        0x80000000 |
+        ((uint32_t)bus << 16) |
+        ((uint32_t)device << 11) |
+        ((uint32_t)func << 8) |
+        (offset & 0xFC);
+
+    outl(0xCF8, address);
+    outl(0xCFC, value);
+}
+
 void pci_scan(void)
 {
     for (uint16_t bus = 0; bus < 256; bus++)
@@ -97,6 +114,16 @@ void pci_scan(void)
                     subclass,
                     progif
                 );
+
+                if (class == 0x01 && subclass == 0x08)
+                {
+                    uint32_t cmd = pci_read(bus, dev, fn, 0x04);
+                    cmd |= (1 << 1); // Memory space
+                    cmd |= (1 << 2); // Bus master
+                    pci_write(bus, dev, fn, 0x04, cmd);
+
+                    kprintf("NVMe PCI DMA enabled\n");
+                }
 
                 uint8_t speed = 0;
                 uint8_t width = 0;
@@ -185,7 +212,7 @@ static inline uint32_t pci_get_bar5(uint8_t bus,
 
 uint8_t pci_find_capability(uint8_t bus, uint8_t dev, uint8_t fn, uint8_t cap_id)
 {
-    uint8_t status = (pci_read(bus, dev, fn, 0x06) >> 16) & 0xFF;
+    uint16_t status = (pci_read(bus,dev,fn,0x04)>>16)&0xFFFF;
     if (!(status & 0x10))
         return 0; // no capabilities list
 

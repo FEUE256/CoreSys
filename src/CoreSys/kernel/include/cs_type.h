@@ -91,4 +91,6 @@
 #include <drivers/page/main.h>
 #include <drivers/reg/main.h>
 
+#include <drivers/nvme/main.h>
+
 #include <kernel/mem.h>

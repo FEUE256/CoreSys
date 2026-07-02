@@ -8,3 +8,4 @@ out.txt
 # find . -type f -exec cat {} + > out.txt
 full.txt
 # I dont like LFS so you make it your self
+kernel.mk
