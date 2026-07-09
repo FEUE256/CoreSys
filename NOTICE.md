@@ -1,7 +1,9 @@
 # NOTICE
 
-## Today's Topic: No 0.1.2.1 COP Release
+## Today's Topic: Delay
 
-No Cop release wil come
+The next version of CoreSys will have a delay because it's a big update! 
+
+Hope you will understand and like it when it comes out.
 
 // Nils Efverman CEO FÈUE
