@@ -400,25 +400,40 @@ HAL_REBOOT            = 34
 
 ---
 
-# Error Handling
+# FS ABI
 
-Unknown syscall:
+The FS ABI provides low-level fs services.
 
-```asm
-.word 0xFFFF
+---
+
+## FS Frame
+
+```c
+typedef struct {
+    uint64_t rax;
+    uint64_t rdi;
+    uint64_t rsi;
+    uint64_t rdx;
+} fs_frame_t;
 ```
 
-Unknown HAL call:
+---
 
-```asm
-.word 0xFFFF
-```
+# FS Call Numbers
 
-This intentionally generates:
-
-```text
-#UD
-Invalid Opcode Exception
+```c
+FS_DEV_NULL      = 0
+COP_INIT         = 1
+COP_DEINIT       = 2
+COP_CREATE_DIR   = 3
+COP_WRITE_FILE   = 4
+COP_READ_FILE    = 5
+COP_DELETE_FILE  = 6
+COP_APPEND_FILE  = 7
+COP_EXEC_FILE    = 8
+COP_FS_INIT      = 9
+COP_FS_DEINIT    = 10
+COP_CREATE_FILE  = 11
 ```
 
 ---

@@ -145,7 +145,7 @@ C_LDFLAGS:
   - "-Wl,--emit-relocs"
   - "-Wl,--section-alignment,4096"
   - "-Wl,--file-alignment,4096"
-  - "-Wl,-entry,imain"
+  - "-Wl,-entry,cmain"
   - "-Wl,--allow-multiple-definition"
 
 GPT_MODE: "Release"

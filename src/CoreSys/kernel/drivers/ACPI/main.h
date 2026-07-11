@@ -13,6 +13,7 @@ void shutdown(void)
     cs_task deinit_task1 = {
         .name = "Deinitialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "deinit",
         .entry = deinit
     };
     task_run(&deinit_task1); // Deinit Drivers
@@ -23,6 +24,7 @@ void shutdown(void)
     cs_task init_task = {
         .name = "Initialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "init",
         .entry = init
     };
 
@@ -33,6 +35,7 @@ void shutdown(void)
     cs_task deinit_task2 = {
         .name = "Deinitialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "deinit",
         .entry = deinit
     };
     task_run(&deinit_task2); // Deinit Drivers
@@ -40,6 +43,7 @@ void shutdown(void)
     cs_task hlt_task = {
         .name = "Halt Task",
         .source_header = "drivers/halt/main.h",
+        .entry_name = "hlt",
         .entry = hlt
     };
 
@@ -51,6 +55,7 @@ void reboot(void)
     cs_task deinit_task3 = {
         .name = "Deinitialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "deinit",
         .entry = deinit
     };
     task_run(&deinit_task3); // Deinit Drivers
@@ -61,6 +66,7 @@ void reboot(void)
     cs_task init_task = {
         .name = "Initialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "init",
         .entry = init
     };
 
@@ -71,6 +77,7 @@ void reboot(void)
     cs_task deinit_task4 = {
         .name = "Deinitialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "deinit",
         .entry = deinit
     };
     task_run(&deinit_task4); // Deinit Drivers
@@ -78,6 +85,7 @@ void reboot(void)
     cs_task hlt_task = {
         .name = "Halt Task",
         .source_header = "drivers/halt/main.h",
+        .entry_name = "hlt",
         .entry = hlt
     };
 
@@ -91,6 +99,7 @@ void kshutdown(cs_task* self)
     cs_task deinit_task1 = {
         .name = "Deinitialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "deinit",
         .entry = deinit
     };
     task_run(&deinit_task1); // Deinit Drivers
@@ -101,6 +110,7 @@ void kshutdown(cs_task* self)
     cs_task init_task = {
         .name = "Initialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "init",
         .entry = init
     };
 
@@ -111,6 +121,7 @@ void kshutdown(cs_task* self)
     cs_task deinit_task2 = {
         .name = "Deinitialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "deinit",
         .entry = deinit
     };
     task_run(&deinit_task2); // Deinit Drivers
@@ -118,6 +129,7 @@ void kshutdown(cs_task* self)
     cs_task hlt_task = {
         .name = "Halt Task",
         .source_header = "drivers/halt/main.h",
+        .entry_name = "hlt",
         .entry = hlt
     };
 
@@ -130,6 +142,7 @@ void kreboot(cs_task* self)
     cs_task deinit_task3 = {
         .name = "Deinitialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "deinit",
         .entry = deinit
     };
     task_run(&deinit_task3); // Deinit Drivers
@@ -140,6 +153,7 @@ void kreboot(cs_task* self)
     cs_task init_task = {
         .name = "Initialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "init",
         .entry = init
     };
 
@@ -150,6 +164,7 @@ void kreboot(cs_task* self)
     cs_task deinit_task4 = {
         .name = "Deinitialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "deinit",
         .entry = deinit
     };
     task_run(&deinit_task4); // Deinit Drivers
@@ -157,6 +172,7 @@ void kreboot(cs_task* self)
     cs_task hlt_task = {
         .name = "Halt Task",
         .source_header = "drivers/halt/main.h",
+        .entry_name = "hlt",
         .entry = hlt
     };
 

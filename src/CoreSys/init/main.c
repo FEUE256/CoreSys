@@ -237,7 +237,7 @@ void ShowMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected)
     {
         L"CoreSys Kernel (Normal)",
         L"CoreSys Kernel (Debug)",
-        L"CoreSys Kernel (Silent)",
+        L"CoreSys Kernel (Silent (not recommened))",
         L"Shutdown"
     };
 

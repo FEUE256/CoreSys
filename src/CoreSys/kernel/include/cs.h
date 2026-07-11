@@ -97,6 +97,41 @@ void sys_reinit(void);
 void sys_halt(void);
 void sys_sf(const char* s);
 
+// // FS functions
+int fsret(int code);
+bool fs_cop_init();
+uint64_t fs_cop_deinit();
+int fs_cop_mkdir(const char *path);
+int fs_cop_create(const char *path);
+int fs_cop_write(const char *path, const void *buffer, uint64_t size);
+int fs_cop_read(const char *path, void *buffer, uint64_t size);
+int fs_cop_delete(const char *path);
+int fs_cop_append(const char *path, const void *buffer, uint64_t size);
+uint64_t fs_cop_exec_file(const char *path);
+uint64_t fs_fs_init();
+uint64_t fs_fs_deinit();
+
+typedef struct CS_FS {
+    int (*null)(int code);
+
+    bool (*init)(void);
+    uint64_t (*deinit)(void);
+
+    int (*mkdir)(const char *path);
+    int (*create)(const char *path);
+
+    int (*write)(const char *path, const void *buffer, uint64_t size);
+    int (*read)(const char *path, void *buffer, uint64_t size);
+
+    int (*delete)(const char *path);
+    int (*append)(const char *path, const void *buffer, uint64_t size);
+
+    uint64_t (*exec_file)(const char *path);
+
+    uint64_t (*fs_init)(void);
+    uint64_t (*fs_deinit)(void);
+} __attribute__((packed)) CS_FS;
+
 typedef struct CS_HAL {
     int (*null)(int);
 
@@ -141,7 +176,7 @@ typedef struct CS_HAL {
 
     void (*shutdown)(void);
     void (*reboot)(void);
-} CS_HAL;
+} __attribute__((packed)) CS_HAL;
 
 typedef struct CS_SYS {
     int  (*null)(void);
@@ -158,12 +193,13 @@ typedef struct CS_SYS {
     void (*halt)(void);
 
     void (*sf)(const char*);
-} CS_SYS;
+} __attribute__((packed)) CS_SYS;
 
 typedef struct CS_CORE {
     CS_HAL hal;
     CS_SYS sys;
-} CS_CORE;
+    CS_FS  fs;
+} __attribute__((packed)) CS_CORE;
 
 void tsk_init(void) {
     tsk_ready = 1;
@@ -176,6 +212,25 @@ void tsk_deinit(void) {
 void cs_init(CS_CORE *core)
 {
     tsk_init();
+
+    core->fs.null        = fsret;
+
+    core->fs.init        = fs_cop_init;
+    core->fs.deinit      = fs_cop_deinit;
+
+    core->fs.mkdir       = fs_cop_mkdir;
+    core->fs.create      = fs_cop_create;
+
+    core->fs.write       = fs_cop_write;
+    core->fs.read        = fs_cop_read;
+
+    core->fs.delete      = fs_cop_delete;
+    core->fs.append      = fs_cop_append;
+
+    core->fs.exec_file   = fs_cop_exec_file;
+
+    core->fs.fs_init     = fs_fs_init;
+    core->fs.fs_deinit   = fs_fs_deinit;
 
     core->hal.null              = hal_dev_null;
 
@@ -239,6 +294,25 @@ void cs_init(CS_CORE *core)
 void cs_deinit(CS_CORE *core)
 {
     tsk_deinit();
+
+    core->fs.null        = NULL;
+
+    core->fs.init        = NULL;
+    core->fs.deinit      = NULL;
+
+    core->fs.mkdir       = NULL;
+    core->fs.create      = NULL;
+
+    core->fs.write       = NULL;
+    core->fs.read        = NULL;
+
+    core->fs.delete      = NULL;
+    core->fs.append      = NULL;
+
+    core->fs.exec_file   = NULL;
+
+    core->fs.fs_init     = NULL;
+    core->fs.fs_deinit   = NULL;
 
     core->hal.execute_command   = NULL;
     core->hal.tty_loop          = NULL;

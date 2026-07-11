@@ -16,23 +16,47 @@ typedef unsigned short u16;
 #define COM1 0x3F8 
 #define a_port 0x2E8
 
+static inline uint64_t rdtsc()
+{
+    uint32_t lo, hi;
+    __asm__ volatile ("rdtsc" : "=a"(lo), "=d"(hi));
+    return ((uint64_t)hi << 32) | lo;
+}
+
+void delay_rough()
+{
+    for (volatile uint32_t i = 0; i < 50000; i++)
+    {
+        __asm__ volatile("nop");
+    }
+}
+
 // ==============================
 // Port I/O
 // ==============================
-static inline void outb(u16 port, u8 val)
+inline void outb(u16 port, u8 val)
 {
     __asm__ volatile ("outb %0, %1"
                       :
                       : "a"(val), "Nd"(port));
 }
 
-static inline u8 inb(u16 port)
+inline u8 inb(u16 port)
 {
     u8 ret;
     __asm__ volatile ("inb %1, %0"
                       : "=a"(ret)
                       : "Nd"(port));
     return ret;
+}
+
+static inline void outsw(uint16_t port, const void *addr, uint32_t count)
+{
+    __asm__ volatile (
+        "rep outsw"
+        : "+S"(addr), "+c"(count)
+        : "d"(port)
+    );
 }
 
 // ==============================
@@ -600,6 +624,7 @@ static inline void initSerial(cs_task* self)
     cs_task clear_task = {
         .name = "Serial Clear Task",
         .source_header = "drivers/serial/main.h",
+        .entry_name = "serial_clear",
         .entry = serial_clear
     };
     task_run(&clear_task); // Clear serial output
@@ -649,6 +674,7 @@ static inline void deinitSerial(cs_task* self)
     cs_task clear_task = {
         .name = "Serial Clear Task",
         .source_header = "drivers/serial/main.h",
+        .entry_name = "serial_clear",
         .entry = serial_clear
     };
     task_run(&clear_task); // Clear serial output
@@ -870,4 +896,260 @@ int snprintf(char *buf, size_t size, const char *fmt, ...)
     va_end(args);
 
     return pos;
+}
+
+#include <stdint.h>
+#include <stddef.h>
+
+/* ---------------- memcmp ---------------- */
+int memcmp(const void *a, const void *b, size_t n)
+{
+    const unsigned char *x = a;
+    const unsigned char *y = b;
+
+    for (size_t i = 0; i < n; i++)
+    {
+        if (x[i] != y[i])
+            return x[i] - y[i];
+    }
+    return 0;
+}
+
+/* ---------------- strchr ---------------- */
+char *strchr(const char *s, int c)
+{
+    while (*s)
+    {
+        if (*s == (char)c)
+            return (char *)s;
+        s++;
+    }
+    return NULL;
+}
+
+/* ---------------- strspn ---------------- */
+size_t strspn(const char *s, const char *accept)
+{
+    const char *p = s;
+
+    while (*p)
+    {
+        const char *a = accept;
+        int found = 0;
+
+        while (*a)
+        {
+            if (*p == *a)
+            {
+                found = 1;
+                break;
+            }
+            a++;
+        }
+
+        if (!found)
+            break;
+
+        p++;
+    }
+
+    return p - s;
+}
+
+/* ---------------- strcspn ---------------- */
+size_t strcspn(const char *s, const char *reject)
+{
+    const char *p = s;
+
+    while (*p)
+    {
+        const char *r = reject;
+
+        while (*r)
+        {
+            if (*p == *r)
+                return p - s;
+
+            r++;
+        }
+
+        p++;
+    }
+
+    return p - s;
+}
+
+int strncmp(const char *s1, const char *s2, size_t n)
+{
+    while (n > 0) {
+        unsigned char c1 = (unsigned char)*s1;
+        unsigned char c2 = (unsigned char)*s2;
+
+        if (c1 != c2)
+            return c1 - c2;
+
+        if (c1 == '\0')
+            return 0;
+
+        s1++;
+        s2++;
+        n--;
+    }
+
+    return 0;
+}
+
+char *strncpy(char *dest, const char *src, size_t n)
+{
+    size_t i = 0;
+
+    while (i < n && src[i] != '\0') {
+        dest[i] = src[i];
+        i++;
+    }
+
+    while (i < n) {
+        dest[i] = '\0';
+        i++;
+    }
+
+    return dest;
+}
+
+uint64_t kstrtoull(const char *str, const char **endptr, int base)
+{
+    uint64_t result = 0;
+
+    if (!str) {
+        if (endptr) *endptr = NULL;
+        return 0;
+    }
+
+    // skip whitespace
+    while (*str == ' ' || *str == '\t' || *str == '\n' ||
+           *str == '\r' || *str == '\f' || *str == '\v') {
+        str++;
+    }
+
+    // optional sign (strtoull allows '-', but result is unsigned)
+    if (*str == '+') {
+        str++;
+    } else if (*str == '-') {
+        str++;
+    }
+
+    // base auto-detect
+    if (base == 0) {
+        if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
+            base = 16;
+        } else if (str[0] == '0') {
+            base = 8;
+        } else {
+            base = 10;
+        }
+    }
+
+    // skip 0x prefix
+    if (base == 16 && str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
+        str += 2;
+    }
+
+    while (*str) {
+        char c = *str;
+        uint8_t digit;
+
+        if (c >= '0' && c <= '9') {
+            digit = c - '0';
+        } else if (c >= 'a' && c <= 'f') {
+            digit = c - 'a' + 10;
+        } else if (c >= 'A' && c <= 'F') {
+            digit = c - 'A' + 10;
+        } else {
+            break;
+        }
+
+        if (digit >= base) {
+            break;
+        }
+
+        result = result * (uint64_t)base + digit;
+        str++;
+    }
+
+    if (endptr) {
+        *endptr = str;
+    }
+
+    return result;
+}
+
+void bc_to_buf(uint64_t bc, char *buf, int buf_size)
+{
+    if (!buf || buf_size <= 1)
+        return;
+
+    int i = 0;
+
+    if (bc == 0)
+    {
+        buf[0] = '0';
+        buf[1] = '\0';
+        return;
+    }
+
+    while (bc > 0 && i < buf_size - 1)
+    {
+        int digit = bc % 10;
+        buf[i++] = '0' + digit;
+        bc /= 10;
+    }
+
+    /* reverse */
+    for (int j = 0; j < i / 2; j++)
+    {
+        char tmp = buf[j];
+        buf[j] = buf[i - j - 1];
+        buf[i - j - 1] = tmp;
+    }
+
+    buf[i] = '\0';
+}
+
+int strcmp(const char *s1, const char *s2)
+{
+    while (*s1 && (*s1 == *s2)) {
+        s1++;
+        s2++;
+    }
+
+    return (unsigned char)*s1 - (unsigned char)*s2;
+}
+
+uint64_t strlen(const char *s)
+{
+    uint64_t len = 0;
+
+    while (s[len])
+        len++;
+
+    return len;
+}
+
+char *strrchr(const char *str, int c)
+{
+    const char *last = 0;
+
+    while (*str)
+    {
+        if (*str == (char)c)
+            last = str;
+
+        str++;
+    }
+
+    // Handle searching for '\0'
+    if (c == 0)
+        return (char *)str;
+
+    return (char *)last;
 }

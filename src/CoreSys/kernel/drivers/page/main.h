@@ -197,18 +197,10 @@ void* kmalloc(size_t size)
     if (size == 0)
         return NULL;
 
-    if (size <= 4096)
-        return pmm_alloc_pages(1);
+    size_t total = size + sizeof(kmalloc_hdr);
+    size_t pages = kmalloc_align(total);
 
-    size_t total =
-        size + sizeof(kmalloc_hdr);
-
-    size_t pages =
-        kmalloc_align(total);
-
-    kmalloc_hdr* hdr =
-        (kmalloc_hdr*)pmm_alloc_pages(pages);
-
+    kmalloc_hdr* hdr = (kmalloc_hdr*)pmm_alloc_pages(pages);
     if (!hdr)
         return NULL;
 

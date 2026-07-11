@@ -67,6 +67,7 @@ uint64_t syscall(syscall_frame_t* frame) {
         cs_task kshutdown_task = {
             .name = "Kshutdown Task",
             .source_header = "drivers/ACPI/main.h",
+            .entry_name = "kshutdown",
             .entry = kshutdown
         };
 
@@ -77,6 +78,7 @@ uint64_t syscall(syscall_frame_t* frame) {
         cs_task kreboot_task = {
             .name = "Kreboot Task",
             .source_header = "drivers/ACPI/main.h",
+            .entry_name = "kreboot",
             .entry = kreboot
         };
 
@@ -87,6 +89,7 @@ uint64_t syscall(syscall_frame_t* frame) {
         cs_task kinit_task = {
             .name = "Initialization Task",
             .source_header = "drivers/init/main.h",
+            .entry_name = "init",
             .entry = init
         };
 
@@ -97,6 +100,7 @@ uint64_t syscall(syscall_frame_t* frame) {
         cs_task kdeinit_task = {
             .name = "Deinitialization Task",
             .source_header = "drivers/init/main.h",
+            .entry_name = "deinit",
             .entry = deinit
         };
         task_run(&kdeinit_task); // Deinit Drivers
@@ -106,6 +110,7 @@ uint64_t syscall(syscall_frame_t* frame) {
         cs_task k_clear_task = {
             .name = "Clear Task",
             .source_header = "drivers/serial/main.h",
+            .entry_name = "k_clear",
             .entry = k_clear
         };
         task_run(&k_clear_task); // Clear Drivers
@@ -115,6 +120,7 @@ uint64_t syscall(syscall_frame_t* frame) {
         cs_task kreinit_task = {
             .name = "Reinitialization Task",
             .source_header = "drivers/init/main.h",
+            .entry_name = "kreinit",
             .entry = kreinit
         };
         task_run(&kreinit_task); // Reinit Drivers
@@ -124,6 +130,7 @@ uint64_t syscall(syscall_frame_t* frame) {
         cs_task khlt_task = {
             .name = "Halt Task",
             .source_header = "drivers/halt/main.h",
+            .entry_name = "hlt",
             .entry = hlt
         };
         task_run(&khlt_task); // Halt Drivers

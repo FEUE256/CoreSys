@@ -56,7 +56,7 @@ void format_regb(char *out, uint8_t regB)
 }
 
 void get_time() {
-        uint8_t sec_bcd  = cmos_read(0x00);
+    uint8_t sec_bcd  = cmos_read(0x00);
     uint8_t min_bcd  = cmos_read(0x02);
     uint8_t hour_bcd = cmos_read(0x04);
 

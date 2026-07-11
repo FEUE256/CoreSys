@@ -9,7 +9,9 @@
 #include <drivers/task/main.h>       // Task management functions
 #include <drivers/cfs/main.h>        // CoreSys Filesystem (cfs)
 #include <drivers/pci/main.h>        // PCI
+#include <drivers/cop/main.h>       // FS
 #include <kernel/mem.h>
+#include <asm/global.h>
 #include <cs.h>
 
 CS_CORE core = {0};
@@ -25,6 +27,7 @@ void init(cs_task* self) {
     cs_task init_serial_task = {
         .name = "Serial initialization Task",
         .source_header = "drivers/serial/main.h",
+        .entry_name = "initSerial",
         .entry = initSerial
     };
     task_run(&init_serial_task); // init Serial Drivers
@@ -41,6 +44,7 @@ void init(cs_task* self) {
     cs_task init_cfs_task = {
         .name = "CFS initialization Task",
         .source_header = "drivers/cfs/main.h",
+        .entry_name = "cfs_init",
         .entry = cfs_init
     };
     task_run(&init_cfs_task); // init CFS
@@ -49,18 +53,50 @@ void init(cs_task* self) {
     cs_task init_ahci_task = {
         .name = "AHCI initialization Task",
         .source_header = "drivers/pci/main.h",
+        .entry_name = "ahci_init",
         .entry = ahci_init
     };
     task_run(&init_ahci_task); // init AHCI
     if (debug != 2) { k_log("AHCI initialized successfully."); }
 
     cs_task init_pci_task = {
-        .name = "PCI iGPU/GPU initialization Task",
+        .name = "PCI/PCIe iGPU/GPU initialization Task",
         .source_header = "drivers/pci/main.h",
+        .entry_name = "pci_init",
         .entry = pci_init
     };
     task_run(&init_pci_task); // init PCI
     if (debug != 2) { k_log("PCI iGPU/GPU initialized successfully."); }
+
+    cs_task init_cop_task = {
+        .name = "COP initialization Task",
+        .source_header = "drivers/cop/main.h",
+        .entry_name = "cop_init",
+        .entry = cop_init
+    };
+    task_run(&init_cop_task); // init COP
+    if (debug != 2) { k_log("COP initialized successfully."); }
+
+    /*
+        File stucture:
+        /
+        ├── sys
+            ├── kernel
+            |    ├── kernel.cfg
+            ├── system
+                ├── debug.cfg
+                ├── boot
+                    ├── bc.sctfi
+    */
+
+    cs_task init_fs_task = {
+        .name = "FS initialization Task",
+        .source_header = "drivers/cop/main.h",
+        .entry_name = "fs_init",
+        .entry = fs_init
+    };
+    task_run(&init_fs_task); // init FS
+    if (debug != 2) { k_log("FS initialized successfully."); }
 
     // For extra safty
     cs_init(&core);
@@ -80,6 +116,7 @@ void deinit(cs_task* self) {
     cs_task deinit_serial_task = {
         .name = "Serial Deinitialization Task",
         .source_header = "drivers/serial/main.h",
+        .entry_name = "deinitSerial",
         .entry = deinitSerial
     };
     task_run(&deinit_serial_task); // Deinit Serial Drivers
@@ -87,6 +124,7 @@ void deinit(cs_task* self) {
     cs_task deinit_cfs_task = {
         .name = "CFS Deinitialization Task",
         .source_header = "drivers/cfs/main.h",
+        .entry_name = "cfs_deinit",
         .entry = cfs_deinit
     };
     task_run(&deinit_cfs_task); // Deinit CFS
@@ -94,6 +132,7 @@ void deinit(cs_task* self) {
     cs_task deinit_ahci_task = {
         .name = "AHCI deinitialization Task",
         .source_header = "drivers/ahci/main.h",
+        .entry_name = "ahci_deinit",
         .entry = ahci_deinit
     };
     task_run(&deinit_ahci_task); // deinit AHCI
@@ -101,9 +140,26 @@ void deinit(cs_task* self) {
     cs_task deinit_pci_task = {
         .name = "PCI iGPU/GPU deinitialization Task",
         .source_header = "drivers/pci/main.h",
+        .entry_name = "pci_deinit",
         .entry = pci_deinit
     };
     task_run(&deinit_pci_task); // deinit PCI
+
+    cs_task deinit_fs_task = {
+        .name = "FS deinitialization Task",
+        .source_header = "drivers/cop/main.h",
+        .entry_name = "fs_deinit",
+        .entry = fs_deinit
+    };
+    task_run(&deinit_fs_task); // deinit FS
+
+    cs_task deinit_cop_task = {
+        .name = "COP deinitialization Task",
+        .source_header = "drivers/cop/main.h",
+        .entry_name = "cop_deinit",
+        .entry = cop_deinit
+    };
+    task_run(&deinit_cop_task); // deinit COP
 
     cs_deinit(&core);
 }
@@ -112,6 +168,7 @@ void reinit() {
     cs_task deinit_task = {
         .name = "Deinitialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "deinit",
         .entry = deinit
     };
     task_run(&deinit_task); // Deinit Drivers
@@ -119,6 +176,7 @@ void reinit() {
     cs_task init_task = {
         .name = "Initialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "init",
         .entry = init
     };
 
@@ -131,6 +189,7 @@ void kreinit(cs_task* self) {
     cs_task deinit_task = {
         .name = "Deinitialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "deinit",
         .entry = deinit
     };
     task_run(&deinit_task); // Deinit Drivers
@@ -138,6 +197,7 @@ void kreinit(cs_task* self) {
     cs_task init_task = {
         .name = "Initialization Task",
         .source_header = "drivers/init/main.h",
+        .entry_name = "init",
         .entry = init
     };
 

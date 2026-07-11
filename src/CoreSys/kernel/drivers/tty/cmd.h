@@ -15,6 +15,8 @@
 #include <drivers/led/main.h>
 #include <drivers/reg/main.h>
 #include <drivers/ata/main.h>
+#include <drivers/nvme/main.h>
+#include <drivers/cop/main.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -27,38 +29,37 @@ extern void tty_loop();
 extern void tty_write(const char *s);
 extern void k_sf(const char *s);
 
-int syscall_test_main(void) {
-    return 0;
-}
-
 void execute_command(const char *cmd, int debug)
 {
+    (void)debug;
     // HELP
     if (cmd[0] == 'h' && cmd[1] == 'e' && cmd[2] == 'l' && cmd[3] == 'p')
     {
-        tty_write(
-            "Commands:\n"
-            " help      - Show help\n"
-            " clear     - Clear terminal\n"
-            " cls       - Alias for clear\n"
-            " echo      - Print text\n"
-            " shutdown  - Shut down system\n"
-            " reboot    - Reboot system\n"
-            " hlt       - Halt CPU\n"
-            " sf        - System failure test\n"
-            " ver       - Show version\n"
-            " fsinfo    - Filesystem info\n"
-            " ps        - List processes\n"
-            " ii        - ASCII table\n"
-            " rax       - Print RAX\n"
-            " run       - Run syscall test\n"
-            " cfg       - Show kernel config\n"
-            " cr        - Show credits\n"
-            " led       - Keyboard LED demo\n"
-            " ata       - ATA dump\n"
-            " debug     - Show debug value\n"
-            " reg       - Register dump\n"
-        );
+    tty_write(
+        "CoreSys Command List\n"
+        "--------------------\n"
+        " ata       - Dump ATA sector\n"
+        " cfg       - Show kernel configuration\n"
+        " clear     - Clear terminal\n"
+        " cls       - Alias for clear\n"
+        " cr        - Show credits\n"
+        " debug     - Show debug value\n"
+        " echo      - Print text\n"
+        " fsf       - Formats the FS"
+        " fsinfo    - Show filesystem information\n"
+        " help      - Show this help\n"
+        " hlt       - Halt CPU\n"
+        " ii        - Show ASCII table\n"
+        " led       - Keyboard LED demo\n"
+        " nvme      - Dump NVMe sector\n"
+        " ps        - List running processes\n"
+        " rax       - Print RAX register\n"
+        " reboot    - Reboot system\n"
+        " reg       - Dump CPU registers (debug mode)\n"
+        " sf        - Trigger system failure test\n"
+        " shutdown  - Shut down system\n"
+        " ver       - Show kernel version\n"
+    );
     }
     // CLEAR / CLS
     else if (
@@ -78,19 +79,18 @@ void execute_command(const char *cmd, int debug)
         tty_write(p);
         tty_write("\n");
     }
-    else if (cmd[0] == 's' && cmd[1] == 'h' && cmd[2] == 'u' && cmd[3] == 't' &&
-         cmd[4] == 'd' && cmd[5] == 'o' && cmd[6] == 'w' && cmd[7] == 'n') {
-            shutdown();
-         }
-    else if (cmd[0] == 'r' && cmd[1] == 'e' && cmd[2] == 'b' && cmd[3] == 'o' &&
-         cmd[4] == 'o' && cmd[5] == 't') {
-            reboot();
-         }
+    else if (cmd[0] == 's' && cmd[1] == 'h' && cmd[2] == 'u' && cmd[3] == 't' && cmd[4] == 'd' && cmd[5] == 'o' && cmd[6] == 'w' && cmd[7] == 'n') {
+        shutdown();
+    }
+    else if (cmd[0] == 'r' && cmd[1] == 'e' && cmd[2] == 'b' && cmd[3] == 'o' && cmd[4] == 'o' && cmd[5] == 't') {
+        reboot();
+    }
     else if (cmd[0] == 'h' && cmd[1] == 'l' && cmd[2] == 't')
     {
         cs_task hlt_task = {
             .name = "Halt Task",
             .source_header = "drivers/halt/main.h",
+            .entry_name = "hlt",
             .entry = hlt
         };
         task_run(&hlt_task); // Halt the system
@@ -105,7 +105,7 @@ void execute_command(const char *cmd, int debug)
         kprint("\r\n");
     }
     else if (cmd[0] == 'f' && cmd[1] == 's' && cmd[2] == 'i' && cmd[3] == 'n' && cmd[4] == 'f' && cmd[5] == 'o') {
-        kprint("Filesystem: cfs\n");
+        kprint("Filesystem: cfs and cop\n");
     }
     else if (cmd[0] == 'p' && cmd[1] == 's')
     {
@@ -126,42 +126,41 @@ void execute_command(const char *cmd, int debug)
         serial_write_u64(rax_value);
         kprint("\n");
     }
-    else if (cmd[0] == 'r' && cmd[1] == 'u' && cmd[2] == 'n')
+    else if (cmd[0] == 'f' && cmd[1] == 's' && cmd[2] == 'f')
     {
-        syscall_test_main();
+        cop_format(COP_TOTAL_LBAS);
+
+        cs_task init_cop_task = {
+            .name = "COP initialization Task",
+            .source_header = "drivers/cop/main.h",
+            .entry_name = "cop_init",
+            .entry = cop_init
+        };
+        task_run(&init_cop_task); // init COP
+
+        cs_task init_fs_task = {
+            .name = "FS initialization Task",
+            .source_header = "drivers/cop/main.h",
+            .entry_name = "fs_init",
+            .entry = fs_init
+        };
+        task_run(&init_fs_task); // init FS
+        if (debug != 2) { k_log("FS initialized successfully."); }
+
+        char buf[4092];
+        cop_read("/sys/system/debug.cfg", buf, sizeof(buf));
+
+        int bc = (uint64_t)kstrtoull(buf, NULL, 10);
+        if (bc != 2) { k_log("COP initialized successfully."); }
     }
     else if (cmd[0] == 'c' && cmd[1] == 'f' && cmd[2] == 'g')
     {
-        uint64_t size = 0;
-        uint8_t* kernel_cfg = cfs_read(kernel_cfg_file, &size);
+        char buf[4092];
+        cop_read("/sys/kernel/kernel.cfg", buf, sizeof(buf));
 
-        if (kernel_cfg == NULL) 
-        {
-            sys_write("Kernel Configuration: <kc_null_invalid>\n");
-            return;
-        }
+        kprintf("Kernel Config: \n");
+        kprintf("%s", buf);
 
-        if (!kernel_cfg)
-        {
-            sys_write("Kernel Configuration: <no_kc_invalid>\n");
-            return;
-        }
-
-        if (size == 0)
-        {
-            sys_write("Kernel Configuration: <size_z_invalid>");
-        }
-
-        char buffer[4092];
-
-        if (size >= sizeof(buffer))
-            size = sizeof(buffer) - 1;
-
-        memcpy(buffer, kernel_cfg, size);
-        buffer[size] = '\0';
-
-        sys_write(buffer);
-        sys_write("\n");
     }
     else if (cmd[0] == 'c' && cmd[1] == 'r')
     {
@@ -171,13 +170,24 @@ void execute_command(const char *cmd, int debug)
         led_demo();
     }
     else if (cmd[0] == 'a' && cmd[1] == 't' && cmd[2] == 'a') {
-        hexdump_512_all();
+        ata_dump_lba_io(0);
     }
     else if (cmd[0] == 'd' && cmd[1] == 'e' && cmd[2] == 'b' && cmd[3] == 'u' && cmd[4] == 'g') {
-        kprintf("%d\n", debug);
+        char buf[512];
+        cop_read("/sys/system/debug.cfg", buf, sizeof(buf));
+
+        kprintf("%s", buf);
+    }
+    else if (cmd[0] == 'n' && cmd[1] == 'v' && cmd[2] == 'm' && cmd[3] == 'e') {
+        nvme_dump_drive_lba(0, 1, 0);
     }
     else if (cmd[0] == 'r' && cmd[1] == 'e' && cmd[2] == 'g') {
-        if (debug == 1) {
+        char buf[4092];
+        cop_read("/sys/system/debug.cfg", buf, sizeof(buf));
+
+        int bc = (uint64_t)kstrtoull(buf, NULL, 10);
+    
+        if (bc == 1) {
             print_regs();
         } else {
             k_warning("Enable Debug mode for this feature\n");

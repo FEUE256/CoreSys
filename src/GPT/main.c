@@ -1,12 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <time.h>
-#include <uchar.h> 
-#include <string.h>
-#include <inttypes.h>
-#include <ctype.h>
 #include "include/define.h"
 
 // =====================================
@@ -680,7 +671,11 @@ bool add_disk_image_info_file(FILE *image) {
     if (!fp) return false;
 
     fprintf(fp, "DISK_SIZE=%"PRIu64"\n", image_size);
-    fprintf(fp, "ABF, Offical CoreSys Image\n");
+    fprintf(fp, "LBA_SIZE=%"PRIu64"\n", lba_size);
+    fprintf(fp, "ESP_SIZE=%"PRIu64"\n", esp_size);
+    fprintf(fp, "UDP_SIZE=%"PRIu64"\n", data_size);
+    fprintf(fp, "IMAGE_NAME=%s\n", image_name);
+    fprintf(fp, "Appoved By FEUE, Offical CoreSys Image\n");
     fclose(fp);
 
     fp = fopen("SEVI.TXT", "rb");
@@ -1119,6 +1114,8 @@ int main(int argc, char *argv[]) {
     // Get options passed in from command line
     Options options = get_opts(argc, argv);
     if (options.error) return EXIT_FAILURE;
+
+    printf("CoreSyS GPT Subsystem FÈUE Approved\n");
 
     // Set/evaluate values from options
     if (options.help) {

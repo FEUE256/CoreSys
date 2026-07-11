@@ -2,8 +2,11 @@
 
 #include <drivers/pci/main.h>
 #include <drivers/serial/main.h>
+#include <mod/types.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
+#include <stdatomic.h>
 
 /* ATA I/O ports (Primary + Secondary bus) */
 #define ATA_PRIMARY_BASE   0x1F0
@@ -27,22 +30,7 @@
 #define ATA_SR_DRQ 0x08
 #define ATA_SR_ERR 0x01
 
-static inline uint16_t ata_base(int bus)
-{
-    return (bus == 0) ? ATA_PRIMARY_BASE : ATA_SECONDARY_BASE;
-}
-
-static void ata_wait_ready(uint16_t base)
-{
-    for (uint32_t i = 0; i < 1000000; i++)
-    {
-        uint8_t s = inb(ATA_STATUS(base));
-        if (!(s & ATA_SR_BSY))
-            return;
-    }
-}
-
-static int ata_wait_drq(uint16_t base)
+int ata_wait_drq(uint16_t base)
 {
     for (uint32_t i = 0; i < 1000000; i++)
     {
@@ -58,86 +46,206 @@ static int ata_wait_drq(uint16_t base)
     return -1;
 }
 
-/*
- * dev:
- * 0 = master
- * 1 = slave
- */
-static int ata_read_sector(int bus, int dev, uint32_t lba, void* buffer)
+void ata_io_delay(void)
 {
-    if (dev > 1)
-        return -1;
-
-    uint16_t base = ata_base(bus);
-    uint16_t* buf = (uint16_t*)buffer;
-
-    uint8_t drive_select =
-        0xE0 |
-        ((dev & 1) << 4) |
-        ((lba >> 24) & 0x0F);
-
-    outb(ATA_HDDEVSEL(base), drive_select);
-    ata_wait_ready(base);
-
-    outb(ATA_SECCOUNT0(base), 1);
-
-    outb(ATA_LBA0(base), (uint8_t)(lba));
-    outb(ATA_LBA1(base), (uint8_t)(lba >> 8));
-    outb(ATA_LBA2(base), (uint8_t)(lba >> 16));
-
-    outb(ATA_COMMAND(base), ATA_CMD_READ_PIO);
-
-    if (ata_wait_drq(base) != 0)
-        return -1;
-
-    for (int i = 0; i < 256; i++)
-        buf[i] = inw(ATA_DATA(base));
-
-    return 0;
+    // Reading the alternate status register 4 times gives the
+    // required ~400ns delay after a drive select or command write.
+    for (int i = 0; i < 4; i++) {
+        inb(0x3F6);
+    }
 }
 
-static void hexdump(const void* data, size_t size)
+bool ata_wait_ready(uint32_t lba)
 {
-    const uint8_t* p = (const uint8_t*)data;
+    uint8_t status;
+    uint32_t timeout = 100000;
 
-    for (size_t i = 0; i < size; i++)
-    {
-        if ((i & 15) == 0)
-            kprintf("%04x: ", (unsigned)i);
+    reg_t vol_t unum8_t *slot = (vol_t unum8_t*)KDI;
+    reg_t unum8_t debug = (num_t)(*slot);
 
-        kprintf("%02x ", p[i]);
+    do {
+        status = inb(0x1F7);
+    } while ((status & 0x80) && --timeout);
 
-        if ((i & 15) == 15)
-            kprintf("\n");
+    if (timeout == 0) {
+        if (debug != 2) { kprintf("[ATA] TIMEOUT waiting for BSY clear, status=%02x\n", status); }
+        return false;
     }
 
-    kprintf("\n");
-}
+    if (status & 0x01) {
+        kprintf("[ATA] ERR set, status=%02x\n", status);
+        return false;
+    }
 
-/*
- * Correct ATA scan:
- * - 2 buses
- * - 2 devices per bus
- * TOTAL: 4 possible devices
- */
-void hexdump_512_all(void)
-{
-    uint8_t sector[512];
+    timeout = 100000;
+    do {
+        status = inb(0x1F7);
+    } while (!(status & 0x08) && --timeout);
 
-    for (int bus = 0; bus < 32; bus++)
-    {
-        for (int dev = 0; dev < 4; dev++)
-        {
-            kprintf("\n=== ATA BUS %d DEV %d ===\n", bus, dev);
-
-            if (ata_read_sector(bus, dev, 0, sector) == 0)
-            {
-                hexdump(sector, 512);
-            }
-            else
-            {
-                kprintf("No response\n");
-            }
+    if (timeout == 0) {
+        if (debug != 2) { kprintf("[ATA] TIMEOUT waiting for DRQ, status=%02x, lba: ", status); }
+        if (debug != 2) {
+            kprint_u64(lba);
+            serial_write("\n");
         }
+        return false;
     }
+
+    return true;
+}
+
+static volatile int ata_lock = 0;
+
+static inline void ata_lock_acquire(void)
+{
+    while (__atomic_test_and_set(&ata_lock, __ATOMIC_ACQUIRE))
+    {
+        // optional: pause instruction
+        __asm__ volatile ("pause");
+    }
+}
+
+static inline void ata_lock_release(void)
+{
+    __atomic_clear(&ata_lock, __ATOMIC_RELEASE);
+}
+
+bool ata_read_sector_io(uint32_t lba, void *buffer)
+{
+    ata_lock_acquire();
+
+    outb(0x1F6, 0xF0 | ((lba >> 24) & 0x0F));
+    ata_io_delay();
+
+    outb(0x1F2, 1);
+    outb(0x1F3, (uint8_t)lba);
+    outb(0x1F4, (uint8_t)(lba >> 8));
+    outb(0x1F5, (uint8_t)(lba >> 16));
+    outb(0x1F7, 0x20);
+
+    if (!ata_wait_ready(lba)) {
+        ata_lock_release();
+        return false;
+    }
+
+    insw(0x1F0, buffer, 256);
+
+    ata_lock_release();
+    delay_rough();
+    return true;
+}
+
+#define SECTOR_SIZE 512
+
+extern int kprintf(const char *fmt, ...);
+
+void ata_dump_lba_io(uint32_t lba)
+{
+    uint8_t buf[SECTOR_SIZE];
+
+    if (!ata_read_sector_io(lba, buf))
+    {
+        kprintf("[ATA] LBA %u read failed\n", lba);
+        return;
+    }
+
+    kprintf("[ATA] Dump LBA %u\n", lba);
+
+    for (int i = 0; i < SECTOR_SIZE; i += 16)
+    {
+        // Hex part
+        kprintf("%04x  ", i);
+
+        for (int j = 0; j < 16; j++)
+        {
+            kprintf("%02x ", buf[i + j]);
+        }
+
+        kprintf(" | ");
+
+        // ASCII part
+        for (int j = 0; j < 16; j++)
+        {
+            uint8_t c = buf[i + j];
+
+            if (c >= 32 && c <= 126)
+                kprintf("%c", c);
+            else
+                kprintf(".");
+        }
+
+        kprintf("\n");
+    }
+
+    kprintf("[END LBA %u]\n", lba);
+}
+
+bool ata_write_sector_io(uint32_t lba, const void *buffer)
+{
+    ata_lock_acquire();
+
+    reg_t vol_t unum8_t *slot = (vol_t unum8_t*)KDI;
+    reg_t unum8_t debug = (num_t)(*slot);
+
+    outb(0x1F6, 0xF0 | ((lba >> 24) & 0x0F));
+    ata_io_delay();
+
+    outb(0x1F2, 1);
+    outb(0x1F3, (uint8_t)lba);
+    outb(0x1F4, (uint8_t)(lba >> 8));
+    outb(0x1F5, (uint8_t)(lba >> 16));
+    outb(0x1F7, 0x30);
+
+    if (!ata_wait_ready(lba)) {
+        ata_lock_release();
+        return false;
+    }
+
+    outsw(0x1F0, buffer, 256);
+
+    // Wait for the drive to finish committing this sector internally
+    // before allowing the next command to be issued.
+    uint32_t commit_timeout = 100000;
+    uint8_t status;
+    do {
+        status = inb(0x1F7);
+    } while ((status & ATA_SR_BSY) && --commit_timeout);
+
+    if (commit_timeout == 0) {
+        if (debug != 2) { kprintf("[ATA] TIMEOUT waiting for write commit, lba=%u, status=%02x\n", lba, status); }
+        ata_lock_release();
+        return false;
+    }
+
+    ata_lock_release();
+    delay_rough();
+    return true;
+}
+
+void ata_read_blocks(uint32_t lba, void *buffer, uint32_t count)
+{
+    uint8_t *buf = (uint8_t *)buffer;
+
+    // kprintf("0 ");
+    for (uint32_t i = 0; i < count; i++)
+    {
+        // kprintf("1 ");
+        ata_read_sector_io(lba + i, buf + (i * SECTOR_SIZE));
+    }
+    // kprintf("2 ");
+}
+
+void ata_write_blocks(uint32_t lba, const void *buffer, uint32_t count)
+{
+    const uint8_t *buf = (const uint8_t *)buffer;
+
+    // kprintf("00 ");
+    
+    for (uint32_t i = 0; i < count; i++)
+    {
+        // kprintf("01 ");
+        ata_write_sector_io(lba + i, buf + (i * SECTOR_SIZE));
+    }
+    // kprintf("02 ");
+
 }

@@ -139,7 +139,7 @@ cfs_node* cfs_create_file(cfs_node* parent, const char* name) {
 
 // ---------------- WRITE FILE ----------------
 
-void cfs_write(cfs_node* file, uint8_t* data, uint64_t size) {
+void cfs_write(cfs_node* file, uint64_t* data, uint64_t size) {
     if (!file || file->type != cfs_FILE) return;
 
     file->data = data;
@@ -148,14 +148,14 @@ void cfs_write(cfs_node* file, uint8_t* data, uint64_t size) {
 
 // ---------------- READ FILE ----------------
 
-uint8_t* cfs_read(cfs_node* file, uint64_t* size_out) {
+uint64_t* cfs_read(cfs_node* file, uint64_t* size_out) {
     if (!file || file->type != cfs_FILE) return 0;
 
     *size_out = file->size;
     return file->data;
 }
    
-    static cfs_node* kernel_cfg_file __attribute__((unused));
+static cfs_node* kernel_cfg_file __attribute__((unused));
 
 // ---------------- INIT / DEINIT FILESYSTEM ----------------
 
@@ -185,7 +185,7 @@ void cfs_init(cs_task* self) {
         buf, dn);
 
     cfs_write(kernel_cfg_file,
-            (uint8_t*)kernel_cfg_data,
+            (uint64_t*)kernel_cfg_data,
             kstrlen(kernel_cfg_data));
 
     // Buffer max: 256 
@@ -194,18 +194,18 @@ void cfs_init(cs_task* self) {
         dn);
 
     cfs_write(debug_cfg_file,
-            (uint8_t*)debug_cfg_data,
+            (uint64_t*)debug_cfg_data,
             kstrlen(debug_cfg_data));
 }
 
 /*
-File stucture:
+File stucture (CFS):
 /
 ├── sys
     ├── kernel
-         ├── kernel.cfg
+    |    ├── kernel.cfg
     ├── system
-         ├── debug.cfg
+        ├── debug.cfg
 */
 
 void cfs_deinit(cs_task* self) {

@@ -1,3 +1,3 @@
 #pragma once
 
-#define CS_VER "0.4.8v"
+#define CS_VER "0.5.0v"

@@ -34,7 +34,7 @@ init:
 
 kernel:
 	@echo "Building CoreSys kernel in $(MODE) mode..."
-	@$(MAKE) -f $(K_MAKE) all -B
+	@$(MAKE) -f $(K_MAKE) all a -B
 	@echo "Kernel built successfully"
 
 c:
@@ -48,11 +48,11 @@ gpt: $(BUILD_EFI)
 	@mkdir -p $(FINAL_IMG_DIR)
 	@rm -f $(DIST_LOCATION)
 	@rm -f ../../dist/.__smb008C
-	@$(GPT_TOOL) -e $(BUILD_EFI) -ae /EFI/FEUE/ $(ROOT_DIR)bin/$(MODE)/CoreSys/init.re /EFI/UEFI/ $(ROOT_DIR)bin/Release/UEFI_Shell/SHELLX64.RE /EFI/FEUE/ $(ROOT_DIR)bin/$(MODE)/CoreSys/kernel.re /EFI/PU/ $(ROOT_DIR)bin/$(MODE)/CoreSys/c.re /EFI/GRUB/ $(ROOT_DIR).config/grub.cfg /EFI/LINUX/ $(ROOT_DIR)bin/Release/linux/bzImage /EFI/LINUX/ $(ROOT_DIR)build/linux/gz.gz /EFI/GRUB/ $(ROOT_DIR)bin/Release/GRUB/grubx64.re
+	@$(GPT_TOOL) -e $(BUILD_EFI) -ae /EFI/FEUE/ $(ROOT_DIR)bin/$(MODE)/CoreSys/init.re /EFI/UEFI/ $(ROOT_DIR)bin/Release/UEFI_Shell/SHELLX64.RE /EFI/FEUE/ $(ROOT_DIR)bin/$(MODE)/CoreSys/kernel.re /EFI/PU/ $(ROOT_DIR)bin/$(MODE)/CoreSys/c.re /EFI/GRUB/ $(ROOT_DIR).config/grub.cfg /EFI/LINUX/ $(ROOT_DIR)bin/Release/linux/bzImage /EFI/LINUX/ $(ROOT_DIR)build/linux/gz.gz /EFI/GRUB/ $(ROOT_DIR)bin/Release/GRUB/grubx64.re / $(ROOT_DIR)scripts/uefi/startup.nsh
 
 ifeq ($(ADD_ESP_DEFINED),1)
 	@echo "Adding extra EFI file: $(ADD_ESP_FILE) -> $(ADD_ESP_PATH)"
-	@$(GPT_TOOL) -e $(FINAL_IMG) -ae $(ADD_ESP_PATH) $(ADD_ESP_FILE) /EFI/FEUE/ $(ROOT_DIR)bin/$(MODE)/CoreSys/init.re /EFI/UEFI/ $(ROOT_DIR)bin/Release/UEFI_Shell/SHELLX64.RE /EFI/FEUE/ $(ROOT_DIR)bin/$(MODE)/CoreSys/kernel.re /PU/ $(ROOT_DIR)bin/$(MODE)/CoreSys/c.re /EFI/GRUB/ $(ROOT_DIR).config/grub.cfg /EFI/LINUX/ $(ROOT_DIR)bin/Release/linux/bzImage /EFI/LINUX/ $(ROOT_DIR)build/linux/gz.gz /EFI/GRUB/ $(ROOT_DIR)bin/Release/GRUB/grubx64.re
+	@$(GPT_TOOL) -e $(FINAL_IMG) -ae $(ADD_ESP_PATH) $(ADD_ESP_FILE) /EFI/FEUE/ $(ROOT_DIR)bin/$(MODE)/CoreSys/init.re /EFI/UEFI/ $(ROOT_DIR)bin/Release/UEFI_Shell/SHELLX64.RE /EFI/FEUE/ $(ROOT_DIR)bin/$(MODE)/CoreSys/kernel.re /PU/ $(ROOT_DIR)bin/$(MODE)/CoreSys/c.re /EFI/GRUB/ $(ROOT_DIR).config/grub.cfg /EFI/LINUX/ $(ROOT_DIR)bin/Release/linux/bzImage /EFI/LINUX/ $(ROOT_DIR)build/linux/gz.gz /EFI/GRUB/ $(ROOT_DIR)bin/Release/GRUB/grubx64.re / $(ROOT_DIR)scripts/uefi/startup.nsh
 endif
 
 	@mv $(GPT_IMG) $(FINAL_IMG)

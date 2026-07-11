@@ -6,6 +6,9 @@
 #include <drivers/log/main.h>        // Logging functions
 #include <stdarg.h>
 
+typedef CS_STATUS_T CS_STATUS_T;
+extern CS_STATUS_T status;
+
 void k_sf(const char *s) {
     serial_clear(NULL);
 
@@ -14,7 +17,7 @@ void k_sf(const char *s) {
     serial_write("KERNEL SYSTEM FAILURE!!!\n\n");
 
     k_log("Sytem failure detected. Halting system to prevent damage.");
-    k_log(s);
+    kprintf("[REASON] %s", s);
 
     serial_write("\r\n");
     serial_write("\r\nYour computer must shutdown now to prevent further damage.\r\n");
@@ -49,7 +52,7 @@ void k_sff(const char *fmt, ...)
     vsnprintf(buffer, sizeof(buffer), fmt, args);
     va_end(args);
 
-    k_log(buffer);
+    kprintf("[REASON] %s", buffer);
 
     serial_write("\r\n\r\nYour computer must shutdown now to prevent further damage.\r\n");
     serial_write("\r\nPress the power button to shutdown...");

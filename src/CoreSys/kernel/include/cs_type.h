@@ -78,6 +78,9 @@
 #include <drivers/halcalls/main.h>
 #include <drivers/hal/main.h>
 
+#include <drivers/fscalls/main.h>
+#include <drivers/fs/main.h>
+#include <drivers/fscalls/main.h>
 #include <drivers/init/main.h>
 #include <drivers/task/main.h>
 #include <drivers/halt/main.h>
@@ -92,5 +95,10 @@
 #include <drivers/reg/main.h>
 
 #include <drivers/nvme/main.h>
+
+#include <drivers/cop/main.h>
+
+#include <misc/pp.h>
+#include <misc/debug.h>
 
 #include <kernel/mem.h>

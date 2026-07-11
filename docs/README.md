@@ -59,6 +59,10 @@ Power User only
 
 * [Requirements](req.md)
 
+## Fscalls
+
+* [FS calls](fscalls/README.md)
+
 ## Master Makefile
 
 * [Master Makefile](https://github.com/FEUE256/CoreSys/blob/master/docs/Master%20Makefile/README.md)

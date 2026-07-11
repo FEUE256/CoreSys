@@ -161,6 +161,7 @@ uint64_t halcall(hal_frame_t* frame)
         cs_task kshutdown_task = {
             .name = "Kshutdown Task",
             .source_header = "drivers/ACPI/main.h",
+            .entry_name = "kshutdown",
             .entry = kshutdown
         };
         task_run(&kshutdown_task);
@@ -170,6 +171,7 @@ uint64_t halcall(hal_frame_t* frame)
         cs_task kreboot_task = {
             .name = "Kreboot Task",
             .source_header = "drivers/ACPI/main.h",
+            .entry_name = "kreboot",
             .entry = kreboot
         };
         task_run(&kreboot_task);

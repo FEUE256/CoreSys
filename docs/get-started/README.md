@@ -15,7 +15,7 @@ cd Path/to/CoreSys/build/master
 ```
 3. Run Script
 ```bash
-make qemu -B
+make all qemu -B
 ```
 
 ## Hardware

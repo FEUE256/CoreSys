@@ -101,3 +101,5 @@ clean:
 	done
 	@rm -f ./CoreSys.img ./SEVI.TXT ../../bin/Debug/CoreSys/kernel.re
 	
+ata:
+	make -C ../ata/

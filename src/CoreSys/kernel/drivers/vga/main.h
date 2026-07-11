@@ -80,6 +80,7 @@ void clear_screen() {
 // Thanks to popcorn bootloader and kernel github
 
 #include <stdint.h>
+#include <mod/globe.h>
 
 // Marked as volatile so that the compiler doesn't optimize it out.
 volatile uint16_t *video_memory = (uint16_t *)0xb8000;
@@ -123,4 +124,19 @@ void vga_clear() {
     video_memory[i] = 0x0f00 | ' ';
   }
   cursor = 0;
+}
+
+void print_vga(cs_task *self) {
+    (void)self;
+
+    clear_screen(); // VGA
+    vga_clear(); // VGA
+
+    vga_println("No VGA support Serial only"); // VGA
+    print_string("No VGA support Serial only!"); // VGA
+
+    for (unsigned long long i = 0; i < 64000; i++) {
+        framebuffer[i] = 0xFFFF0000;
+        VGA_GRAPHICS[i] = 4; // red palette index
+    }
 }

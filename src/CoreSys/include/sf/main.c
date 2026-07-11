@@ -14,7 +14,7 @@ void sf(char *file, int line, const char *func, EFI_STATUS status, const CHAR16 
     error(file, line, func, status, fmt);
 
     printf(L"\r\n");
-    printf(L"\r\nYour computer must reboot");
+    printf(L"\r\nYour computer must reboot to pervent hardware failure");
     printf(L"\r\nPress any key to reboot...");
     get_key();
     reboot();

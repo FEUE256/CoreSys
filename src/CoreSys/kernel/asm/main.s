@@ -6,10 +6,19 @@
 ; Two thing: do not use hal_* or sys_* from C and everything is already initailized
 
 extern kaprint ; in lib.s
+extern init_d  ; in drivers/init/main.h
+
+section .bss
+    align 16
+
+    stack_bottom:
+        resb 0x100000      ; 1 MiB stack
+    stack_top:
 
 section .data
     global _cs_asm_init_main ; Init main globe
     global _cs_asm_test_main ; Test main globe
+    global _cs_asm_stack_main ; Stack main
 
 section .text
     init_print:
@@ -134,3 +143,4 @@ section .text
     _cs_asm_test_main:
         ud2
         ret
+        

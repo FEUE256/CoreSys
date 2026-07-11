@@ -17,7 +17,7 @@ typedef struct cfs_node {
     cfs_type type;
 
     unum64_t size;
-    unum8_t* data;
+    unum64_t* data;
 
     str_t cfs_node* parent;
 

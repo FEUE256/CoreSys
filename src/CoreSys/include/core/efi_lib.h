@@ -8,6 +8,7 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <arch/x86_64.h>
+#include <core/stdio_efi.h>
 #include <project/head.h>
 #include <sf/main.c> // For sf() system failure function, which is used in this library for fatal error handling
 
