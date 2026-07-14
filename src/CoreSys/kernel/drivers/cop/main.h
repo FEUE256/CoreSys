@@ -730,8 +730,6 @@ bool cop_mount(void)
     memcpy(&cop_g_sb, &sb, sizeof(sb));
     cop_g_mounted = true;
 
-    if (debug != 2) { kprintf("[COP] Mount OK\n"); }
-
     return true;
 }
 
@@ -1129,7 +1127,6 @@ void cop_init(cs_task *self)
 
     if (mount == true)
     {
-        if (debug != 2) { kprintf("[COPFS] Mounted COPFS\n"); }
         cop_g_inited = true;
         return;
     }

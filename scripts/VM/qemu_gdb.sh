@@ -38,9 +38,13 @@ nice -21 qemu-system-x86_64 \
   -rtc base=localtime \
   -boot order=c \
   -netdev tap,id=net0,ifname=tap0,script=no,downscript=no \
-  -device e1000,netdev=net0 \
+  -device e1000,netdev=net1 \
   -serial mon:stdio \
+  -device pcie-root-port,id=rp1 \
+  -device virtio-balloon-pci,bus=rp1 \
+  -vga std \
+  -netdev user,id=net1 \
+  -device e1000,netdev=net0 \
   -s -S \
   -audiodev wav,id=audio0,path="$HOME/CoreSysVM/sound.wav" # \
   # -nographic 
-  

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <drivers/hw/vga/main.h>
+
 // Thanks to dev.to and https://dev.to/frosnerd/writing-my-own-vga-driver-22nn and https://github.com/FRosner/FrOS
 
 unsigned char port_byte_in(unsigned short port) {
@@ -134,6 +136,7 @@ void print_vga(cs_task *self) {
 
     vga_println("No VGA support Serial only"); // VGA
     print_string("No VGA support Serial only!"); // VGA
+    vga_test(); // Prints No VGA support in morse code VGA
 
     for (unsigned long long i = 0; i < 64000; i++) {
         framebuffer[i] = 0xFFFF0000;

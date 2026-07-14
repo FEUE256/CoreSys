@@ -5,6 +5,130 @@
 #include <drivers/task/main.h>
 #include <globe.h>
 
+#define PCI_CONFIG_ADDRESS 0xCF8
+#define PCI_CONFIG_DATA    0xCFC
+
+static uint32_t pci_config_address(
+    uint8_t bus,
+    uint8_t dev,
+    uint8_t fun,
+    uint16_t offset
+)
+{
+    return
+        (1 << 31) |
+        ((uint32_t)bus << 16) |
+        ((uint32_t)dev << 11) |
+        ((uint32_t)fun << 8) |
+        (offset & 0xFC);
+}
+
+
+uint32_t pci_read32(
+    uint8_t bus,
+    uint8_t dev,
+    uint8_t fun,
+    uint16_t offset
+)
+{
+    uint32_t address =
+        (1U << 31) |
+        ((uint32_t)bus << 16) |
+        ((uint32_t)dev << 11) |
+        ((uint32_t)fun << 8) |
+        (offset & 0xFC);
+
+
+    outl(
+        0xCF8,
+        address
+    );
+
+
+    return inl(0xCFC);
+}
+
+
+
+/*
+    Read 16 bit PCI register
+*/
+
+uint16_t pci_read16(
+    uint8_t bus,
+    uint8_t dev,
+    uint8_t fun,
+    uint16_t offset
+)
+{
+    outl(
+        PCI_CONFIG_ADDRESS,
+        pci_config_address(
+            bus,
+            dev,
+            fun,
+            offset
+        )
+    );
+
+
+    return
+        inw(
+            PCI_CONFIG_DATA +
+            (offset & 2)
+        );
+}
+
+
+/*
+    PCI Memory Base
+*/
+
+uint64_t pci_get_memory_base(
+    uint8_t bus,
+    uint8_t dev,
+    uint8_t fun
+)
+{
+    uint16_t value =
+        pci_read16(
+            bus,
+            dev,
+            fun,
+            0x20
+        );
+
+
+    return
+        ((uint64_t)(value & 0xFFF0))
+        << 16;
+}
+
+/*
+    PCI Memory Limit
+*/
+
+uint64_t pci_get_memory_limit(
+    uint8_t bus,
+    uint8_t dev,
+    uint8_t fun
+)
+{
+    uint16_t value =
+        pci_read16(
+            bus,
+            dev,
+            fun,
+            0x22
+        );
+
+
+    return
+        (((uint64_t)(value & 0xFFF0))
+        << 16)
+        | 0xFFFFF;
+}
+
 int pci_get_pcie_link(uint8_t bus,
                       uint8_t dev,
                       uint8_t fn,
@@ -29,6 +153,69 @@ uint32_t pci_read(uint8_t bus,
 
     outl(0xCF8, address);
     return inl(0xCFC);
+}
+
+uint32_t pci_read_config32(uint8_t bus,
+                           uint8_t slot,
+                           uint8_t func,
+                           uint8_t offset)
+{
+    uint32_t address;
+
+    address =
+        (1U << 31) |
+        ((uint32_t)bus  << 16) |
+        ((uint32_t)slot << 11) |
+        ((uint32_t)func << 8)  |
+        (offset & 0xFC);
+
+    outl(PCI_CONFIG_ADDRESS, address);
+
+    return inl(PCI_CONFIG_DATA);
+}
+
+uint32_t ihb_pci_read32(uint8_t bus, uint8_t slot,
+                               uint8_t func, uint8_t offset)
+{
+    uint32_t address =
+        (1U << 31) |
+        ((uint32_t)bus  << 16) |
+        ((uint32_t)slot << 11) |
+        ((uint32_t)func << 8)  |
+        (offset & 0xFC);
+
+    outl(PCI_CONFIG_ADDRESS, address);
+    return inl(PCI_CONFIG_DATA);
+}
+
+
+/*
+    Read 8 bit PCI register
+*/
+
+uint8_t pci_read8(
+    uint8_t bus,
+    uint8_t dev,
+    uint8_t fun,
+    uint16_t offset
+)
+{
+    outl(
+        PCI_CONFIG_ADDRESS,
+        pci_config_address(
+            bus,
+            dev,
+            fun,
+            offset
+        )
+    );
+
+
+    return
+        inb(
+            PCI_CONFIG_DATA +
+            (offset & 3)
+        );
 }
 
 /*
@@ -321,4 +508,212 @@ void pci_deinit(cs_task *self) {
     (void)self;
 
     framebuffer = NULL;
+}
+
+#define PCI_CONFIG_SIZE 256
+#define PCI_EXT_CONFIG_SIZE 4096
+
+#define PCI_COMMAND_OFFSET 0x04
+#define PCI_STATUS_OFFSET  0x06
+#define PCI_CAP_PTR_OFFSET 0x34
+
+/*
+ * Read one PCI configuration register
+ */
+uint32_t pci_read_config32(uint8_t bus,
+                           uint8_t slot,
+                           uint8_t func,
+                           uint8_t offset);
+
+
+/*
+ * 1. Read all PCI configuration registers
+ */
+void pci_read_all_config(uint8_t bus,
+                         uint8_t slot,
+                         uint8_t func,
+                         uint32_t *buffer)
+{
+    for (uint16_t offset = 0;
+         offset < PCI_CONFIG_SIZE;
+         offset += 4)
+    {
+        buffer[offset / 4] =
+            pci_read_config32(bus, slot, func, offset);
+    }
+}
+
+
+/*
+ * 2. Dump configuration space
+ */
+void pci_dump_config(uint8_t bus,
+                     uint8_t slot,
+                     uint8_t func)
+{
+    kprintf("PCI Configuration Space %u:%u:%u\n",
+            bus, slot, func);
+
+    for (uint16_t offset = 0;
+         offset < PCI_CONFIG_SIZE;
+         offset += 4)
+    {
+        uint32_t value =
+            pci_read_config32(bus, slot, func, offset);
+
+        kprintf("0x");
+        kprint_u64(offset);
+        kprintf(": ");
+
+        kprint_u64(value);
+        kprintf("\n");
+    }
+}
+
+
+/*
+ * 3. Detect PCI capabilities
+ */
+void pci_detect_capabilities(uint8_t bus,
+                             uint8_t slot,
+                             uint8_t func)
+{
+    uint32_t status =
+        pci_read_config32(bus, slot, func, 0x04);
+
+    /*
+     * Status register bit 4:
+     * Capabilities List
+     */
+    if (!(status & (1 << 20)))
+    {
+        kprintf("No PCI capabilities\n");
+        return;
+    }
+
+
+    uint32_t cap =
+        pci_read_config32(bus,
+                          slot,
+                          func,
+                          PCI_CAP_PTR_OFFSET);
+
+
+    uint8_t ptr = cap & 0xFF;
+
+
+    while (ptr)
+    {
+        uint32_t capability =
+            pci_read_config32(bus,
+                              slot,
+                              func,
+                              ptr);
+
+
+        uint8_t id = capability & 0xFF;
+        uint8_t next = (capability >> 8) & 0xFF;
+
+
+        kprintf("Capability ID: ");
+        kprint_u64(id);
+        kprintf("\n");
+
+
+        ptr = next;
+    }
+}
+
+
+/*
+ * 4. Detect PCI extended capabilities
+ */
+void pci_detect_extended_capabilities(uint8_t bus,
+                                      uint8_t slot,
+                                      uint8_t func)
+{
+    for (uint16_t offset = 0x100;
+         offset < PCI_EXT_CONFIG_SIZE;
+         offset += 4)
+    {
+        uint32_t cap =
+            pci_read_config32(bus,
+                              slot,
+                              func,
+                              offset);
+
+
+        if (cap == 0)
+            continue;
+
+
+        uint16_t id = cap & 0xFFFF;
+
+
+        kprintf("Extended Capability at 0x");
+        kprint_u64(offset);
+
+        kprintf(" ID: ");
+        kprint_u64(id);
+
+        kprintf("\n");
+    }
+}
+
+/*
+ * 5. Read PCI command register
+ */
+uint16_t pci_read_command(uint8_t bus,
+                          uint8_t slot,
+                          uint8_t func)
+{
+    uint32_t value =
+        pci_read_config32(bus,
+                          slot,
+                          func,
+                          PCI_COMMAND_OFFSET);
+
+
+    return value & 0xFFFF;
+}
+
+
+/*
+ * 6. Read PCI status register
+ */
+uint16_t pci_read_status(uint8_t bus,
+                         uint8_t slot,
+                         uint8_t func)
+{
+    uint32_t value =
+        pci_read_config32(bus,
+                          slot,
+                          func,
+                          PCI_STATUS_OFFSET);
+
+
+    return (value >> 16) & 0xFFFF;
+}
+
+int pci_is_bridge(
+    uint8_t bus,
+    uint8_t dev,
+    uint8_t fun
+)
+{
+    uint8_t class =
+        pci_read8(bus,dev,fun,0x0B);
+
+    uint8_t subclass =
+        pci_read8(bus,dev,fun,0x0A);
+
+
+    if(class == 0x06 &&
+       subclass == 0x04)
+    {
+        return 1;
+    }
+
+
+    return 0;
 }

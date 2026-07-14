@@ -17,6 +17,8 @@
 #include <drivers/ata/main.h>
 #include <drivers/nvme/main.h>
 #include <drivers/cop/main.h>
+#include <drivers/hw/ACPI/main.h>
+#include <misc/debug.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -57,6 +59,7 @@ void execute_command(const char *cmd, int debug)
         " reboot    - Reboot system\n"
         " reg       - Dump CPU registers (debug mode)\n"
         " sf        - Trigger system failure test\n"
+        " s0..s5    - Enter ACPI sleep state S0-S5\n"
         " shutdown  - Shut down system\n"
         " ver       - Show kernel version\n"
     );
@@ -68,6 +71,16 @@ void execute_command(const char *cmd, int debug)
     )
     {
         tty_write("\x1b[2J\x1b[H");
+    }
+    else if (
+        cmd[0] == 's' &&
+        cmd[1] >= '0' && cmd[1] <= '5' &&
+        cmd[2] == '\0'
+    )
+    {
+        uint8_t state = (uint8_t)(cmd[1] - '0');
+
+        acpi_sleep(state);
     }
     // ECHO
     else if (cmd[0] == 'e' && cmd[1] == 'c' && cmd[2] == 'h' && cmd[3] == 'o')
@@ -189,6 +202,28 @@ void execute_command(const char *cmd, int debug)
     
         if (bc == 1) {
             print_regs();
+        } else {
+            k_warning("Enable Debug mode for this feature\n");
+        }
+    }
+    else if (cmd[0] == 'p' && cmd[1] == 'd') {
+        char buf[4092];
+        cop_read("/sys/system/debug.cfg", buf, sizeof(buf));
+
+        int bc = (uint64_t)kstrtoull(buf, NULL, 10);
+    
+        if (bc == 1) {
+            cs_task print_debug_task = {
+                .name = "Print Debug Task",
+                .source_header = "misc/debug.h",
+                .entry_name = "print_debug",
+                .entry = print_debug
+            };
+            
+            task_run(&print_debug_task);
+
+            // Sets the status that the debug has been OK
+            status |= CS_DEBUG_OK;
         } else {
             k_warning("Enable Debug mode for this feature\n");
         }

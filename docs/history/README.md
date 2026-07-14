@@ -10,6 +10,10 @@ For mini build time use NO_NPM=1 eg make all NO_NPM=1
 
 ---
 
+## 0.1.3.5v (2026-07-14)
+
+Added hw/* drivers for PCI devices in the kernel
+
 ## 0.1.3.3v (2026-07-11)
 
 Added COPFS a fully working filesystem, core.fs.* calls in CS_CORE, custom ovmf firmware (github.com/FEUE256/csf for more info) and more 

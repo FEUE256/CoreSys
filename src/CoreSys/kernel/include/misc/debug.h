@@ -44,12 +44,31 @@
 #include <drivers/reg/main.h>
 
 #include <drivers/nvme/main.h>
-
 #include <drivers/cop/main.h>
 
 #include <misc/pp.h>
 
+#include <drivers/hw/ihb/main.h>
+#include <drivers/hw/ISAB/main.h>
+#include <drivers/hw/usb/main.h>
+#include <drivers/hw/ACPI/main.h>
+#include <drivers/hw/vga/main.h>
+#include <drivers/hw/eth/main.h>
+
 #include <kernel/mem.h>
+
+ret_t kmain();
+
+void krnl_stack(void) {
+    uint64_t stack;
+
+    asm volatile(
+        "mov %%rsp, %0"
+        : "=r"(stack)
+    );
+
+    kprintf("Kernel stack: %p\n", stack);
+}
 
 void print_debug(cs_task *self) {
     (void)self;
@@ -122,6 +141,59 @@ void print_debug(cs_task *self) {
 
     // Test NULL
     kprintf("NULL %%p NULL %p NULL %%d NULL %d\n", NULL, NULL);
+
+    // Intel Host Brige Debug info
+    ihb_general_print();
+
+    // Print IHB PCI conf debug info
+    ihb_pci_conf_print();
+
+    // Print IHB Memory debug info
+    ihb_memory_print();
+
+    // Print UEFI conf debug info
+    ihb_uefi_conf_print();
+
+    // Dump PCI windows
+    ihb_dump_pci_windows();
+
+    // Dump Mem Controller
+    ihb_dump_memory_controller();
+
+    // Dump IHB conf
+    ihb_dump_bridge_configuration(
+        0,0,0
+    );
+
+    // Verifys firmare setup
+    ihb_verify_firmware_setup();
+
+    // Detects hw misconf
+    ihb_detect_hardware_misconfiguration();
+
+    // Prints full ISA Brige dump
+    isab_dump_full();
+
+    // Prints USB general debug info
+    usb_general_print();
+    
+    // Print UHCI info
+    usb_uhci_init();
+
+    // Prints xHCI info
+    xhci_init(0, 1, 2);
+
+    // Print general ACPI info
+    acpi_general_print();
+
+    // Prints E1000 info
+    e1000_dump();
+
+    // Prints Kernel entry
+    kprintf("Kernel Entry: %p\n", kmain);
+
+    // Prints Kernel stack
+    krnl_stack();
 
     // Prints debug texts
     k_warning("[TRACE] The kernel is only for QEMU and may not work properly on real hardware. If trying to use on real hardware can result in system damages. This OS is under active development, use at your own risk.");

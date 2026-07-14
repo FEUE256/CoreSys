@@ -95,10 +95,16 @@
 #include <drivers/reg/main.h>
 
 #include <drivers/nvme/main.h>
-
 #include <drivers/cop/main.h>
 
 #include <misc/pp.h>
 #include <misc/debug.h>
+
+#include <drivers/hw/ihb/main.h>
+#include <drivers/hw/ISAB/main.h>
+#include <drivers/hw/usb/main.h>
+#include <drivers/hw/ACPI/main.h>
+#include <drivers/hw/vga/main.h>
+#include <drivers/hw/eth/main.h>
 
 #include <kernel/mem.h>

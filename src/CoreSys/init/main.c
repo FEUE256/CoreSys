@@ -37,6 +37,168 @@ void init(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable)
     cin  = SystemTable->ConIn;
 }
 
+BOOT_INFO boot_info;
+
+void get_memory_mapl(EFI_SYSTEM_TABLE *SystemTable)
+{
+    UINTN memory_map_size = 0;
+    UINTN map_key;
+    UINTN descriptor_size;
+    UINT32 descriptor_version;
+
+    EFI_STATUS status;
+
+
+    /*
+        First call gets required size
+    */
+    status = SystemTable->BootServices->GetMemoryMap(
+        &memory_map_size,
+        NULL,
+        &map_key,
+        &descriptor_size,
+        &descriptor_version
+    );
+
+
+    memory_map_size += descriptor_size * 8;
+
+
+    EFI_MEMORY_DESCRIPTOR *memory_map;
+
+
+    status = SystemTable->BootServices->AllocatePool(
+        EfiLoaderData,
+        memory_map_size,
+        (VOID**)&memory_map
+    );
+
+
+    if (EFI_ERROR(status))
+    {
+        printf(L"Failed allocating memory map\n");
+        return;
+    }
+
+
+    status = SystemTable->BootServices->GetMemoryMap(
+        &memory_map_size,
+        memory_map,
+        &map_key,
+        &descriptor_size,
+        &descriptor_version
+    );
+
+
+    if (EFI_ERROR(status))
+    {
+        printf(L"GetMemoryMap failed\n");
+        return;
+    }
+
+
+
+    boot_info.memory_entries = 0;
+    boot_info.installed_ram = 0;
+    boot_info.reserved_ram = 0;
+
+
+
+    for(UINTN i = 0; i < memory_map_size / descriptor_size; i++)
+    {
+
+        EFI_MEMORY_DESCRIPTOR *desc =
+            (EFI_MEMORY_DESCRIPTOR*)
+            ((UINT8*)memory_map + i * descriptor_size);
+
+
+
+        if(boot_info.memory_entries < MAX_MEMORY_ENTRIES)
+        {
+            boot_info.memory_map[
+                boot_info.memory_entries
+            ].base =
+                desc->PhysicalStart;
+
+
+            boot_info.memory_map[
+                boot_info.memory_entries
+            ].length =
+                desc->NumberOfPages * 4096;
+
+
+            boot_info.memory_map[
+                boot_info.memory_entries
+            ].type =
+                desc->Type;
+
+
+            boot_info.memory_entries++;
+        }
+
+
+
+        switch(desc->Type)
+        {
+
+            case EfiConventionalMemory:
+
+            case EfiLoaderCode:
+
+            case EfiLoaderData:
+
+            case EfiBootServicesCode:
+
+            case EfiBootServicesData:
+
+                boot_info.installed_ram +=
+                    desc->NumberOfPages * 4096;
+
+                break;
+
+
+
+            case EfiReservedMemoryType:
+
+            case EfiUnusableMemory:
+
+            case EfiACPIReclaimMemory:
+
+            case EfiACPIMemoryNVS:
+
+                boot_info.reserved_ram +=
+                    desc->NumberOfPages * 4096;
+
+                break;
+
+
+
+            case EfiMemoryMappedIO:
+
+            case EfiMemoryMappedIOPortSpace:
+
+                break;
+
+        }
+
+    }
+
+
+
+    /*
+        x86_64 usually supports 40-52 bits.
+        CPUID should replace this later.
+    */
+    boot_info.physical_address_width = 40;
+
+    boot_info.max_supported_memory =
+        1ULL << boot_info.physical_address_width;
+
+
+
+    SystemTable->BootServices->FreePool(memory_map);
+}
+
 // -------------------------------
 // Load EFI image
 // -------------------------------
@@ -175,12 +337,144 @@ cleanup:
     return Status;
 }
 
+void get_acpi_info(EFI_SYSTEM_TABLE *SystemTable)
+{
+    boot_info.rsdp = 0;
+    boot_info.rsdt = 0;
+    boot_info.xsdt = 0;
+    boot_info.acpi_available = 0;
+
+
+    for(UINTN i = 0;
+        i < SystemTable->NumberOfTableEntries;
+        i++)
+    {
+
+        EFI_CONFIGURATION_TABLE *table =
+            &SystemTable->ConfigurationTable[i];
+
+
+        if(memcmp(
+            &table->VendorGuid,
+            &gEfiAcpi20TableGuid,
+            sizeof(EFI_GUID)) == 0)
+        {
+
+            ACPI_RSDP *rsdp =
+                (ACPI_RSDP*)table->VendorTable;
+
+
+            boot_info.rsdp =
+                (uint64_t)rsdp;
+
+
+            boot_info.acpi_revision =
+                rsdp->Revision;
+
+
+            boot_info.acpi_available = 1;
+
+
+            if(rsdp->Revision >= 2)
+            {
+                boot_info.xsdt =
+                    rsdp->XsdtAddress;
+            }
+            else
+            {
+                boot_info.rsdt =
+                    rsdp->RsdtAddress;
+            }
+
+
+            break;
+        }
+
+
+        if(memcmp(
+            &table->VendorGuid,
+            &gEfiAcpi10TableGuid,
+            sizeof(EFI_GUID)) == 0)
+        {
+
+            ACPI_RSDP *rsdp =
+                (ACPI_RSDP*)table->VendorTable;
+
+
+            boot_info.rsdp =
+                (uint64_t)rsdp;
+
+
+            boot_info.rsdt =
+                rsdp->RsdtAddress;
+
+
+            boot_info.acpi_revision =
+                rsdp->Revision;
+
+
+            boot_info.acpi_available = 1;
+
+            break;
+        }
+    }
+}
+
+void get_framebuffer() {
+    EFI_GRAPHICS_OUTPUT_PROTOCOL *gop;
+
+    EFI_GUID gopGuid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+
+    EFI_STATUS Status;
+
+    Status = gST->BootServices->LocateProtocol(&gopGuid, NULL, (VOID**)&gop);
+
+    if(EFI_ERROR(Status))
+    {
+        printf(L"GOP not found\n");
+        return;
+    }
+
+    boot_info.framebuffer = 0;
+    boot_info.framebuffer_size = 0;
+    boot_info.width = 0;
+    boot_info.height = 0;
+    boot_info.pitch = 0;
+    boot_info.format = 0;
+
+    EFI_GRAPHICS_OUTPUT_MODE_INFORMATION *info =
+        gop->Mode->Info;
+
+    boot_info.framebuffer =
+        gop->Mode->FrameBufferBase;
+
+    boot_info.framebuffer_size =
+        gop->Mode->FrameBufferSize;
+
+    boot_info.width =
+        info->HorizontalResolution;
+
+    boot_info.height =
+        info->VerticalResolution;
+
+    boot_info.pitch =
+        info->PixelsPerScanLine;
+
+    boot_info.format =
+        info->PixelFormat;
+}
+
 void mem_write(int debug) {
+    get_memory_mapl(gST);
+    get_acpi_info(gST);
+    get_framebuffer();
+
     volatile uint8_t *slot = (volatile uint8_t*)KDI;
     *slot = (uint8_t)debug; 
 
-    volatile EFI_SYSTEM_TABLE **slot1 = (volatile EFI_SYSTEM_TABLE **)KSP;
-    *slot1 = gST;
+    volatile BOOT_INFO *slot1 = (volatile BOOT_INFO*)KSP;
+    *slot1 = boot_info;
+    
 }
 
 // -------------------------------

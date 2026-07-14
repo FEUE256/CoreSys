@@ -64,17 +64,7 @@ ret_t kmain() {
 
     // Prints all debug text
     if (debug == 1) {
-        cs_task print_debug_task = {
-            .name = "Print Debug Task",
-            .source_header = "misc/debug.h",
-            .entry_name = "print_debug",
-            .entry = print_debug
-        };
-        
-        task_run(&print_debug_task);
-
-        // Sets the status that the debug has been OK
-        status |= CS_DEBUG_OK;
+        kprintf("Run pd in the terminal to access debug mode!\n");
     } else {
         // If debug int = 0 print some normal text
         if (debug != 2) { 
@@ -97,7 +87,7 @@ ret_t kmain() {
     };
     task_run(&vga_task);
 
-    // Sets up tty_task task
+    // Runs TTY loop via CS_CORE
     core.hal.tty_loop();
 
     // Sets status to that TTY has ran
@@ -106,7 +96,7 @@ ret_t kmain() {
     // Sets cs_return_value to core.sys.null() before CS_CORE has been deinit
     reg_t ret_t cs_return_value = core.sys.null();
 
-    // Sets up deinit task
+    // Runs deinit via CS_CORE
     core.sys.deinit();
 
     // Deinits CS_CORE
@@ -118,7 +108,6 @@ ret_t kmain() {
     // Sets that the CoreSys kernel has been deinit
     status |= CS_DEINIT_OK; // Deinit
 
-    // Sets up the halt task
     // Cant use core.sys.halt because cs_core is deinited
     // Cant use cs_task because its deinited
     // Can technicly use sys_halt/_hlt but thats not used in RKC

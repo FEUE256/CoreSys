@@ -10,6 +10,7 @@
 #include <drivers/cfs/main.h>        // CoreSys Filesystem (cfs)
 #include <drivers/pci/main.h>        // PCI
 #include <drivers/cop/main.h>       // FS
+#include <drivers/hw/ACPI/main.h>  // ACPI
 #include <kernel/mem.h>
 #include <asm/global.h>
 #include <cs.h>
@@ -98,6 +99,14 @@ void init(cs_task* self) {
     task_run(&init_fs_task); // init FS
     if (debug != 2) { k_log("FS initialized successfully."); }
 
+    cs_task init_acpi_task = {
+        .name = "ACPI initialization Task",
+        .source_header = "drivers/hw/ACPI/main.h",
+        .entry_name = "acpi_init",
+        .entry = acpi_init
+    };
+    task_run(&init_acpi_task); // init ACPI
+
     // For extra safty
     cs_init(&core);
     if (debug != 2) { k_log("CS CORE initialized successfully."); }
@@ -160,28 +169,10 @@ void deinit(cs_task* self) {
         .entry = cop_deinit
     };
     task_run(&deinit_cop_task); // deinit COP
-
+    
+    // Dont deinit ACPI because its used to shutdown or reboot
+    
     cs_deinit(&core);
-}
-
-void reinit() {
-    cs_task deinit_task = {
-        .name = "Deinitialization Task",
-        .source_header = "drivers/init/main.h",
-        .entry_name = "deinit",
-        .entry = deinit
-    };
-    task_run(&deinit_task); // Deinit Drivers
-
-    cs_task init_task = {
-        .name = "Initialization Task",
-        .source_header = "drivers/init/main.h",
-        .entry_name = "init",
-        .entry = init
-    };
-
-    task_run(&init_task); // Reinit Drivers
-
 }
 
 void kreinit(cs_task* self) {

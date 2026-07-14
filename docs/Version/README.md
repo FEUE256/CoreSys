@@ -1,16 +1,43 @@
 # CoreSys & Co Version
 
-- CoreSys Version: 0.5.0v Dev
+- CoreSys Version: 0.5.1v Dev
 - MC Version: 1.1v Release
 - GPT Tool Version: 2.5 Release
 - Project (Everything around CoreSyS including website etc.) 0.4.7v
 
-CSC Version: 0.1.3.3v
+CSC Version: 0.1.3.5v
 (For Devs remember to change CS_VER in include/kernel/version.h and docs/history update)
 
 CSC (CoreSys & Co)
 
 Fun fact the CSC 9.0v has only 9000 (excluded EDK Headers) lines of code
+
+0.1.3.5 CSCS gh-lang:
+github-linguist
+    77.82%  1657729    C
+    19.67%  419003     HTML
+    1.13%   24015      Makefile
+    
+0.1.3.5 CSC cloc:
+cloc . --exclude-dir=.git,bin,.venv,dist
+     379 text files.
+     333 unique files.
+     109 files ignored.
+
+github.com/AlDanial/cloc v 2.06  T=22.86 s (14.6 files/s, 4409.1 lines/s)
+----------------------------------------------------------------------------------
+Language                        files          blank        comment           code
+----------------------------------------------------------------------------------
+C                                  50           4456           4769          22875
+C/C++ Header                      104           7423           4355          20232
+JSON                               54              0              0          16574
+HTML                                5           4131             11           9592
+Markdown                           60            797              0           1985
+Other
+----------------------------------------------------------------------------------
+SUM:                              333          17398           9377          74035
+----------------------------------------------------------------------------------
+(Removed EDK)
 
 0.1.2.8v CSC gh-lang:
 github-linguist

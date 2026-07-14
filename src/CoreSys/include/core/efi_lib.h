@@ -12,6 +12,8 @@
 #include <project/head.h>
 #include <sf/main.c> // For sf() system failure function, which is used in this library for fatal error handling
 
+#include <kernel/mem.h>
+
 #include <core/efi.h>
 
 #define CHAR_CARRIAGE_RETURN L'\r'   // Enter key
