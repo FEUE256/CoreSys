@@ -39,7 +39,7 @@ bool cop_write(const char *path, const void *buffer, uint64_t size);
 bool cop_read(const char *path, void *buffer, uint64_t size);
 bool cop_delete(const char *path);
 bool cop_append(const char *path, const void *buffer, uint64_t size);
-void cop_exec_file(const char *path);
+uint64_t cop_exec_file(const char *path);
 void fs_init(cs_task *self);
 void fs_deinit(cs_task *self);
 
@@ -101,8 +101,7 @@ uint64_t fscall(fscall_frame_t *frame)
         );
     }
     else if (id == COP_EXEC_FILE) {
-        cop_exec_file((const char*)frame->rdi);
-        return 0;
+        return cop_exec_file((const char*)frame->rdi);
     }
     else if (id == COP_FS_INIT) {
         cs_task fs_init_task = {
@@ -130,9 +129,10 @@ uint64_t fscall(fscall_frame_t *frame)
         return (uint64_t)cop_create((const char*)frame->rdi);
     }
     else {
-        __asm__ volatile(".word 0xFFFF"); // #UD
-        irq(CS_IRQ_UD);
-    }
+        irq(CS_IRQ_UD); // #UD for invalid syscall
+    }   
+
+    // Dead code (irq -> ud2 -> sf -> hlt)
 
     return (uint64_t)-1;
 }

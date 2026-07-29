@@ -1,5 +1,8 @@
 #pragma once
 
+#include <drivers/irqcalls/main.h>
+#include <kernel/version.h>
+
 void execute_command(const char *cmd, int debug);
 void tty_putc(char c);
 void tty_write(const char *s);
@@ -97,7 +100,7 @@ void sys_reinit(void);
 void sys_halt(void);
 void sys_sf(const char* s);
 
-// // FS functions
+// FS functions
 int fsret(int code);
 bool fs_cop_init();
 uint64_t fs_cop_deinit();
@@ -195,10 +198,43 @@ typedef struct CS_SYS {
     void (*sf)(const char*);
 } __attribute__((packed)) CS_SYS;
 
+typedef struct CS_IRQ {
+    uint64_t (*null)(int code);
+
+    uint64_t (*de)(void);
+    uint64_t (*db)(void);
+    uint64_t (*nmi)(void);
+    uint64_t (*bp)(void);
+    uint64_t (*of)(void);
+    uint64_t (*br)(void);
+    uint64_t (*ud)(void);
+    uint64_t (*nm)(void);
+    uint64_t (*df)(void);
+    uint64_t (*co)(void);
+    uint64_t (*ts)(void);
+    uint64_t (*np)(void);
+    uint64_t (*ss)(void);
+    uint64_t (*gp)(void);
+    uint64_t (*pf)(void);
+    uint64_t (*rs)(void);
+    uint64_t (*mf)(void);
+    uint64_t (*ac)(void);
+    uint64_t (*mc)(void);
+    uint64_t (*xm)(void);
+    uint64_t (*ve)(void);
+    uint64_t (*cp)(void);
+    uint64_t (*hv)(void);
+    uint64_t (*vc)(void);
+    uint64_t (*sx)(void);
+
+} __attribute__((packed)) CS_IRQ;
+
 typedef struct CS_CORE {
     CS_HAL hal;
     CS_SYS sys;
     CS_FS  fs;
+    CS_IRQ irq;
+    char version[16];
 } __attribute__((packed)) CS_CORE;
 
 void tsk_init(void) {
@@ -212,6 +248,8 @@ void tsk_deinit(void) {
 void cs_init(CS_CORE *core)
 {
     tsk_init();
+
+    snprintf(core->version, sizeof((void*)CS_VER), "%s", CS_VER);
 
     core->fs.null        = fsret;
 
@@ -231,6 +269,39 @@ void cs_init(CS_CORE *core)
 
     core->fs.fs_init     = fs_fs_init;
     core->fs.fs_deinit   = fs_fs_deinit;
+
+    core->irq.null = irq_dev_null;
+
+    core->irq.de  = irq_de;
+    core->irq.db  = irq_db;
+    core->irq.nmi = irq_nmi;
+    core->irq.bp  = irq_bp;
+    core->irq.of  = irq_of;
+    core->irq.br  = irq_br;
+    core->irq.ud  = irq_ud;
+    core->irq.nm  = irq_nm;
+
+    core->irq.df  = irq_df;
+    core->irq.co  = irq_co;
+
+    core->irq.ts  = irq_ts;
+    core->irq.np  = irq_np;
+    core->irq.ss  = irq_ss;
+    core->irq.gp  = irq_gp;
+    core->irq.pf  = irq_pf;
+
+    core->irq.rs  = irq_rs;
+
+    core->irq.mf  = irq_mf;
+    core->irq.ac  = irq_ac;
+    core->irq.mc  = irq_mc;
+    core->irq.xm  = irq_xm;
+    core->irq.ve  = irq_ve;
+    core->irq.cp  = irq_cp;
+
+    core->irq.hv  = irq_hv;
+    core->irq.vc  = irq_vc;
+    core->irq.sx  = irq_sx;
 
     core->hal.null              = hal_dev_null;
 
@@ -294,6 +365,41 @@ void cs_init(CS_CORE *core)
 void cs_deinit(CS_CORE *core)
 {
     tsk_deinit();
+
+    memcpy(core->version, 0, 0);
+
+    core->irq.null = NULL;
+
+    core->irq.de  = NULL;
+    core->irq.db  = NULL;
+    core->irq.nmi = NULL;
+    core->irq.bp  = NULL;
+    core->irq.of  = NULL;
+    core->irq.br  = NULL;
+    core->irq.ud  = NULL;
+    core->irq.nm  = NULL;
+
+    core->irq.df  = NULL;
+    core->irq.co  = NULL;
+
+    core->irq.ts  = NULL;
+    core->irq.np  = NULL;
+    core->irq.ss  = NULL;
+    core->irq.gp  = NULL;
+    core->irq.pf  = NULL;
+
+    core->irq.rs  = NULL;
+
+    core->irq.mf  = NULL;
+    core->irq.ac  = NULL;
+    core->irq.mc  = NULL;
+    core->irq.xm  = NULL;
+    core->irq.ve  = NULL;
+    core->irq.cp  = NULL;
+
+    core->irq.hv  = NULL;
+    core->irq.vc  = NULL;
+    core->irq.sx  = NULL;
 
     core->fs.null        = NULL;
 

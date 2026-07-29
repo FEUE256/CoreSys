@@ -19,6 +19,7 @@ typedef signed con_t; // Signed
 typedef size_t cap_t; // Capacity
 typedef uintptr_t unumarr_t; // Arrow (like on a map its an Pointer to it)
 typedef intptr_t numarr_t; // Arrow (like on a map its an Pointer to it)
+typedef char tid_t[17]; // Task ID
 
 #define vol_t volatile // Voliatile
 #define set_t const // Set'ed
@@ -27,3 +28,16 @@ typedef intptr_t numarr_t; // Arrow (like on a map its an Pointer to it)
 #define reg_t register // Register
 #define str_t struct // Struct
 #define sta_t static // Static
+
+typedef struct {
+    uint64_t low;
+    uint64_t high;
+} uint128_t;
+
+typedef struct {
+    int64_t low;
+    int64_t high;
+} int128_t;
+
+typedef int128_t num128_t;
+typedef uint128_t unum128_t;

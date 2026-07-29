@@ -7,8 +7,9 @@ This doc come not be 100 % real thing that will come to CoreSys! This doc will a
 ### Will be implemented
     Non at this point of time.
 
-    make every cmd commando a program 
-    GPU driver in hw/gfx
+    IRQ 20+ -> FF 
+    /task/[tid] via snprintf
+    Advance Math Enige (AME)
 
 ### Maybe will be implemented
     - Non at this point of time.

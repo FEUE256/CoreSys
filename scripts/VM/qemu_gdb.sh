@@ -43,8 +43,10 @@ nice -21 qemu-system-x86_64 \
   -device pcie-root-port,id=rp1 \
   -device virtio-balloon-pci,bus=rp1 \
   -vga std \
+  -cpu max \
   -netdev user,id=net1 \
   -device e1000,netdev=net0 \
+  -serial tcp::4444,server=on,wait=off \
   -s -S \
   -audiodev wav,id=audio0,path="$HOME/CoreSysVM/sound.wav" # \
   # -nographic 

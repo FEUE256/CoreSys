@@ -77,7 +77,7 @@ a:
 	fi
 #   For deleting old content
 	$(ROOT_DIR)bin/Release/ata/ata.run $(ROOT_DIR)misc/disk/ata.img -k bin -f
-	$(ROOT_DIR)bin/Release/ata/ata.run $(ROOT_DIR)misc/disk/ata.img -p $(ROOT_DIR)build/CoreSys/utils/test.o bin/test.bin
+	$(ROOT_DIR)bin/Release/ata/ata.run $(ROOT_DIR)misc/disk/ata.img -p $(ROOT_DIR)build/CoreSys/utils/test.o bin/it.bin
 
 # =====================
 # All

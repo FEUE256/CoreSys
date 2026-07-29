@@ -39,6 +39,10 @@ Power User only
 
 * [System calls](syscalls/README.md)
 
+## IRQ Calls
+
+* [IRQ calls](irqcalls/README.md)
+
 ## Hal Calls
 
 * [HAL calls](halcalls/README.md)

@@ -8,3 +8,4 @@ out.txt
 # find . -type f -exec cat {} + > out.txt
 full.txt
 kernel.mk
+o.txt

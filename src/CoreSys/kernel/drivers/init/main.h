@@ -11,6 +11,7 @@
 #include <drivers/pci/main.h>        // PCI
 #include <drivers/cop/main.h>       // FS
 #include <drivers/hw/ACPI/main.h>  // ACPI
+#include <drivers/idt/main.h>  // IDT
 #include <kernel/mem.h>
 #include <asm/global.h>
 #include <cs.h>
@@ -51,6 +52,15 @@ void init(cs_task* self) {
     task_run(&init_cfs_task); // init CFS
     if (debug != 2) { k_log("CFS initialized successfully."); }
 
+    cs_task init_cop_task = {
+        .name = "COP initialization Task",
+        .source_header = "drivers/cop/main.h",
+        .entry_name = "cop_init",
+        .entry = cop_init
+    };
+    task_run(&init_cop_task); // init COP
+    if (debug != 2) { k_log("COP initialized successfully."); }
+
     cs_task init_ahci_task = {
         .name = "AHCI initialization Task",
         .source_header = "drivers/pci/main.h",
@@ -68,15 +78,6 @@ void init(cs_task* self) {
     };
     task_run(&init_pci_task); // init PCI
     if (debug != 2) { k_log("PCI iGPU/GPU initialized successfully."); }
-
-    cs_task init_cop_task = {
-        .name = "COP initialization Task",
-        .source_header = "drivers/cop/main.h",
-        .entry_name = "cop_init",
-        .entry = cop_init
-    };
-    task_run(&init_cop_task); // init COP
-    if (debug != 2) { k_log("COP initialized successfully."); }
 
     /*
         File stucture:
@@ -106,6 +107,7 @@ void init(cs_task* self) {
         .entry = acpi_init
     };
     task_run(&init_acpi_task); // init ACPI
+    if (debug != 2) { k_log("ACPI initialized successfully."); }
 
     // For extra safty
     cs_init(&core);
@@ -169,7 +171,7 @@ void deinit(cs_task* self) {
         .entry = cop_deinit
     };
     task_run(&deinit_cop_task); // deinit COP
-    
+
     // Dont deinit ACPI because its used to shutdown or reboot
     
     cs_deinit(&core);

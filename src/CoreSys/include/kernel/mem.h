@@ -7,7 +7,9 @@
 #define KDI 0x256        // Mem Addr
 // If changed update kernel/asm/main.s
 
-#define KSP 0x00007C04   // Mem Addr
+#define KSP 0x270   // Mem Addr
+
+#define KUE 0x300 // Mem Addr
 
 #define MAX_MEMORY_ENTRIES 256
 

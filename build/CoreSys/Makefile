@@ -34,7 +34,7 @@ init:
 
 kernel:
 	@echo "Building CoreSys kernel in $(MODE) mode..."
-	@$(MAKE) -f $(K_MAKE) all a -B
+	@$(MAKE) -f $(K_MAKE) all a -B 
 	@echo "Kernel built successfully"
 
 c:

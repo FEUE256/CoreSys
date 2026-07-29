@@ -69,12 +69,14 @@
 #include <drivers/ata/main.h>
 #include <drivers/task/main.h>
 #include <mod/types.h>
+#include <mod/globe.h>
 #include <drivers/time/main.h>
 #include <kernel/mem.h>
 #include <drivers/cfs/main.h>
 #include <drivers/ret/main.h>
 #include <drivers/sf/main.h>
 #include <drivers/halt/main.h>
+#include <drivers/tty/state.h>
 
 // ATA block definitions (read/write)
 void ata_write_blocks(uint32_t lba, const void *buffer, uint32_t count);
@@ -90,7 +92,7 @@ void ata_read_blocks(uint32_t lba, void *buffer, uint32_t count);
 // Bumped: on-disk superblock layout changed (fields added/reordered).
 // Old images will fail cop_mount() cleanly instead of being
 // misinterpreted. Reformat with fsf after upgrading.
-#define COP_VERSION  0x00010001u
+#define COP_VERSION  0x00010002u
 
 // ---------------------------------------------------------------
 // Block / sector information
@@ -98,8 +100,9 @@ void ata_read_blocks(uint32_t lba, void *buffer, uint32_t count);
 #define COP_SECTOR_SIZE   512
 #define COP_LBA_SIZE      512
 #define COP_BLOCK_SIZE    4096
-#define COP_TOTAL_LBAS    131072   // 64 MB at 512-byte sectors
+#define COP_TOTAL_LBAS    131072   // 64 MB at COP_SECTOR_SIZE sectors
 #define COP_RESERVED_LBAS 1
+#define COP_EXEC_FILE_MAX_BYTE 8388608
 
 // ---------------------------------------------------------------
 // Superblock
@@ -132,7 +135,7 @@ cop_superblock_t cop_g_sb;
 // Inode
 // ---------------------------------------------------------------
 // type: 0 = free, 1 = file, 2 = directory
-#define COP_DIRECT_BLOCKS 24
+#define COP_DIRECT_BLOCKS 86
 
 typedef struct __attribute__((packed))
 {
@@ -161,7 +164,7 @@ typedef struct __attribute__((packed))
 // ---------------------------------------------------------------
 _Static_assert(sizeof(cop_superblock_t) == 94,
     "cop_superblock_t size changed - update ata.run to match");
-_Static_assert(sizeof(cop_inode_t) == 209,
+_Static_assert(sizeof(cop_inode_t) == 705,
     "cop_inode_t size changed - update ata.run to match");
 _Static_assert(sizeof(cop_dirent_t) == 211,
     "cop_dirent_t size changed - update ata.run to match");
@@ -188,8 +191,8 @@ _Static_assert(sizeof(cop_dirent_t) == 211,
 // ---------------------------------------------------------------
 // Global state
 // ---------------------------------------------------------------
-bool cop_g_inited  = false;
-bool cop_g_mounted = false;
+// bool cop_g_inited  = false; // Defined in globe.h
+// bool cop_g_mounted = false;
 
 // ---------------------------------------------------------------
 // Forward declarations
@@ -275,10 +278,25 @@ static uint32_t cop_block_to_lba(uint64_t block)
 // =================================================================
 // Free-block bitmap (supports bitmaps spanning multiple blocks)
 // =================================================================
+static volatile int cop_bitmap_lock = 0;
+
+static inline void cop_bitmap_lock_acquire(void)
+{
+    while (__atomic_test_and_set(&cop_bitmap_lock, __ATOMIC_ACQUIRE))
+        __asm__ volatile ("pause");
+}
+
+static inline void cop_bitmap_lock_release(void)
+{
+    __atomic_clear(&cop_bitmap_lock, __ATOMIC_RELEASE);
+}
+
 uint64_t cop_alloc_block(void)
 {
     if (!cop_g_mounted)
         return UINT64_MAX;
+
+    cop_bitmap_lock_acquire();
 
     uint64_t data_blocks = cop_g_sb.total_blocks - cop_g_sb.data_start;
     uint64_t bits_per_block = (uint64_t)COP_BLOCK_SIZE * 8;
@@ -318,11 +336,13 @@ uint64_t cop_alloc_block(void)
                 cop_g_sb.free_blocks--;
                 cop_write_superblock();
 
+                cop_bitmap_lock_release();
                 return cop_g_sb.data_start + global_bit;
             }
         }
     }
 
+    cop_bitmap_lock_release();
     return UINT64_MAX;
 }
 
@@ -1544,14 +1564,14 @@ bool cop_append(const char *path, const void *buffer, uint64_t size)
 }
 
 // What it does: executes the path .bin
-void cop_exec_file(const char *path)
+uint64_t cop_exec_file(const char *path)
 {
-    void *buffer = kmalloc(8388608); // COP_MAX_FILE_SIZE_MB into bytes
+    void *buffer = kmalloc(COP_EXEC_FILE_MAX_BYTE); // COP_MAX_FILE_SIZE_MB into bytes
 
     if (!buffer)
-        return;
+        return 1;
 
-    cop_read(path, buffer, 8388608);
+    cop_read(path, buffer, COP_EXEC_FILE_MAX_BYTE);
 
     __asm__ volatile (
         "lea 1f(%%rip), %%rax\n"  // Address after the jmp
@@ -1563,7 +1583,18 @@ void cop_exec_file(const char *path)
         : "rax", "memory"
     );
 
+    uint64_t status = *(volatile uint64_t *)KUE;
+
+    uint8_t debug = *(volatile uint8_t *)KDI;
+
+    if (debug == 1) {
+        kprintf("[TRACE] Util: %s, returned", path);
+        kprintf("\n");
+    }
+
     kfree(buffer);
+
+    return status;
 }
 
 // =================================================================
@@ -1592,7 +1623,21 @@ uint64_t cop_katoi(const char *buf)
             +-- debug.cfg
             +-- boot
                 +-- bc.sctfi
+    +-- task
+        +--  [tid]
+    +-- bin
+        +-- it.bin
 */
+
+bool cop_exists(const char *path)
+{
+    if (!path || !cop_g_mounted)
+        return false;
+
+    uint64_t inode;
+
+    return cop_lookup(path, &inode);
+}
 
 void fs_init(cs_task *self)
 {
@@ -1609,26 +1654,93 @@ void fs_init(cs_task *self)
         debug = kstrtoull(data, NULL, 10);
     }
 
-    cop_mkdir("/sys");
-    if (debug == 1) kprintf("Created /sys\n");
+    if (!cop_exists("/sys"))
+    {
+        cop_mkdir("/sys");
+        if (debug == 1) kprintf("[COPFS] Created /sys\n");
+    }
+    else if (debug == 1)
+    {
+        kprintf("[COPFS] Exists /sys\n");
+    }
 
-    cop_mkdir("/sys/kernel");
-    if (debug == 1) kprintf("Created /sys/kernel\n");
 
-    cop_mkdir("/sys/system");
-    if (debug == 1) kprintf("Created /sys/system\n");
+    if (!cop_exists("/sys/kernel"))
+    {
+        cop_mkdir("/sys/kernel");
+        if (debug == 1) kprintf("[COPFS] Created /sys/kernel\n");
+    }
+    else if (debug == 1)
+    {
+        kprintf("[COPFS] Exists /sys/kernel\n");
+    }
 
-    cop_mkdir("/sys/system/boot");
-    if (debug == 1) kprintf("Created /sys/system/boot\n");
 
-    cop_create("/sys/kernel/kernel.cfg");
-    if (debug == 1) kprintf("Created /sys/kernel/kernel.cfg\n");
+    if (!cop_exists("/sys/system"))
+    {
+        cop_mkdir("/sys/system");
+        if (debug == 1) kprintf("[COPFS] Created /sys/system\n");
+    }
+    else if (debug == 1)
+    {
+        kprintf("[COPFS] Exists /sys/system\n");
+    }
 
-    cop_create("/sys/system/debug.cfg");
-    if (debug == 1) kprintf("Created /sys/system/debug.cfg\n");
 
-    cop_create("/sys/system/boot/bc.sctfi");
-    if (debug == 1) kprintf("Created /sys/system/boot/bc.sctfi\n");
+    if (!cop_exists("/sys/system/boot"))
+    {
+        cop_mkdir("/sys/system/boot");
+        if (debug == 1) kprintf("[COPFS] Created /sys/system/boot\n");
+    }
+    else if (debug == 1)
+    {
+        kprintf("[COPFS] Exists /sys/system/boot\n");
+    }
+
+
+    if (!cop_exists("/sys/kernel/kernel.cfg"))
+    {
+        cop_create("/sys/kernel/kernel.cfg");
+        if (debug == 1) kprintf("[COPFS] Created /sys/kernel/kernel.cfg\n");
+    }
+    else if (debug == 1)
+    {
+        kprintf("[COPFS] Exists /sys/kernel/kernel.cfg\n");
+    }
+
+
+    if (!cop_exists("/sys/system/debug.cfg"))
+    {
+        cop_create("/sys/system/debug.cfg");
+        if (debug == 1) kprintf("[COPFS] Created /sys/system/debug.cfg\n");
+    }
+    else if (debug == 1)
+    {
+        kprintf("[COPFS] Exists /sys/system/debug.cfg\n");
+    }
+
+
+    if (!cop_exists("/sys/system/boot/bc.sctfi"))
+    {
+        cop_create("/sys/system/boot/bc.sctfi");
+        if (debug == 1) kprintf("[COPFS] Created /sys/system/boot/bc.sctfi\n");
+    }
+    else if (debug == 1)
+    {
+        kprintf("[COPFS] Exists /sys/system/boot/bc.sctfi\n");
+    }
+
+    if (!cop_exists("/task"))
+    {
+        cop_mkdir("/task");
+        if (debug == 1) kprintf("[COPFS] Created /task\n");
+    } else if (cop_exists("/task"))
+    {
+        cop_create("/task/.cfsts");
+        if (debug == 1) {
+            kprintf("[COPFS] Exists /task\n");
+        }
+    }
 
     char kernel_cfg_buffer[4092];
     uint64_t kernel_cfg_size = 0;
@@ -1670,11 +1782,156 @@ void fs_deinit(cs_task *self)
 {
     (void)self;
 
-    cop_delete("/sys/kernel");
-    cop_delete("/sys/system/debug.cfg");
+    cop_delete("/task"); // Task TID cleanup
+
+    // Sync FS when we implement that
 }
 
 int bc_print(char *buf) {
     cop_read("/sys/system/boot/bc.sctfi", buf, sizeof(buf));
     return 0;
 }
+
+int tree_seen(uint64_t inode)
+{
+    for (int i = 0; i < tree_visited_count; i++)
+    {
+        if (tree_visited[i] == inode)
+            return 1;
+    }
+
+    if (tree_visited_count < TREE_MAX_VISITED)
+    {
+        tree_visited[tree_visited_count++] = inode;
+    }
+
+    return 0;
+}
+
+void tree_print(const char *path, int depth)
+{
+    if (depth >= 16)
+        return;
+
+
+    uint64_t inode_num;
+
+    if (!cop_lookup(path, &inode_num))
+        return;
+
+
+    if (tree_seen(inode_num))
+    {
+        for (int i = 0; i < depth; i++)
+            kprintf("|   ");
+
+        kprintf("[LOOP]\r\n");
+        return;
+    }
+
+
+    cop_inode_t inode;
+
+    cop_read_inode(inode_num, &inode);
+
+
+    if (inode.type != 2)
+        return;
+
+
+
+    uint64_t total_entries = inode.size / sizeof(cop_dirent_t);
+    uint64_t entries_seen = 0;
+
+
+    char names[64][COP_MAX_NAME_LEN];
+    uint8_t types[64];
+
+    int count = 0;
+
+
+
+    for (int i = 0;
+         i < COP_DIRECT_BLOCKS && entries_seen < total_entries;
+         i++)
+    {
+        if (inode.blocks[i] == 0)
+            continue;
+
+        if (inode.blocks[i] < cop_g_sb.data_start)
+            continue;
+
+        if (inode.blocks[i] >= cop_g_sb.total_blocks)
+            continue;
+
+
+
+        uint8_t buf[COP_BLOCK_SIZE];
+
+
+        ata_read_blocks(
+            cop_block_to_lba(inode.blocks[i]),
+            buf,
+            COP_BLOCK_SIZE / COP_SECTOR_SIZE
+        );
+
+
+
+        uint64_t offset = 0;
+
+
+        while (offset + sizeof(cop_dirent_t) <= COP_BLOCK_SIZE &&
+               entries_seen < total_entries &&
+               count < 64)
+        {
+
+            cop_dirent_t *entry =
+                (cop_dirent_t *)(buf + offset);
+
+
+
+            if (entry->inode != 0 &&
+                entry->name[0] != '\0' &&
+                strcmp(entry->name, ".") != 0 &&
+                strcmp(entry->name, "..") != 0)
+            {
+                strcpy(names[count], entry->name);
+                types[count] = entry->type;
+                count++;
+            }
+
+
+            entries_seen++;
+            offset += sizeof(cop_dirent_t);
+        }
+    }
+
+    for (int i = 0; i < count; i++)
+    {
+        int is_last = (i == count - 1);
+
+        for (int d = 0; d < depth; d++)
+            kprintf("|   ");
+
+        kprintf(is_last ? "+-- " : "|-- ");
+        kprintf("%s\r\n", names[i]);
+
+        if (types[i] == 2)
+        {
+            char child[256];
+
+            if (path[0] == '/' && path[1] == '\0')
+            {
+                snprintf(child, sizeof(child), "/%s", names[i]);
+            }
+            else
+            {
+                snprintf(child, sizeof(child), "%s/%s", path, names[i]);
+            }
+
+            tree_print(child, depth + 1);
+        }
+    }
+}
+
+// THE ONLY UP TO DATE FS TREE IS BEFORE cop_exists

@@ -24,6 +24,8 @@ Init Mode is not an ordinary mode outside CoreSys. Its like bm but for the init 
 
 The KU API as we will now say for the KM/UM API has a calling table as our main API calling technice.
 
+(HAL AND SYS ONLY FOR IRQ AND FS SEE ABI)
+
 Calling table:
 CS_CORE  
 ├── CS_HAL  

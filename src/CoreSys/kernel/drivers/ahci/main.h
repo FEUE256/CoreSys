@@ -160,14 +160,18 @@ int ahci_identify(hba_port_t* port)
 
     while (port->cmd & (1 << 15));
 
-    hba_cmd_header_t* cmd =
-        (hba_cmd_header_t*)kmalloc(sizeof(hba_cmd_header_t));
+    hba_cmd_header_t* cmd = (hba_cmd_header_t*)kmalloc(sizeof(hba_cmd_header_t));
 
-    uint8_t* identify_buf =
-        (uint8_t*)kmalloc(512);
-
-    if (!cmd || !identify_buf)
+    if (!cmd)
         return -2;
+
+    uint8_t* identify_buf = (uint8_t*)kmalloc(512);
+
+    if (!identify_buf)
+    {
+        kfree(cmd);
+        return -2;
+    }
 
     memset(cmd, 0, sizeof(hba_cmd_header_t));
     memset(identify_buf, 0, 512);
@@ -247,9 +251,9 @@ int ahci_read_sector(hba_port_t* port, uint64_t lba, void* buf)
     /* 4. PRDT (1 entry) */
     uint64_t addr = (uint64_t)buf;
 
-    ((uint32_t*)cmd->prdt_entry)[0] = (uint32_t)addr;
-    ((uint32_t*)cmd->prdt_entry)[1] = 0;
-    ((uint32_t*)cmd->prdt_entry)[2] = 511; // 512 bytes
+    ((uint32_t*)cmd->prdt_entry)[0] = (uint32_t)(addr & 0xFFFFFFFF);
+    ((uint32_t*)cmd->prdt_entry)[1] = (uint32_t)(addr >> 32); // was hardcoded 0
+    ((uint32_t*)cmd->prdt_entry)[2] = 511;
     ((uint32_t*)cmd->prdt_entry)[3] = 0;
 
     /* 5. Issue command */

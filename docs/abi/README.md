@@ -48,6 +48,9 @@ aut_t       | auto           | 0  bits
 reg_t       | register       | 0  bits
 str_t       | struct         | 0  bits
 sta_t       | static         | 0  bits
+unum128_t   | uint64_t       | 128 bits
+num128_t    | int64_t        | 128 bits
+tid_t       | char[16]       | 16 bytes
 
 (If the type dont have a core abi varient use the normal type)
 
@@ -438,6 +441,39 @@ COP_CREATE_FILE  = 11
 
 ---
 
+# IRQ Call Numbers
+
+00 - IRQ_DEV_NULL
+
+100 - IRQ_DE   (#DE Divide Error)
+101 - IRQ_DB   (#DB Debug)
+102 - IRQ_NMI  (Non-Maskable Interrupt)
+103 - IRQ_BP   (#BP Breakpoint)
+104 - IRQ_OF   (#OF Overflow)
+105 - IRQ_BR   (#BR BOUND Range Exceeded)
+106 - IRQ_UD   (#UD Invalid Opcode)
+107 - IRQ_NM   (#NM Device Not Available)
+108 - IRQ_DF   (#DF Double Fault)
+109 - IRQ_CO   (Coprocessor Segment Overrun)
+10A - IRQ_TS   (#TS Invalid TSS)
+10B - IRQ_NP   (#NP Segment Not Present)
+10C - IRQ_SS   (#SS Stack Segment Fault)
+10D - IRQ_GP   (#GP General Protection)
+10E - IRQ_PF   (#PF Page Fault)
+10F - IRQ_RS   (Reserved)
+110 - IRQ_MF   (#MF x87 Floating Point)
+111 - IRQ_AC   (#AC Alignment Check)
+112 - IRQ_MC   (#MC Machine Check)
+113 - IRQ_XM   (#XM SIMD Floating Point)
+114 - IRQ_VE   (#VE Virtualization)
+115 - IRQ_CP   (#CP Control Protection)
+
+11C - IRQ_HV   (#HV Hypervisor Injection)
+11D - IRQ_VC   (#VC VMM Communication)
+11E - IRQ_SX   (#SX Security Exception)
+
+---
+
 # Task ABI
 
 ## Task Structure
@@ -446,6 +482,7 @@ COP_CREATE_FILE  = 11
 typedef struct cs_task {
     const char* name;
     const char* source_header;
+    const char* entry_name;
     void (*entry)(struct cs_task* self);
 } cs_task;
 ```
@@ -514,6 +551,9 @@ typedef struct cfs_node {
     ├── kernel
     │   └── kernel.cfg
     └── system
+        └── debug.cfg
+        └── boot
+            └── bc.sctfi
 ```
 
 ---

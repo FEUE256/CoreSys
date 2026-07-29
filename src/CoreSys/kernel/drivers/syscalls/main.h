@@ -54,7 +54,7 @@ uint64_t syscall(syscall_frame_t* frame) {
     uint64_t id = frame->rax;
 
     if (id == SYS_DEV_NULL) {
-        return (int)kret();
+        return (uint64_t)kret();
     }
     else if (id == SYS_READ) {
         return (uint64_t)kread();
@@ -141,9 +141,10 @@ uint64_t syscall(syscall_frame_t* frame) {
         return 0;
     } 
     else {
-        __asm__ volatile (".word 0xFFFF"); // #UD for invalid syscall
         irq(CS_IRQ_UD); // #UD for invalid syscall
     }   
+
+    // Dead code (irq -> ud2 -> sf -> hlt)
 
     return (uint64_t)-1;
 }

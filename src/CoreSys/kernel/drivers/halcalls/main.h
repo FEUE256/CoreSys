@@ -7,6 +7,7 @@
 void tty_putc(char c);
 void tty_write(const char *s);
 void tty_loop();
+void tty_run(cs_task *self);
 void serial_write_char(char c);
 char serial_read_char();
 void execute_command(const char *cmd, int debug);
@@ -37,7 +38,14 @@ uint64_t halcall(hal_frame_t* frame)
         return 0;
     }
     else if (id == HAL_TTY_LOOP) {
-        tty_loop();
+        cs_task tty_task = {
+            .name = "TTY Run Task",
+            .source_header = "drivers/tty/main.h",
+            .entry_name = "tty_run",
+            .entry = tty_run
+        };
+
+        task_run(&tty_task); // tty_run Drivers
         return 0;
     }
     else if (id == HAL_TTY_WRITE) {
@@ -122,10 +130,6 @@ uint64_t halcall(hal_frame_t* frame)
         kclear();
         return 0;
     }
-    else if (id == HAL_KCLEAR) {
-        kclear();
-        return 0;
-    }
     else if (id == HAL_K_CLEAR) {
         kclear();
         return 0;
@@ -178,9 +182,10 @@ uint64_t halcall(hal_frame_t* frame)
         return 0;
     }
     else {
-        __asm__ volatile (".word 0xFFFF"); // #UD for invalid syscall
         irq(CS_IRQ_UD); // #UD for invalid syscall
     }   
+
+    // Dead code (irq -> ud2 -> sf -> hlt)
 
     return (uint64_t)-1;
 }

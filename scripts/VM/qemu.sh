@@ -44,6 +44,12 @@ nice -21 qemu-system-x86_64 \
   -device pcie-root-port,id=rp1 \
   -device virtio-balloon-pci,bus=rp1 \
   -serial mon:stdio \
+  -global ICH9-LPC.disable_s3=1 \
   -vga std \
-  -audiodev wav,id=audio0,path="$HOME/CoreSysVM/sound.wav" # \
+  -display gtk,gl=off \
+  -cpu max,+avx,enforce \
+  -audiodev wav,id=audio0,path="$HOME/CoreSysVM/sound.wav" \
+  -device ich9-intel-hda \
+  -device hda-output,audiodev=audio0
   # -nographic 
+  

@@ -19,6 +19,8 @@
 #include <drivers/cop/main.h>
 #include <drivers/hw/ACPI/main.h>
 #include <misc/debug.h>
+#include <misc/rnd.h>
+#include <drivers/tty/state.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -62,7 +64,21 @@ void execute_command(const char *cmd, int debug)
         " s0..s5    - Enter ACPI sleep state S0-S5\n"
         " shutdown  - Shut down system\n"
         " ver       - Show kernel version\n"
+        " mon       - Shell monitring\n"
+        " pwd       - Show the current dir\n"
+        " cd        - Change dir\n"
+        " ls        - List files and dirs\n"
+        " mkdir     - Creates a dir\n"
+        " touch     - Creates a file\n"
+        " exist     - Prints if the dir of file exists\n"
+        " tree      - Prints the fs tree\n"
     );
+    }
+    // PWD - show current directory
+    else if (cmd[0] == 'p' && cmd[1] == 'w' && cmd[2] == 'd' && cmd[3] == '\0')
+    {
+        tty_write(tty_terms[tty_current].cwd);
+        tty_write("\r\n");
     }
     // CLEAR / CLS
     else if (
@@ -92,6 +108,14 @@ void execute_command(const char *cmd, int debug)
         tty_write(p);
         tty_write("\n");
     }
+    else if (cmd[0] == 'r' && cmd[1] == 'n' && cmd[2] == 'd')
+    {
+        uint64_t value = k_trnd();
+
+        kprintf("Random Numbers: ");
+        kprint_u64(value);
+        kprint("\n");
+    }
     else if (cmd[0] == 's' && cmd[1] == 'h' && cmd[2] == 'u' && cmd[3] == 't' && cmd[4] == 'd' && cmd[5] == 'o' && cmd[6] == 'w' && cmd[7] == 'n') {
         shutdown();
     }
@@ -107,6 +131,301 @@ void execute_command(const char *cmd, int debug)
             .entry = hlt
         };
         task_run(&hlt_task); // Halt the system
+    }
+    // "mon" command - loops printing stats on current TTY
+    else if (cmd[0] == 'm' && cmd[1] == 'o' && cmd[2] == 'n') {
+        while (1) {
+            char bc[64];
+            cop_read("/sys/system/boot/bc.sctfi", bc, sizeof(bc));
+            kprintf("\r[MON] Boot count: %s  Time: ", bc);
+            get_time();
+
+            // check for _ to break
+            if (serial_received() && inb(0x3F8) == '_')
+                break;
+        }
+    }
+
+    // CD - change directory
+    else if (cmd[0] == 'c' && cmd[1] == 'd')
+    {
+        const char *path = cmd + 2;
+        if (*path == ' ') path++;
+
+        // cd with no arg goes to /
+        if (*path == '\0') {
+            strcpy(tty_terms[tty_current].cwd, "/");
+        }
+        else if (path[0] == '/') {
+            // absolute path
+            if (cop_exists(path)) {
+                strcpy(tty_terms[tty_current].cwd, path);
+            } else {
+                kprintf("cd: %s: No such directory\r\n", path);
+            }
+        }
+        else if (strcmp(path, "..") == 0) {
+            // strip last component
+            if (!(tty_terms[tty_current].cwd[0] == '/' && tty_terms[tty_current].cwd[1] == '\0')) {
+                char *last = strrchr(tty_terms[tty_current].cwd, '/');
+                if (last && last != tty_terms[tty_current].cwd)
+                    *last = '\0';
+                else
+                    tty_terms[tty_current].cwd[1] = '\0'; // back to "/"
+            }
+        }
+        else {
+            // relative path - build full path
+            char full[256];
+            if (tty_terms[tty_current].cwd[0] == '/' && tty_terms[tty_current].cwd[1] == '\0') {
+                snprintf(full, sizeof(full), "/%s", path);
+            } else {
+                snprintf(full, sizeof(full), "%s/%s", tty_terms[tty_current].cwd, path);
+            }
+
+            if (cop_exists(full)) {
+                strcpy(tty_terms[tty_current].cwd, full);
+            } else {
+                kprintf("cd: %s: No such directory\r\n", full);
+            }
+        }
+    }
+
+    // CAT - print file contents
+    else if (cmd[0] == 'c' && cmd[1] == 'a' && cmd[2] == 't')
+    {
+        const char *path = cmd + 3;
+        if (*path == ' ') path++;
+
+        if (*path == '\0') {
+            tty_write("cat: missing path\r\n");
+        }
+        else {
+            // build full path if relative
+            char full[256];
+            if (path[0] == '/') {
+                strcpy(full, path);
+            } else if (tty_terms[tty_current].cwd[0] == '/' && tty_terms[tty_current].cwd[1] == '\0') {
+                snprintf(full, sizeof(full), "/%s", path);
+            } else {
+                snprintf(full, sizeof(full), "%s/%s", tty_terms[tty_current].cwd, path);
+            }
+
+            if (!cop_exists(full)) {
+                kprintf("cat: %s: No such file\r\n", full);
+            } else {
+                char buf[4096];
+                if (cop_read(full, buf, sizeof(buf))) {
+                    tty_write(buf);
+                    tty_write("\r\n");
+                } else {
+                    kprintf("cat: %s: Read failed\r\n", full);
+                }
+            }
+        }
+    }
+
+    // LS - list directory contents
+    else if (cmd[0] == 'l' && cmd[1] == 's')
+    {
+        const char *path = cmd + 2;
+        if (*path == ' ') path++;
+
+        char *cwd = tty_terms[tty_current].cwd;
+
+        char full[256];
+        if (*path == '\0') {
+            strcpy(full, cwd);
+        } else if (path[0] == '/') {
+            strcpy(full, path);
+        } else if (cwd[0] == '/' && cwd[1] == '\0') {
+            snprintf(full, sizeof(full), "/%s", path);
+        } else {
+            snprintf(full, sizeof(full), "%s/%s", cwd, path);
+        }
+
+        if (!cop_exists(full)) {
+            kprintf("ls: %s: No such directory\r\n", full);
+        } else {
+            uint64_t inode_num;
+            if (!cop_lookup(full, &inode_num)) {
+                kprintf("ls: %s: lookup failed\r\n", full);
+            } else {
+                cop_inode_t inode;
+                cop_read_inode(inode_num, &inode);
+
+                if (inode.type != 2) {
+                    kprintf("ls: %s: Not a directory\r\n", full);
+                } else {
+                    // total entries written = inode.size / sizeof(cop_dirent_t)
+                    uint64_t total_entries = inode.size / sizeof(cop_dirent_t);
+                    uint64_t entries_seen  = 0;
+
+                    for (int i = 0; i < COP_DIRECT_BLOCKS && entries_seen < total_entries; i++) {
+                        if (inode.blocks[i] == 0) continue;
+
+                        // skip blocks outside data region
+                        if (inode.blocks[i] < cop_g_sb.data_start) continue;
+                        if (inode.blocks[i] >= cop_g_sb.total_blocks) continue;
+
+                        uint8_t buf[COP_BLOCK_SIZE];
+                        ata_read_blocks(
+                            cop_block_to_lba(inode.blocks[i]),
+                            buf,
+                            COP_BLOCK_SIZE / COP_SECTOR_SIZE
+                        );
+
+                        uint64_t offset = 0;
+                        while (offset + sizeof(cop_dirent_t) <= COP_BLOCK_SIZE
+                            && entries_seen < total_entries)
+                        {
+                            cop_dirent_t *entry = (cop_dirent_t *)(buf + offset);
+
+                            if (entry->inode != 0 && entry->name[0] != '\0') {
+                                if (entry->type == 2)
+                                    kprintf("[DIR]  %s\r\n", entry->name);
+                                else
+                                    kprintf("[FILE] %s\r\n", entry->name);
+                            }
+
+                            entries_seen++;
+                            offset += sizeof(cop_dirent_t);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    else if (cmd[0] == 't' &&
+            cmd[1] == 'r' &&
+            cmd[2] == 'e' &&
+            cmd[3] == 'e')
+    {
+        const char *path = cmd + 4;
+        if (*path == ' ')
+            path++;
+
+        char *cwd = tty_terms[tty_current].cwd;
+
+        char full[256];
+
+        if (*path == '\0')
+        {
+            strcpy(full, cwd);
+        }
+        else if (path[0] == '/')
+        {
+            strcpy(full, path);
+        }
+        else if (cwd[0] == '/' && cwd[1] == '\0')
+        {
+            snprintf(full, sizeof(full), "/%s", path);
+        }
+        else
+        {
+            snprintf(full, sizeof(full), "%s/%s", cwd, path);
+        }
+
+        if (!cop_exists(full))
+        {
+            kprintf("tree: %s: No such directory\r\n", full);
+        }
+        else
+        {
+            tree_visited_count = 0;
+
+            kprintf("%s\r\n", full);
+            tree_print(full, 0);
+        }
+    }
+    // MKDIR - create directory
+    else if (cmd[0] == 'm' && cmd[1] == 'k' && cmd[2] == 'd' && cmd[3] == 'i' && cmd[4] == 'r')
+    {
+        const char *path = cmd + 5;
+        if (*path == ' ') path++;
+
+        char full[256];
+        if (path[0] == '/') {
+            strcpy(full, path);
+        } else if (tty_terms[tty_current].cwd[0] == '/' && tty_terms[tty_current].cwd[1] == '\0') {
+            snprintf(full, sizeof(full), "/%s", path);
+        } else {
+            snprintf(full, sizeof(full), "%s/%s", tty_terms[tty_current].cwd, path);
+        }
+
+        if (cop_mkdir(full))
+            kprintf("mkdir: created %s\r\n", full);
+        else
+            kprintf("mkdir: failed to create %s\r\n", full);
+    }
+
+    // TOUCH - create empty file
+    else if (cmd[0] == 't' && cmd[1] == 'o' && cmd[2] == 'u' && cmd[3] == 'c' && cmd[4] == 'h')
+    {
+        const char *path = cmd + 5;
+        if (*path == ' ') path++;
+
+        char full[256];
+        if (path[0] == '/') {
+            strcpy(full, path);
+        } else if (tty_terms[tty_current].cwd[0] == '/' && tty_terms[tty_current].cwd[1] == '\0') {
+            snprintf(full, sizeof(full), "/%s", path);
+        } else {
+            snprintf(full, sizeof(full), "%s/%s", tty_terms[tty_current].cwd, path);
+        }
+
+        if (cop_create(full))
+            kprintf("touch: created %s\r\n", full);
+        else
+            kprintf("touch: failed to create %s\r\n", full);
+    }
+
+    // RM - delete file or directory
+    else if (cmd[0] == 'r' && cmd[1] == 'm')
+    {
+        const char *path = cmd + 2;
+        if (*path == ' ') path++;
+
+        char full[256];
+        if (path[0] == '/') {
+            strcpy(full, path);
+        } else if (tty_terms[tty_current].cwd[0] == '/' && tty_terms[tty_current].cwd[1] == '\0') {
+            snprintf(full, sizeof(full), "/%s", path);
+        } else {
+            snprintf(full, sizeof(full), "%s/%s", tty_terms[tty_current].cwd, path);
+        }
+
+        if (!cop_exists(full)) {
+            kprintf("rm: %s: No such file\r\n", full);
+        } else if (cop_delete(full)) {
+            kprintf("rm: deleted %s\r\n", full);
+        } else {
+            kprintf("rm: failed to delete %s\r\n", full);
+        }
+    }
+
+    // EXISTS - check if path exists
+    else if (cmd[0] == 'e' && cmd[1] == 'x' && cmd[2] == 'i' && cmd[3] == 's' && cmd[4] == 't')
+    {
+        const char *path = cmd + 5;
+        // handle both "exist /foo" and "exists /foo"
+        if (*path == 's') path++;
+        if (*path == ' ') path++;
+
+        char full[256];
+        if (path[0] == '/') {
+            strcpy(full, path);
+        } else if (tty_terms[tty_current].cwd[0] == '/' && tty_terms[tty_current].cwd[1] == '\0') {
+            snprintf(full, sizeof(full), "/%s", path);
+        } else {
+            snprintf(full, sizeof(full), "%s/%s", tty_terms[tty_current].cwd, path);
+        }
+
+        if (cop_exists(full))
+            kprintf("exists: YES %s\r\n", full);
+        else
+            kprintf("exists: NO  %s\r\n", full);
     }
     else if (cmd[0] == 's' && cmd[1] == 'f')
     {
@@ -189,7 +508,7 @@ void execute_command(const char *cmd, int debug)
         char buf[512];
         cop_read("/sys/system/debug.cfg", buf, sizeof(buf));
 
-        kprintf("%s", buf);
+        kprintf("%s\n", buf);
     }
     else if (cmd[0] == 'n' && cmd[1] == 'v' && cmd[2] == 'm' && cmd[3] == 'e') {
         nvme_dump_drive_lba(0, 1, 0);
@@ -201,6 +520,7 @@ void execute_command(const char *cmd, int debug)
         int bc = (uint64_t)kstrtoull(buf, NULL, 10);
     
         if (bc == 1) {
+            _cs_asm_get_regs(&regs); // ASM / Regs global
             print_regs();
         } else {
             k_warning("Enable Debug mode for this feature\n");

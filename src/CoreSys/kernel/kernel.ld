@@ -1,7 +1,7 @@
 ENTRY(kmain)
 OUTPUT_FORMAT(pei-x86-64)
 SECTIONS {
-  . = 0x100000;
+  . = 0x001000;
   .text : { *(.text*) }
   .rodata : { *(.rodata*) }
   .data : { *(.data*) }

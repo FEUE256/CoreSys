@@ -630,6 +630,8 @@ void bmain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
 }
 
 EFI_STATUS EFIAPI bmain(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
+    __asm__ volatile ("cli");
+
     init(ImageHandle, SystemTable);
     clear_screen();
 

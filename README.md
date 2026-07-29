@@ -73,11 +73,6 @@ See more in the NOTICE.md
 
 ---
 
-## Permitions
-
-1. Go to build/master
-2. make init
-
 ## Terminal
 
 1. Open WSL or the Terminal
@@ -108,3 +103,7 @@ For maximum support use a 512 MB RAM
 
 Read more in the docs/ folder.
 [Docs](docs/README.md)
+
+## Misc
+
+Do not edit misc/disk/ata.img it may cause kernel system failure

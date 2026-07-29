@@ -47,6 +47,8 @@
 #include <drivers/cop/main.h>
 
 #include <misc/pp.h>
+#include <misc/avx.h>
+#include <misc/cpu.h>
 
 #include <drivers/hw/ihb/main.h>
 #include <drivers/hw/ISAB/main.h>
@@ -57,6 +59,7 @@
 
 #include <kernel/mem.h>
 
+#ifdef KERNEL
 ret_t kmain();
 
 void krnl_stack(void) {
@@ -69,6 +72,7 @@ void krnl_stack(void) {
 
     kprintf("Kernel stack: %p\n", stack);
 }
+#endif // KERNEL
 
 void print_debug(cs_task *self) {
     (void)self;
@@ -79,7 +83,8 @@ void print_debug(cs_task *self) {
     // Prints what trace means
     k_log("TRACE = DEBUG/LOG/INTERNAL");
 
-    // Prints register dump
+    // Prints and gets register dump
+    _cs_asm_get_regs(&regs);
     print_regs();
 
     // Prints the time at boot
@@ -127,7 +132,7 @@ void print_debug(cs_task *self) {
 
     kprintf("Boot count: %s\n", bc_buf);
 
-    core.fs.exec_file("/bin/test.bin");
+    core.fs.exec_file("/bin/it.bin");
 
     // Tests pointers
     num_t x = 5;
@@ -189,14 +194,30 @@ void print_debug(cs_task *self) {
     // Prints E1000 info
     e1000_dump();
 
+    #ifdef KERNEL
     // Prints Kernel entry
     kprintf("Kernel Entry: %p\n", kmain);
 
     // Prints Kernel stack
     krnl_stack();
+    #endif // KERNEL
 
-    // Prints debug texts
-    k_warning("[TRACE] The kernel is only for QEMU and may not work properly on real hardware. If trying to use on real hardware can result in system damages. This OS is under active development, use at your own risk.");
-    k_log("[TRACE] FÈUE CoreSys Kernel Terminal will be started in one secund. Subsystem status: Boot: OK, Init: OK, Kernel started: YES, Logging: ACTIVE, Debug Int: Available");
-    k_log("[TRACE] Cheack 'sstatus' type CS_SUBSYS_STATUS_T for verdification and 'status' type CS_STATUS_T for general status");
+    // AVX 512
+    kprintf("Before AVX init: ");
+    cpu_avx(); // Prints AVX state
+
+    // Enable AVX
+    avx_enable();
+
+    // AVX 512
+    kprintf("After AVX init: ");
+    cpu_avx();
+
+    // SSE 128
+    detect_sse();
+
+    // CPU ID
+    cpu_id();
+
+    kprintf("CoreSys Kernel Version: %s\n", g_core.version);
 }

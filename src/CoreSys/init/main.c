@@ -276,6 +276,36 @@ EFI_STATUS load_efi(
 
     if (EFI_ERROR(Status)) goto cleanup_buffer;
 
+    if (EFI_ERROR(Status))
+    goto cleanup_buffer;
+
+
+    EFI_LOADED_IMAGE_PROTOCOL *Image = NULL;
+
+    EFI_GUID LoadedImageGUID = EFI_LOADED_IMAGE_PROTOCOL_GUID;
+
+
+    Status = SystemTable->BootServices->HandleProtocol(
+        LoadedImage,
+        &LoadedImageGUID,
+        (void**)&Image
+    );
+
+
+    if (!EFI_ERROR(Status))
+    {
+        printf(
+            L"Kernel Base: 0x%llx\r\n",
+            (unsigned long long)Image->ImageBase
+        );
+
+        printf(
+            L"Kernel Size: 0x%llx\r\n",
+            (unsigned long long)Image->ImageSize
+        );
+    }
+
+
     *OutImage = LoadedImage;
 
 cleanup_buffer:
@@ -484,7 +514,11 @@ void kernel(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, int debug)
 {
     clear_screen();
 
-    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Jump to Kernel\r\n");
+    if (debug == 404) {
+        SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Jump to Kernel to shutdown\r\n");
+    } else {
+        SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Jump to Kernel\r\n");
+    }
     SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Press ESC to return\r\n");
 
     EFI_INPUT_KEY key;
@@ -579,7 +613,7 @@ void imain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
                     if (selected == 0) kernel(ImageHandle, SystemTable, 0);
                     if (selected == 1) kernel(ImageHandle, SystemTable, 1);
                     if (selected == 2) kernel(ImageHandle, SystemTable, 2);
-                    if (selected == 3) shutdown();
+                    if (selected == 3) kernel(ImageHandle, SystemTable, 404);
                     break;
             }
         }

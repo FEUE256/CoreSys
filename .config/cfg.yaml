@@ -19,12 +19,14 @@ OUTPUT_DIR: "$(abspath $(ROOT_DIR)bin/$(MODE)/CoreSys)"
 CC: "x86_64-w64-mingw32-gcc"
 LD: "x86_64-w64-mingw32-gcc"
 INC_DIR: "$(SRC_DIR)/include"
-CF_STD: "-Werror"
+CF_STD: 
+  - "-Werror" 
+  # - "-Wunused-result"
 INCLUDES:
   - "-I$(INC_DIR)"
 
 B_CFLAGS:
-  - "-std=c17"
+  - "-std=c2x"
   - "-Wall"
   - "$(CF_STD)"
   - "-Wextra"
@@ -52,7 +54,7 @@ B_LDFLAGS:
   - "-Wl,--allow-multiple-definition"
 
 K_CFLAGS:
-  - "-std=c17"
+  - "-std=c2x"
   - "-Wall"
   - "$(CF_STD)"
   - "-Wextra"
@@ -75,14 +77,17 @@ K_CFLAGS:
   - "-I$(ROOT_DIR)src/CoreSys/kernel/include/mod/"
   - "-I$(ROOT_DIR)src/CoreSys/kernel/include/mod/linux/"
   - "-fcommon"
+  - "-fno-stack-check"
+  - "-fno-stack-clash-protection"
+  - "-fno-builtin"
+  - "-fno-ident"
+  - "-mwindows"
+  - "-DKERNEL"
 
 K_LDFLAGS:
   - "-nostdlib"
   - "-nostartfiles"
   - "-nodefaultlibs"
-  - "-static-libgcc"
-  - "-lgcc"
-  - "-lm"
   - "-T $(K_DIR)/kernel.ld"
   - "-Wl,--subsystem,10"
   - "-Wl,--image-base,0"
@@ -95,7 +100,7 @@ K_LDFLAGS:
 SRCS: "$(wildcard $(SRC_DIR)/*.c)"
 
 I_CFLAGS:
-  - "-std=c17"
+  - "-std=c2x"
   - "-Wall"
   - "$(CF_STD)"
   - "-Wextra"
@@ -122,7 +127,7 @@ I_LDFLAGS:
   - "-Wl,--allow-multiple-definition"
 
 C_CFLAGS:
-  - "-std=c17"
+  - "-std=c2x"
   - "-Wall"
   - "$(CF_STD)"
   - "-Wextra"
@@ -152,10 +157,10 @@ GPT_MODE: "Release"
 NE_MODE: "Release"
 
 NE_TOOL: "$(ROOT_DIR)bin/$(NE_MODE)/NE/ne.run"
-GPT_TOOL: "$(ROOT_DIR)bin/Release/GPT/write_gpt.run"
+GPT_TOOL: "$(ROOT_DIR)bin/$(GPT_MODE)/GPT/write_gpt.run"
 
 GPT_IMG: "$(BUILD_DIR)/CoreSys.img"
-GPT_FILE_TXT: "$(BUILD_DIR)/FILE.TXT"
+GPT_FILE_TXT: "$(BUILD_DIR)/SEVI.TXT"
 
 FINAL_IMG_DIR: "$(BIN_DIR)/CoreSys"
 FINAL_IMG: "$(FINAL_IMG_DIR)/CoreSys.img"

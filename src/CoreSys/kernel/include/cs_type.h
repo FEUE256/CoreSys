@@ -55,6 +55,8 @@
 #include <mod/types.h>
 #include <mod/assert.h>
 #include <mod/status.h>
+#include <mod/rkc.h>
+#include <mod/sound.h>
 
 #include <asm/global.h>
 
@@ -80,7 +82,7 @@
 
 #include <drivers/fscalls/main.h>
 #include <drivers/fs/main.h>
-#include <drivers/fscalls/main.h>
+
 #include <drivers/init/main.h>
 #include <drivers/task/main.h>
 #include <drivers/halt/main.h>
@@ -99,6 +101,9 @@
 
 #include <misc/pp.h>
 #include <misc/debug.h>
+#include <misc/avx.h>
+#include <misc/cpu.h>
+#include <misc/rnd.h>
 
 #include <drivers/hw/ihb/main.h>
 #include <drivers/hw/ISAB/main.h>

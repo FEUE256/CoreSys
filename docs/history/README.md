@@ -6,17 +6,21 @@ This document contains major milestones, normal updates, and development progres
 
 All entries were written by Nils Efverman.
 
-For mini build time use NO_NPM=1 eg make all NO_NPM=1
+For mini build time use NO\_NPM=1 eg make all NO\_NPM=1
 
----
+\---
+
+## 0.1.3.7v (2026-07-29)
+
+Changed: build system, docs, QEMU, bootloader, init, and big kernel update. Kernel Update; asm, kernel/mem.h, ACPI, AHCI, COPFS, All four calling systems (including irq WIP), eth, added idt (not used will be removed), added multitasking ctrl t in terminal kernel and more
 
 ## 0.1.3.5v (2026-07-14)
 
-Added hw/* drivers for PCI devices in the kernel
+Added hw/\* drivers for PCI devices in the kernel
 
 ## 0.1.3.3v (2026-07-11)
 
-Added COPFS a fully working filesystem, core.fs.* calls in CS_CORE, custom ovmf firmware (github.com/FEUE256/csf for more info) and more 
+Added COPFS a fully working filesystem, core.fs.\* calls in CS\_CORE, custom ovmf firmware (github.com/FEUE256/csf for more info) and more
 
 ## 0.1.3.1v (2026-07-02)
 
@@ -24,7 +28,7 @@ Added NVMe to kernel
 
 ## 0.1.3.0v (2026-06-29)
 
-Added VGA driver kernel/include/asm Chaged drivers everyone exept irq led status and time changed readme EULA cpppropites (new) CONTRIBITING.md int layer efi.h qemu scripts misc etc build time: 
+Added VGA driver kernel/include/asm Chaged drivers everyone exept irq led status and time changed readme EULA cpppropites (new) CONTRIBITING.md int layer efi.h qemu scripts misc etc build time:
 real    0m32.269s
 user    0m9.891s
 sys     0m2.419s
@@ -59,7 +63,7 @@ time make all
 * User: `8.352s`
 * Sys: `1.778s`
 
----
+\---
 
 ## 0.1.2.4v (2026-05-24)
 
@@ -71,20 +75,20 @@ Also added a small CIOS testing directory:
 test/
 ```
 
----
+\---
 
 ## 0.1.2.3 / 0.1.2.2 (2026-05-17)
 
 * Added project changes
 * Small `src/` update
 
----
+\---
 
 ## 0.1.2.1v (2026-05-16)
 
 Added small updates to the kernel and init system.
 
----
+\---
 
 ## 0.1.2.0v (Date Unknown)
 
@@ -94,7 +98,7 @@ Added CSE:
 CoreSys Encryption (SHA256)
 ```
 
----
+\---
 
 ## Added Core Kernel Features (2026-05-03)
 
@@ -103,7 +107,7 @@ Added:
 * Task creation
 * System calls
 
----
+\---
 
 ## Small Things (2026-05-03)
 
@@ -116,13 +120,13 @@ Changes:
 * Added `pyyaml` and `pip` to dependency lists
 * Added Arch Linux support
 
----
+\---
 
 ### Disclaimer
 
 Build times are measured via SSH on a Raspberry Pi 4 with 4 GB RAM.
 
----
+\---
 
 ## 12.0 CSC (2026-04-24)
 
@@ -136,7 +140,7 @@ This system will not receive major GUI development until further notice.
 * User: `5.547s`
 * Sys: `1.750s`
 
----
+\---
 
 ## 11.0 CSC (2026-04-24)
 
@@ -154,31 +158,31 @@ The 11.0 CSC release introduced:
 * User: `5.436s`
 * Sys: `1.714s`
 
----
+\---
 
 ## API (2026-04-19)
 
 Fixed the CoreSys API.
 
----
+\---
 
 ## ExitBootServices (2026-04-09)
 
 Verified that `ExitBootServices()` and the kernel work correctly together.
 
----
+\---
 
 ## UEFI Shell and Recovery (2026-04-08 → 2026-04-09)
 
 Fixed the recovery system in the CoreSys bootloader.
 
----
+\---
 
 ## Small Fixes (2026-04-07)
 
 Small maintenance fixes and improvements.
 
----
+\---
 
 ## Big Update Coming (2026-03-09 → After cd3f594 Release)
 
@@ -194,7 +198,7 @@ Major changes:
 * New `src/` file structure
 * Many additional internal improvements
 
----
+\---
 
 ## Things (2026-03-09)
 
@@ -202,7 +206,7 @@ Just some smaller and more relaxed development work.
 
 I honestly do not remember everything added here, but some small improvements were made.
 
----
+\---
 
 ## Some Quick Updates (2026-03-07)
 
@@ -214,7 +218,7 @@ Minor repository and GitHub updates, including:
 * Documentation updates
 * Improved file structure clarity
 
----
+\---
 
 ## First EDK Headers Working (2026-02-21)
 
@@ -232,11 +236,11 @@ This feels similar to a "Hello, World" moment for the project.
 
 Now we can focus on developing a working bootloader.
 
----
+\---
 
 ## Added EDK Header Support (2026-02-21)
 
-Added support for `EDK II` x86_64 headers in CoreSys.
+Added support for `EDK II` x86\_64 headers in CoreSys.
 
 This is a major step toward building:
 
@@ -244,7 +248,7 @@ This is a major step toward building:
 * UEFI applications
 * Better firmware integration
 
----
+\---
 
 ## New LICENSE (2026-02-20)
 
@@ -268,3 +272,4 @@ See:
 
 Note:
 `NOTICE.md` may later be removed or repurposed for other topics.
+

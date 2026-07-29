@@ -2,8 +2,7 @@
 
 #include <drivers/serial/main.h>
 #include <drivers/sf/main.h>
-
-#pragma once
+#include <drivers/ret/main.h>
 
 /*
  * x86 Exceptions
@@ -59,6 +58,7 @@ const char* cs_irq_name(int irq)
         case CS_IRQ_SS:  return "Stack Segment Fault (#SS)";
         case CS_IRQ_GP:  return "General Protection Fault (#GP)";
         case CS_IRQ_PF:  return "Page Fault (#PF)";
+        case CS_IRQ_RS:  return "Reserved (#RS)";
         case CS_IRQ_MF:  return "x87 Floating-Point Exception (#MF)";
         case CS_IRQ_AC:  return "Alignment Check (#AC)";
         case CS_IRQ_MC:  return "Machine Check (#MC)";
@@ -70,10 +70,22 @@ const char* cs_irq_name(int irq)
         case CS_IRQ_SX:  return "Security Exception (#SX)";
 
         default:
-            return "Reserved/Unknown";
+            return "Unknown";
     }
 }
 
 void irq(int irq) {
-    k_sff("IRQ: %s", cs_irq_name(irq));
+    const char *string = cs_irq_name(irq);
+
+    if (strcmp((char*)string, "Breakpoint (#BP)") == 0) {
+        _cs_asm_int3_main(); // ASM
+        k_sff("IRQ: %s + _cs_asm_int3_main failed :(", string);
+    }
+
+    if (strcmp((char*)string, "Invalid Opcode (#UD)") == 0) {
+        _cs_asm_ud2_main(); // ASM
+        k_sff("IRQ: %s + _cs_asm_ud2_main failed :(", string);
+    }
+
+    k_sff("IRQ: %s", string);
 }

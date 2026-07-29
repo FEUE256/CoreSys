@@ -57,6 +57,16 @@ qemu:
 	@bash ../../scripts/VM/qemu.sh
 	@echo "\n\nRan QEMU"
 
+# -------- Qemu DB ---------
+db:
+	@echo "Running QEMU..."
+	@if [ ! -f ../../scripts/VM/qemu_db.sh ]; then \
+		echo "Error: QEMU script not found at ../../scripts/VM/qemu_db.sh"; \
+		exit 1; \
+	fi
+	@bash ../../scripts/VM/qemu_db.sh
+	@echo "\n\nRan QEMU"
+
 # -------- Qemu with GDB ---------
 gdb:
 	@echo "Running QEMU with GDB..."

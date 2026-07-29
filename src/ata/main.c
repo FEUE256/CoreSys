@@ -28,10 +28,10 @@
 // On-disk structures (must match copfs.h byte-for-byte)
 // -----------------------------------------------------------------
 #define COP_MAGIC          "COPFS"
-#define COP_VERSION        0x00010001u
+#define COP_VERSION        0x00010002u
 #define COP_SECTOR_SIZE    512
 #define COP_BLOCK_SIZE     4096
-#define COP_DIRECT_BLOCKS  24
+#define COP_DIRECT_BLOCKS  86
 #define COP_MAX_NAME_LEN   200
 #define COP_MAX_PATH       32767
 
@@ -68,7 +68,7 @@ typedef struct {
 #pragma pack(pop)
 
 _Static_assert(sizeof(cop_superblock_t) == 94,  "superblock layout drift - resync with copfs.h");
-_Static_assert(sizeof(cop_inode_t)      == 209, "inode layout drift - resync with copfs.h");
+_Static_assert(sizeof(cop_inode_t)      == 705, "inode layout drift - resync with copfs.h");
 _Static_assert(sizeof(cop_dirent_t)     == 211, "dirent layout drift - resync with copfs.h");
 
 // -----------------------------------------------------------------

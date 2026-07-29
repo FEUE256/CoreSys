@@ -1198,45 +1198,35 @@ void icmp_send_echo_reply(
 {
     uint8_t packet[128];
 
-    icmp_header_t *reply =
-        (icmp_header_t*)packet;
+    if (length < sizeof(icmp_header_t))
+        return;
 
+    uint16_t payload_len = length - sizeof(icmp_header_t);
+    uint16_t max_payload = sizeof(packet) - sizeof(icmp_header_t);
+
+    if (payload_len > max_payload)
+        payload_len = max_payload;
+
+    icmp_header_t *reply = (icmp_header_t*)packet;
 
     memcpy(
         packet + sizeof(icmp_header_t),
         (uint8_t*)request + sizeof(icmp_header_t),
-        length - sizeof(icmp_header_t)
+        payload_len
     );
-
 
     reply->type = ICMP_ECHO_REPLY;
     reply->code = 0;
+    reply->identifier = request->identifier;
+    reply->sequence   = request->sequence;
+    reply->checksum   = 0;
 
-    reply->identifier =
-        request->identifier;
+    uint16_t reply_len = sizeof(icmp_header_t) + payload_len;
 
-    reply->sequence =
-        request->sequence;
+    reply->checksum = icmp_checksum(packet, reply_len);
 
-
-    reply->checksum = 0;
-
-    reply->checksum =
-        icmp_checksum(
-            packet,
-            length
-        );
-
-
-    ipv4_send(
-        eth->src,
-        ip->src_ip,
-        IPV4_PROTO_ICMP,
-        packet,
-        length
-    );
+    ipv4_send(eth->src, ip->src_ip, IPV4_PROTO_ICMP, packet, reply_len);
 }
-
 
 // =====================================
 // TX
@@ -1760,154 +1750,81 @@ uint32_t dns_ntohl(uint32_t value)
 // DNS Receive
 // =====================================
 
-void dns_receive(
-    void *data,
-    uint16_t length
-)
+void dns_receive(void *data, uint16_t length)
 {
-    if(length < sizeof(dns_header_t))
+    if (length < sizeof(dns_header_t))
     {
         kprintf("[DNS] Invalid packet\n");
         return;
     }
 
+    dns_header_t *dns = (dns_header_t*)data;
 
-    dns_header_t *dns =
-        (dns_header_t*)data;
+    uint8_t *begin = (uint8_t*)data;
+    uint8_t *end   = begin + length;
 
+    uint16_t flags   = dns_ntohs(dns->flags);
+    uint16_t answers = dns_ntohs(dns->answers);
 
-    uint16_t flags =
-        dns_ntohs(dns->flags);
-
-
-    uint16_t answers =
-        dns_ntohs(dns->answers);
-
-
-
-    kprintf("[DNS] Response\n");
-
-
-    kprintf(
-        "ID: 0x%x\n",
-        dns_ntohs(dns->id)
-    );
-
-
-    kprintf(
-        "Flags: 0x%x\n",
-        flags
-    );
-
-
-    kprintf(
-        "Questions: %u\n",
-        dns_ntohs(dns->questions)
-    );
-
-
-    kprintf(
-        "Answers: %u\n",
-        answers
-    );
-
-
-
-    if(!(flags & 0x8000))
+    if (!(flags & 0x8000))
     {
         kprintf("[DNS] Not a response\n");
         return;
     }
 
-
-
-    if(answers == 0)
+    if (answers == 0)
     {
         kprintf("[DNS] No answers\n");
         return;
     }
 
+    uint8_t *ptr = begin + sizeof(dns_header_t);
 
+    if (ptr >= end)
+        return;
 
-    /*
-        Skip DNS header
-    */
-
-    uint8_t *ptr =
-        (uint8_t*)data +
-        sizeof(dns_header_t);
-
-
-
-    /*
-        Skip question section
-
-        Format:
-
-        NAME
-        TYPE
-        CLASS
-    */
-
-
-    while(*ptr)
+    /* Skip question name, bounded */
+    while (ptr < end && *ptr)
     {
-        ptr += (*ptr) + 1;
+        uint8_t label_len = *ptr;
+
+        if (ptr + 1 + label_len >= end)
+            return; /* malformed / truncated name */
+
+        ptr += (size_t)label_len + 1;
     }
 
+    if (ptr >= end)
+        return;
 
-    ptr++; // skip zero
+    ptr++; /* skip terminating zero */
 
+    if (ptr + 4 > end) /* TYPE + CLASS */
+        return;
 
-    ptr += 4; // TYPE + CLASS
+    ptr += 4;
 
+    if (ptr + sizeof(dns_answer_t) > end)
+        return;
 
+    dns_answer_t *answer = (dns_answer_t*)ptr;
 
-    /*
-        Answer section
-    */
-
-    dns_answer_t *answer =
-        (dns_answer_t*)ptr;
-
-
-
-    uint16_t type =
-        dns_ntohs(answer->type);
-
-
-
-    uint16_t size =
-        dns_ntohs(answer->length);
-
-
+    uint16_t type = dns_ntohs(answer->type);
+    uint16_t size = dns_ntohs(answer->length);
 
     ptr += sizeof(dns_answer_t);
 
-
-
-    if(type == DNS_TYPE_A && size == 4)
+    if (type == DNS_TYPE_A && size == 4 && ptr + 4 <= end)
     {
-        uint32_t ip =
-            *(uint32_t*)ptr;
+        uint32_t ip = *(uint32_t*)ptr;
 
-
-        kprintf("[DNS] IPv4: ");
-
-        kprintf(
-            "%u.%u.%u.%u\n",
-            (ip >> 0) & 0xff,
-            (ip >> 8) & 0xff,
-            (ip >> 16) & 0xff,
-            (ip >> 24) & 0xff
-        );
+        kprintf("[DNS] IPv4: %u.%u.%u.%u\n",
+            (ip >> 0) & 0xff, (ip >> 8) & 0xff,
+            (ip >> 16) & 0xff, (ip >> 24) & 0xff);
     }
     else
     {
-        kprintf(
-            "[DNS] Unsupported record %u\n",
-            type
-        );
+        kprintf("[DNS] Unsupported record %u\n", type);
     }
 }
 
@@ -2505,101 +2422,49 @@ void ipv4_receive(
     uint16_t length
 )
 {
-    if(length < sizeof(ipv4_header_t))
+    if (length < sizeof(ipv4_header_t))
         return;
 
+    ipv4_header_t *ip = (ipv4_header_t*)data;
 
-    ipv4_header_t *ip =
-        (ipv4_header_t*)data;
+    uint8_t version = ip->version_ihl >> 4;
+    uint8_t ihl      = ip->version_ihl & 0x0F;
 
-
-    uint8_t version =
-        ip->version_ihl >> 4;
-
-
-    uint8_t ihl =
-        ip->version_ihl & 0x0F;
-
-
-    if(version != 4)
+    if (version != 4)
         return;
 
-
-    if(ihl < 5)
+    if (ihl < 5)
         return;
 
+    uint16_t header_bytes = (uint16_t)ihl * 4;
 
-    uint16_t total =
-        ipv4_ntohs(ip->total_length);
-
-
-    kprintf("[IPv4]\n");
-
-
-    kprintf("SRC: ");
-    ipv4_print_ip(ip->src_ip);
-    kprintf("\n");
-
-
-    kprintf("DST: ");
-    ipv4_print_ip(ip->dst_ip);
-    kprintf("\n");
-
-
-    kprintf("TTL: %u\n", ip->ttl);
-
-    kprintf("Protocol: %u\n", ip->protocol);
-
-
-    if(ip->dst_ip != KERNEL_IP)
+    if (header_bytes > length)
         return;
 
+    uint16_t total = ipv4_ntohs(ip->total_length);
 
+    /* Never trust the wire value beyond what we actually received. */
+    if (total < header_bytes || total > length)
+        total = length;
 
-    void *payload =
-        (uint8_t*)data + (ihl * 4);
+    if (ip->dst_ip != KERNEL_IP)
+        return;
 
+    void *payload = (uint8_t*)data + header_bytes;
+    uint16_t payload_length = total - header_bytes;
 
-    uint16_t payload_length =
-        total - (ihl * 4);
-
-
-
-    switch(ip->protocol)
+    switch (ip->protocol)
     {
         case IPV4_PROTO_ICMP:
-
-            icmp_receive(
-                eth,
-                ip,
-                payload,
-                payload_length
-            );
-
+            icmp_receive(eth, ip, payload, payload_length);
             break;
-
 
         case IPV4_PROTO_UDP:
-
-            udp_receive(
-                eth,
-                ip,
-                payload,
-                payload_length
-            );
-
+            udp_receive(eth, ip, payload, payload_length);
             break;
 
-
         case IPV4_PROTO_TCP:
-
-            tcp_receive(
-                eth,
-                ip,
-                payload,
-                payload_length
-            );
-
+            tcp_receive(eth, ip, payload, payload_length);
             break;
     }
 }

@@ -10,6 +10,8 @@
 typedef unsigned char u8;
 typedef unsigned short u16;
 
+void print_tid(tid_t tid);
+
 // ==============================
 // COM base port
 // ==============================
@@ -479,6 +481,16 @@ int kprintf(const char *fmt, ...)
                 count += kstrlen(s);
                 break;
             }
+            
+            case 't':
+            {
+                char *tid = va_arg(ap, char *);
+
+                print_tid(tid);
+
+                count += 16;
+                break;
+            }
 
             case 'c':
             {
@@ -885,6 +897,28 @@ int snprintf(char *buf, size_t size, const char *fmt, ...)
 
             i++; // skip 's'
         }
+        else if (fmt[i] == '%' && fmt[i + 1] == 'p')
+        {
+            void *ptr = va_arg(args, void *);
+
+            uintptr_t value = (uintptr_t)ptr;
+
+            const char hex[] = "0123456789ABCDEF";
+
+            if (pos < size - 1)
+                buf[pos++] = '0';
+
+            if (pos < size - 1)
+                buf[pos++] = 'x';
+
+            for (int shift = (sizeof(uintptr_t) * 8) - 4; shift >= 0; shift -= 4)
+            {
+                if (pos < size - 1)
+                    buf[pos++] = hex[(value >> shift) & 0xF];
+            }
+
+            i++; // skip 'p'
+        }
         else
         {
             buf[pos++] = fmt[i];
@@ -1152,4 +1186,39 @@ char *strrchr(const char *str, int c)
         return (char *)str;
 
     return (char *)last;
+}
+
+int abs(int x)
+{
+    if (x < 0)
+        return -x;
+
+    return x;
+}
+
+// For more randomness use 8:th not 1:th
+char e_digit(uint64_t x) {
+    uint64_t div = 1;
+
+    // Find the highest power of 10.
+    while (x / div >= 10) {
+        div *= 10;
+    }
+
+    // Skip the first 7 digits.
+    for (int i = 0; i < 7 && div > 1; i++) {
+        div /= 10;
+    }
+
+    return (char)('0' + ((x / div) % 10));
+}
+
+void cli(void)
+{
+    __asm__ volatile ("cli" ::: "memory");
+}
+
+void sti(void)
+{
+    __asm__ volatile ("sti" ::: "memory");
 }
