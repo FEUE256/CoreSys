@@ -34,4 +34,8 @@ Neither the name of Microsoft Corporation nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
 
+Neither the name of AMD Corporation nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+
 BY INSTALLING OR USING COREYSYS, YOU ACKNOWLEDGE THAT YOU HAVE READ THIS AGREEMENT, UNDERSTAND IT, AND AGREE TO BE BOUND BY ITS TERMS.

@@ -1,64 +1,65 @@
-FÈUE License 
+FÈUE License 2.1
 Copyright (c) 2026 Nils Efverman FÈUE
 
 Preamble
-  This License Agreement ("Agreement") grants rights from the Copyright Holder
-  to any individual or legal entity ("Licensee") obtaining a copy of the Software
-  and associated documentation files (collectively, the "Software"). "Derivative Work" means any work based on the Software, including modifications, adaptations, or combined works that include the Software.
+This License Agreement ("Agreement") grants rights from the Copyright Holder to any individual or legal entity ("Licensee") obtaining a copy of the Software and associated documentation files (collectively, the "Software").
+"Derivative Work" means any work based on the Software, including modifications, adaptations, translations, enhancements, or combined works that include the Software.
+"Source Code" means the preferred form of the Software for making modifications.
+"Object Code" means any compiled, assembled, executable, or other machine-readable form of the Software.
+"Contributor" means any individual or legal entity that creates, modifies, or distributes contributions or Derivative Works under this License.
 
 1. Grant of Rights
-  The Copyright Holder grants the Licensee a perpetual, worldwide, non-exclusive,
-  royalty-free license to:
-  - Use, reproduce, modify, adapt, merge, publish, distribute, sublicense, and/or sell copies of the Software.
-  - Permit others to do any of the above under the same terms.
+The Copyright Holder grants the Licensee a perpetual, worldwide, non-exclusive, royalty-free license to:
+- Use, reproduce, modify, adapt, merge, publish, distribute, and/or sell copies of the Software.
+- Permit others to exercise the rights granted under this License.
+No additional license agreement or acceptance is required for recipients to exercise the rights granted under this License.
 
-2. Conditions
+2. Terms and Conditions
 
-  2.1 License Notice
-    All copies or substantial portions of the Software must include this License and copyright notice.
-  
-  2.2 Preservation of Notices
-    Licensees may not remove, alter, or obscure copyright, attribution, or proprietary notices.
-  
-  2.3 Reciprocal Licensing
-    Any redistributed or derivative work must be licensed under the same terms as this License.
-    No additional restrictions may be applied that contradict this License.
-  
-  2.4 Sublicensing
-  
-    The Licensee may grant sublicenses to third parties to use the Software, provided that:
-    
-      (a) Any sublicense is valid for a maximum duration of ten (10) calendar days from the date it is granted.  
-      (b) All sublicenses must include the complete text of this License and all copyright notices.  
-      (c) The Licensee remains fully responsible for any acts or omissions of sublicensees, including compliance with all terms of this License.  
-      (d) No sublicense may grant rights beyond those explicitly granted to the Licensee under this License.
-      (e) The Licensee may grant a sublicense to a third party to use the Software. Such sublicense may not be further sublicensed or transferred by the sublicensee (i.e., no sub-sub-licenses). All sublicenses must include the complete text of this License and all copyright notices. The Licensee remains fully responsible for compliance with this License by any sublicensee.
+2.1 License Notice
+All copies or substantial portions of the Software must include this License and copyright notice.
+
+2.2 Preservation of Notices
+Licensees may not remove, alter, or obscure copyright or attribution notices.
+
+2.3 Copyleft
+Any distributed Derivative Work must be licensed under the same terms as this License.
+Recipients of redistributed Software automatically receive the rights granted by this License from the Copyright Holder.
+
+2.4 Source Code
+If the Software is distributed in executable or Object Code form, the complete corresponding Source Code must also be made available under this License.
+The Source Code must be provided in the preferred form for making modifications. It may be distributed with the Software or made available through a publicly accessible website without charge.
+
+2.5 Modified Versions
+Modified versions may be distributed provided that they:
+- Remain licensed under this License.
+- Clearly identify that they have been modified.
+- Preserve existing copyright and attribution notices.
 
 3. Enforcement
 
-  3.1 Triggering Event
-    Violation of Section 2.3 or any other License term constitutes a breach of this License.
-  
-  3.2 Remedies
-    Upon breach, the Copyright Holder may:
-    - Seek reasonable remedies, including injunctive relief and enforcement of License terms.
-    - Recover actual, reasonable costs incurred in enforcing the License, including attorney fees,
-      court filing fees, and other expenses directly related to the enforcement of this License.
+3.1 Triggering Event
+Violation of this License or failure to comply with its terms constitutes a breach of this License.
+
+3.2 Remedies
+Upon breach, the Copyright Holder may:
+- Seek reasonable remedies, including injunctive relief and enforcement of License terms.
+- Recover reasonable costs incurred in enforcing this License, including attorney fees, court filing fees, and other expenses directly related to enforcement.
 
 4. Attribution Requirements
-  Any public display, publication, or distribution of the Software must include the copyright notice and a link to the FÈUE License.
+Any public display, publication, or distribution of the Software must include:
+- The copyright notice.
+- A copy of this License or a publicly accessible URL where this License can be obtained.
 
 5. Patent Grant
-  The Copyright Holder grants a non-exclusive, worldwide, royalty-free license to any patents necessarily infringed by the use or distribution of the Software.
+The Copyright Holder grants a non-exclusive, worldwide, royalty-free license to any patents necessarily infringed by the use, modification, or distribution of the Software.
 
-6. Disclaimer of Warranty
-  THE SOFTWARE IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-  INCLUDING MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+6. Patent Termination
+If a Licensee initiates patent litigation against any party alleging that the Software infringes a patent, all patent rights granted to that Licensee under this License terminate automatically.
+7. Disclaimer of Warranty
+THE SOFTWARE IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
-7. Limitation of Liability
-  THE COPYRIGHT HOLDER IS NOT LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY
-  ARISING FROM OR IN CONNECTION WITH THE SOFTWARE OR USE THEREOF.
+8. Limitation of Liability
+THE COPYRIGHT HOLDER IS NOT LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM OR IN CONNECTION WITH THE SOFTWARE OR USE THEREOF.
 
-8. Acceptance
-  By using, copying, or redistributing the Software, the Licensee accepts this License
-  and agrees to be bound by its terms.
+The rights granted by this License apply automatically to all recipients of the Software.
