@@ -31,3 +31,5 @@ typedef enum {
 #define CS_ERROR 1 // ERROR
 #define CS_KSF 2 // Kernel System Failure
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#define CS_ERR_BASE 256

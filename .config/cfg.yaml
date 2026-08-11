@@ -21,7 +21,8 @@ LD: "x86_64-w64-mingw32-gcc"
 INC_DIR: "$(SRC_DIR)/include"
 CF_STD: 
   - "-Werror" 
-  # - "-Wunused-result"
+  - "-Wunused-result"
+  
 INCLUDES:
   - "-I$(INC_DIR)"
 

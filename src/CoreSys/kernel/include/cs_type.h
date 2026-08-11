@@ -61,6 +61,7 @@
 #include <asm/global.h>
 
 #include <drivers/vga/main.h>
+#include <drivers/ame/main.h>
 
 #include <drivers/ret/main.h>
 #include <drivers/status/main.h>

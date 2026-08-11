@@ -79,6 +79,21 @@ static inline void serial_write_char(char c)
     outb(COM1, (u8)c);
 }
 
+void print_int_pad(uint64_t value, int width)
+{
+    uint64_t div = 1;
+
+    for (int i = 1; i < width; i++)
+        div *= 10;
+
+    while (div)
+    {
+        serial_write_char('0' + (value / div));
+        value %= div;
+        div /= 10;
+    }
+}
+
 static inline void a_char_print(char c)
 {
     while (!serial_is_transmit_empty());
@@ -489,6 +504,29 @@ int kprintf(const char *fmt, ...)
                 print_tid(tid);
 
                 count += 16;
+                break;
+            }
+
+            case 'a':
+            {
+                int64_t value = va_arg(ap, int64_t);
+
+                if (value == INT64_MIN)
+                {
+                    kprint("-9223372036854775.808");
+                    break;
+                }
+
+                if (value < 0)
+                {
+                    kprint_char('-'); 
+                    value = -value;
+                }
+
+                kprint_int(value / 1000);
+                kprint_char('.');
+                print_int_pad(value % 1000, 3);
+
                 break;
             }
 

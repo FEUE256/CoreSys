@@ -35,6 +35,8 @@ void deinitSerial(cs_task* self);
 void shutdown(void);
 void reboot(void);
 
+static inline void task_run(cs_task* task);
+
 static inline int hal_dev_null(int code);
 static inline void hal_execute_command(const char* cmd);
 
@@ -113,6 +115,19 @@ int fs_cop_append(const char *path, const void *buffer, uint64_t size);
 uint64_t fs_cop_exec_file(const char *path);
 uint64_t fs_fs_init();
 uint64_t fs_fs_deinit();
+
+int memret(int code);
+void pmm_init(uint64_t usable_start, uint64_t usable_size);
+void pmm_deinit(cs_task *self);
+void *pmm_alloc_pages(size_t pages);
+void pmm_free_pages(void *ptr, size_t pages);
+void *kmalloc(size_t size);
+void kfree(void *ptr);
+void *memcpy(void *dest, const void *src, size_t n);
+void *memset(void *dest, int val, size_t n);
+uint64_t virt_to_phys(void *addr);
+
+int tskret(int code);
 
 typedef struct CS_FS {
     int (*null)(int code);
@@ -229,12 +244,32 @@ typedef struct CS_IRQ {
 
 } __attribute__((packed)) CS_IRQ;
 
+typedef struct CS__TASK {
+    int  (*null)(int code);
+    void (*task_run)(cs_task *task);
+} __attribute__((packed)) CS__TASK;
+
+typedef struct CS_MEM {
+    int      (*null)(int code);
+    void     (*pmm_init)(uint64_t usable_start, uint64_t usable_size);
+    void     (*pmm_deinit)(cs_task *self);
+    void    *(*pmm_alloc_pages)(size_t pages);
+    void     (*pmm_free_pages)(void *ptr, size_t pages);
+    void    *(*kmalloc)(size_t size);
+    void     (*kfree)(void *ptr);
+    void    *(*memcpy)(void *dest, const void *src, size_t n);
+    void    *(*memset)(void *dest, int val, size_t n);
+    uint64_t (*virt_to_phys)(void *addr);
+} __attribute__((packed)) CS_MEM;
+
 typedef struct CS_CORE {
-    CS_HAL hal;
-    CS_SYS sys;
-    CS_FS  fs;
-    CS_IRQ irq;
-    char version[16];
+    CS_FS  fs; // Fscalls
+    CS_HAL hal; // Halcalls
+    CS_SYS sys; // Syscalls
+    CS_IRQ irq; // Irqcalls
+    CS_MEM mem; // Memcalls
+    CS__TASK task; // Taskcalls
+    char version[16]; // Version
 } __attribute__((packed)) CS_CORE;
 
 void tsk_init(void) {
@@ -250,6 +285,24 @@ void cs_init(CS_CORE *core)
     tsk_init();
 
     snprintf(core->version, sizeof((void*)CS_VER), "%s", CS_VER);
+
+    core->task.task_run  = task_run;
+    core->task.null      = tskret;
+
+    core->mem.null = memret;
+
+    core->mem.pmm_init        = pmm_init;
+    core->mem.pmm_deinit      = pmm_deinit;
+    core->mem.pmm_alloc_pages = pmm_alloc_pages;
+    core->mem.pmm_free_pages  = pmm_free_pages;
+
+    core->mem.kmalloc = kmalloc;
+    core->mem.kfree   = kfree;
+
+    core->mem.memcpy = memcpy;
+    core->mem.memset = memset;
+
+    core->mem.virt_to_phys = virt_to_phys;
 
     core->fs.null        = fsret;
 
@@ -367,6 +420,21 @@ void cs_deinit(CS_CORE *core)
     tsk_deinit();
 
     memcpy(core->version, 0, 0);
+
+    core->task.task_run  = NULL;
+
+    core->mem.pmm_init        = NULL;
+    core->mem.pmm_deinit      = NULL;
+    core->mem.pmm_alloc_pages = NULL;
+    core->mem.pmm_free_pages  = NULL;
+
+    core->mem.kmalloc = NULL;
+    core->mem.kfree   = NULL;
+
+    core->mem.memcpy = NULL;
+    core->mem.memset = NULL;
+
+    core->mem.virt_to_phys = NULL;
 
     core->irq.null = NULL;
 

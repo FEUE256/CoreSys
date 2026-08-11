@@ -1,4 +1,4 @@
-# CoreSys ABI Specification v1.0 (FÈUE)
+# CoreSys ABI Specification v1.1 (FÈUE)
 ## Core I ABI Spec FÈUE
 
 ## Overview
@@ -611,3 +611,40 @@ Breaking changes require:
 ```text
 ABI Major Version Increment
 ```
+
+# IDT ABI 00-1F
+
+| Vector | Decimal | ABI Symbol        | Exception                               | Description                                     |
+| ------ | ------: | ----------------- | --------------------------------------- | ----------------------------------------------- |
+| 00     |       0 | `_cs_asm_irq_de`  | #DE Divide Error                        | Division by zero or invalid DIV/IDIV operation  |
+| 01     |       1 | `_cs_asm_irq_db`  | #DB Debug Exception                     | Debug registers, breakpoints, single-step       |
+| 02     |       2 | `_cs_asm_irq_nmi` | NMI                                     | Non-maskable interrupt                          |
+| 03     |       3 | `_cs_asm_irq_bp`  | #BP Breakpoint                          | INT3 breakpoint instruction                     |
+| 04     |       4 | `_cs_asm_irq_of`  | #OF Overflow                            | INTO overflow exception                         |
+| 05     |       5 | `_cs_asm_irq_br`  | #BR Bound Range Exceeded                | BOUND instruction exception                     |
+| 06     |       6 | `_cs_asm_irq_ud`  | #UD Invalid Opcode                      | Undefined or invalid instruction                |
+| 07     |       7 | `_cs_asm_irq_nm`  | #NM Device Not Available                | FPU/MMX/SIMD unavailable                        |
+| 08     |       8 | `_cs_asm_irq_df`  | #DF Double Fault                        | Fatal exception during exception handling       |
+| 09     |       9 | `_cs_asm_irq_cs`  | #CS CoreSys Coprocessor Segment Overrun | CoreSys ABI name for legacy reserved CSO vector |
+| 0A     |      10 | `_cs_asm_irq_ts`  | #TS Invalid TSS                         | Invalid Task State Segment                      |
+| 0B     |      11 | `_cs_asm_irq_np`  | #NP Segment Not Present                 | Segment unavailable                             |
+| 0C     |      12 | `_cs_asm_irq_ss`  | #SS Stack-Segment Fault                 | Stack segment violation                         |
+| 0D     |      13 | `_cs_asm_irq_gp`  | #GP General Protection Fault            | General protection violation                    |
+| 0E     |      14 | `_cs_asm_irq_pf`  | #PF Page Fault                          | Memory paging violation                         |
+| 0F     |      15 | `_cs_asm_irq_rs`  | #RS Reserved                            | Reserved Intel vector                           |
+| 10     |      16 | `_cs_asm_irq_mf`  | #MF x87 Floating-Point Error            | x87 floating point exception                    |
+| 11     |      17 | `_cs_asm_irq_ac`  | #AC Alignment Check                     | Alignment violation                             |
+| 12     |      18 | `_cs_asm_irq_mc`  | #MC Machine Check                       | Hardware machine failure                        |
+| 13     |      19 | `_cs_asm_irq_xm`  | #XM SIMD Floating-Point Exception       | SSE/SIMD exception                              |
+| 14     |      20 | `_cs_asm_irq_ve`  | #VE Virtualization Exception            | Virtualization exception                        |
+| 15     |      21 | `_cs_asm_irq_cp`  | #CP Control Protection Exception        | CET control protection violation                |
+| 16     |      22 | `_cs_asm_irq_16`  | Reserved                                | Reserved vector                                 |
+| 17     |      23 | `_cs_asm_irq_17`  | Reserved                                | Reserved vector                                 |
+| 18     |      24 | `_cs_asm_irq_18`  | Reserved                                | Reserved vector                                 |
+| 19     |      25 | `_cs_asm_irq_19`  | Reserved                                | Reserved vector                                 |
+| 1A     |      26 | `_cs_asm_irq_1A`  | Reserved                                | Reserved vector                                 |
+| 1B     |      27 | `_cs_asm_irq_1B`  | Reserved                                | Reserved vector                                 |
+| 1C     |      28 | `_cs_asm_irq_hv`  | #HV Hypervisor Injection Exception      | Hypervisor injected exception                   |
+| 1D     |      29 | `_cs_asm_irq_vc`  | #VC VMM Communication Exception         | Virtual machine communication exception         |
+| 1E     |      30 | `_cs_asm_irq_sx`  | #SX Security Exception                  | Security-related exception                      |
+| 1F     |      31 | `_cs_asm_irq_1F`  | Reserved                                | Reserved vector                                 |

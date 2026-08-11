@@ -84,7 +84,7 @@ uint64_t irqcall(irqcall_frame_t *frame)
         irq(CS_IRQ_DF);
     }
     else if (id == IRQ_CO) {
-        irq(CS_IRQ_CO);
+        irq(CS_IRQ_CS);
     }
     else if (id == IRQ_TS) {
         irq(CS_IRQ_TS);

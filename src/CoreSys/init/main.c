@@ -1,8 +1,6 @@
 // -----------------------------------------
-// FÈUE File CoreSys Init
-// Contains code of the project
-// CyberBoot by FÈUE
-// INIT / OS
+// FÈUE CoreSys Init
+// INIT / OS entry point
 // Namespace io.feue.coresys.init.imain
 // -----------------------------------------
 
@@ -20,7 +18,13 @@
 #include <stdbool.h>
 #include <kernel/mem.h>
 #include <init/headers.h>
-#include <API/CoreSys.h> // CoreSys API
+#include <API/CoreSys.h>
+
+// ─── Globals ──────────────────────────────────────────────────────────────────
+
+BOOT_INFO boot_info;
+
+// ─── EFI context init ─────────────────────────────────────────────────────────
 
 void init(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable)
 {
@@ -29,507 +33,396 @@ void init(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable)
     bs    = SystemTable->BootServices;
     rs    = SystemTable->RuntimeServices;
 
-    gST = SystemTable;
-    gBS = SystemTable->BootServices;
-    gRS = SystemTable->RuntimeServices;
+    gST   = SystemTable;
+    gBS   = SystemTable->BootServices;
+    gRS   = SystemTable->RuntimeServices;
 
-    cout = SystemTable->ConOut;
-    cin  = SystemTable->ConIn;
+    cout  = SystemTable->ConOut;
+    cin   = SystemTable->ConIn;
 }
 
-BOOT_INFO boot_info;
+// ─── Memory map ───────────────────────────────────────────────────────────────
 
 void get_memory_mapl(EFI_SYSTEM_TABLE *SystemTable)
 {
-    UINTN memory_map_size = 0;
-    UINTN map_key;
-    UINTN descriptor_size;
-    UINT32 descriptor_version;
+    UINTN            map_size        = 0;
+    UINTN            map_key         = 0;
+    UINTN            desc_size       = 0;
+    UINT32           desc_version    = 0;
+    EFI_STATUS       status;
 
-    EFI_STATUS status;
-
-
-    /*
-        First call gets required size
-    */
-    status = SystemTable->BootServices->GetMemoryMap(
-        &memory_map_size,
-        NULL,
-        &map_key,
-        &descriptor_size,
-        &descriptor_version
+    // First call: get required buffer size
+    SystemTable->BootServices->GetMemoryMap(
+        &map_size, NULL, &map_key, &desc_size, &desc_version
     );
 
+    map_size += desc_size * 8; // headroom for descriptor churn
 
-    memory_map_size += descriptor_size * 8;
-
-
-    EFI_MEMORY_DESCRIPTOR *memory_map;
-
+    EFI_MEMORY_DESCRIPTOR *map = NULL;
 
     status = SystemTable->BootServices->AllocatePool(
-        EfiLoaderData,
-        memory_map_size,
-        (VOID**)&memory_map
+        EfiLoaderData, map_size, (VOID **)&map
     );
-
-
     if (EFI_ERROR(status))
     {
-        printf(L"Failed allocating memory map\n");
+        printf(L"get_memory_map: AllocatePool failed: %llx\r\n", (unsigned long long)status);
         return;
     }
-
 
     status = SystemTable->BootServices->GetMemoryMap(
-        &memory_map_size,
-        memory_map,
-        &map_key,
-        &descriptor_size,
-        &descriptor_version
+        &map_size, map, &map_key, &desc_size, &desc_version
     );
-
-
     if (EFI_ERROR(status))
     {
-        printf(L"GetMemoryMap failed\n");
+        printf(L"get_memory_map: GetMemoryMap failed: %llx\r\n", (unsigned long long)status);
+        SystemTable->BootServices->FreePool(map);
         return;
     }
 
+    boot_info.memory_entries  = 0;
+    boot_info.installed_ram   = 0;
+    boot_info.reserved_ram    = 0;
 
+    UINTN entry_count = map_size / desc_size;
 
-    boot_info.memory_entries = 0;
-    boot_info.installed_ram = 0;
-    boot_info.reserved_ram = 0;
-
-
-
-    for(UINTN i = 0; i < memory_map_size / descriptor_size; i++)
+    for (UINTN i = 0; i < entry_count; i++)
     {
-
         EFI_MEMORY_DESCRIPTOR *desc =
-            (EFI_MEMORY_DESCRIPTOR*)
-            ((UINT8*)memory_map + i * descriptor_size);
+            (EFI_MEMORY_DESCRIPTOR *)((UINT8 *)map + i * desc_size);
 
+        UINT64 region_bytes = desc->NumberOfPages * 4096ULL;
 
-
-        if(boot_info.memory_entries < MAX_MEMORY_ENTRIES)
+        if (boot_info.memory_entries < MAX_MEMORY_ENTRIES)
         {
-            boot_info.memory_map[
-                boot_info.memory_entries
-            ].base =
-                desc->PhysicalStart;
-
-
-            boot_info.memory_map[
-                boot_info.memory_entries
-            ].length =
-                desc->NumberOfPages * 4096;
-
-
-            boot_info.memory_map[
-                boot_info.memory_entries
-            ].type =
-                desc->Type;
-
-
+            boot_info.memory_map[boot_info.memory_entries].base   = desc->PhysicalStart;
+            boot_info.memory_map[boot_info.memory_entries].length = region_bytes;
+            boot_info.memory_map[boot_info.memory_entries].type   = desc->Type;
             boot_info.memory_entries++;
         }
 
-
-
-        switch(desc->Type)
+        switch (desc->Type)
         {
-
             case EfiConventionalMemory:
-
             case EfiLoaderCode:
-
             case EfiLoaderData:
-
             case EfiBootServicesCode:
-
             case EfiBootServicesData:
-
-                boot_info.installed_ram +=
-                    desc->NumberOfPages * 4096;
-
+                boot_info.installed_ram += region_bytes;
                 break;
-
-
 
             case EfiReservedMemoryType:
-
             case EfiUnusableMemory:
-
             case EfiACPIReclaimMemory:
-
             case EfiACPIMemoryNVS:
-
-                boot_info.reserved_ram +=
-                    desc->NumberOfPages * 4096;
-
+                boot_info.reserved_ram += region_bytes;
                 break;
-
-
 
             case EfiMemoryMappedIO:
-
             case EfiMemoryMappedIOPortSpace:
-
+            default:
                 break;
-
         }
-
     }
 
+    // TODO: replace with CPUID leaf 0x80000008 (EAX bits [7:0])
+    boot_info.physical_address_width  = 40;
+    boot_info.max_supported_memory    = 1ULL << boot_info.physical_address_width;
 
-
-    /*
-        x86_64 usually supports 40-52 bits.
-        CPUID should replace this later.
-    */
-    boot_info.physical_address_width = 40;
-
-    boot_info.max_supported_memory =
-        1ULL << boot_info.physical_address_width;
-
-
-
-    SystemTable->BootServices->FreePool(memory_map);
+    SystemTable->BootServices->FreePool(map);
 }
 
-// -------------------------------
-// Load EFI image
-// -------------------------------
+// ─── ACPI ─────────────────────────────────────────────────────────────────────
+
+void get_acpi_info(EFI_SYSTEM_TABLE *SystemTable)
+{
+    boot_info.rsdp           = 0;
+    boot_info.rsdt           = 0;
+    boot_info.xsdt           = 0;
+    boot_info.acpi_available = 0;
+    boot_info.acpi_revision  = 0;
+
+    for (UINTN i = 0; i < SystemTable->NumberOfTableEntries; i++)
+    {
+        EFI_CONFIGURATION_TABLE *table = &SystemTable->ConfigurationTable[i];
+        ACPI_RSDP *rsdp = (ACPI_RSDP *)table->VendorTable;
+
+        bool is_acpi2 = memcmp(&table->VendorGuid, &gEfiAcpi20TableGuid, sizeof(EFI_GUID)) == 0;
+        bool is_acpi1 = memcmp(&table->VendorGuid, &gEfiAcpi10TableGuid, sizeof(EFI_GUID)) == 0;
+
+        if (!is_acpi2 && !is_acpi1)
+            continue;
+
+        boot_info.rsdp           = (uint64_t)rsdp;
+        boot_info.acpi_revision  = rsdp->Revision;
+        boot_info.acpi_available = 1;
+
+        if (is_acpi2 && rsdp->Revision >= 2)
+            boot_info.xsdt = rsdp->XsdtAddress;
+        else
+            boot_info.rsdt = rsdp->RsdtAddress;
+
+        if (is_acpi2)
+            break; // prefer ACPI 2.0 — stop on first match
+    }
+}
+
+// ─── Framebuffer ──────────────────────────────────────────────────────────────
+
+void get_framebuffer(void)
+{
+    EFI_GUID gopGuid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+    EFI_GRAPHICS_OUTPUT_PROTOCOL *gop = NULL;
+
+    boot_info.framebuffer      = 0;
+    boot_info.framebuffer_size = 0;
+    boot_info.width            = 0;
+    boot_info.height           = 0;
+    boot_info.pitch            = 0;
+    boot_info.format           = 0;
+
+    EFI_STATUS status = gST->BootServices->LocateProtocol(
+        &gopGuid, NULL, (VOID **)&gop
+    );
+    if (EFI_ERROR(status))
+    {
+        printf(L"get_framebuffer: GOP not found: %llx\r\n", (unsigned long long)status);
+        return;
+    }
+
+    EFI_GRAPHICS_OUTPUT_MODE_INFORMATION *info = gop->Mode->Info;
+
+    boot_info.framebuffer      = gop->Mode->FrameBufferBase;
+    boot_info.framebuffer_size = gop->Mode->FrameBufferSize;
+    boot_info.width            = info->HorizontalResolution;
+    boot_info.height           = info->VerticalResolution;
+    boot_info.pitch            = info->PixelsPerScanLine;
+    boot_info.format           = info->PixelFormat;
+}
+
+// ─── Write boot info to shared memory slots ───────────────────────────────────
+
+void mem_write(int debug)
+{
+    get_memory_mapl(gST);
+    get_acpi_info(gST);
+    get_framebuffer();
+
+    *(volatile uint8_t  *)KDI = (uint8_t)debug;
+    *(volatile BOOT_INFO *)KSP = boot_info;
+}
+
+// ─── ExitBootServices ─────────────────────────────────────────────────────────
+
+EFI_STATUS exit_boot_services(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable)
+{
+    UINTN      map_size       = 0;
+    UINTN      map_key        = 0;
+    UINTN      desc_size      = 0;
+    UINT32     desc_version   = 0;
+    EFI_STATUS status;
+
+    status = SystemTable->BootServices->GetMemoryMap(
+        &map_size, NULL, &map_key, &desc_size, &desc_version
+    );
+    if (status != EFI_BUFFER_TOO_SMALL)
+        return status;
+
+    map_size += desc_size * 8;
+
+    EFI_MEMORY_DESCRIPTOR *map = NULL;
+
+    status = SystemTable->BootServices->AllocatePool(
+        EfiLoaderData, map_size, (VOID **)&map
+    );
+    if (EFI_ERROR(status))
+        return status;
+
+    status = SystemTable->BootServices->GetMemoryMap(
+        &map_size, map, &map_key, &desc_size, &desc_version
+    );
+    if (EFI_ERROR(status))
+    {
+        SystemTable->BootServices->FreePool(map);
+        return status;
+    }
+
+    status = SystemTable->BootServices->ExitBootServices(ImageHandle, map_key);
+
+    // NOTE: on success, BootServices are dead — FreePool is intentionally skipped.
+    // On failure, we return the error; the caller should not retry without
+    // re-fetching the memory map since the map key is stale after a failed exit.
+    if (EFI_ERROR(status))
+        SystemTable->BootServices->FreePool(map);
+
+    return status;
+}
+
+// ─── Load EFI image from disk ─────────────────────────────────────────────────
+
 EFI_STATUS load_efi(
-    EFI_HANDLE ImageHandle,
+    EFI_HANDLE        ImageHandle,
     EFI_SYSTEM_TABLE *SystemTable,
-    CHAR16 *FilePath,
-    EFI_HANDLE *OutImage
+    CHAR16           *FilePath,
+    EFI_HANDLE       *OutImage
 )
 {
-    EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *Fs;
-    EFI_FILE_PROTOCOL *Root = NULL, *File = NULL;
-    EFI_STATUS Status;
-    void *Buffer = NULL;
-    EFI_FILE_INFO *Info = NULL;
+    EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *Fs   = NULL;
+    EFI_FILE_PROTOCOL               *Root = NULL;
+    EFI_FILE_PROTOCOL               *File = NULL;
+    EFI_FILE_INFO                   *Info = NULL;
+    void                            *Buffer = NULL;
+    EFI_STATUS                       status;
 
-    UINTN FileSize;
     UINTN InfoSize = sizeof(EFI_FILE_INFO) + 200;
 
-    Status = SystemTable->BootServices->LocateProtocol(
-        &gEfiSimpleFileSystemProtocolGuid,
-        NULL,
-        (void**)&Fs
+    status = SystemTable->BootServices->LocateProtocol(
+        &gEfiSimpleFileSystemProtocolGuid, NULL, (void **)&Fs
     );
-    if (EFI_ERROR(Status)) return Status;
+    if (EFI_ERROR(status)) return status;
 
-    Status = Fs->OpenVolume(Fs, &Root);
-    if (EFI_ERROR(Status)) return Status;
+    status = Fs->OpenVolume(Fs, &Root);
+    if (EFI_ERROR(status)) return status;
 
-    Status = Root->Open(Root, &File, FilePath, EFI_FILE_MODE_READ, 0);
-    if (EFI_ERROR(Status)) return Status;
+    status = Root->Open(Root, &File, FilePath, EFI_FILE_MODE_READ, 0);
+    if (EFI_ERROR(status)) return status;
 
-    Status = SystemTable->BootServices->AllocatePool(
-        EfiLoaderData,
-        InfoSize,
-        (void**)&Info
-    );
-    if (EFI_ERROR(Status)) goto cleanup_file;
+    status = SystemTable->BootServices->AllocatePool(EfiLoaderData, InfoSize, (void **)&Info);
+    if (EFI_ERROR(status)) goto cleanup_file;
 
-    Status = File->GetInfo(File, &gEfiFileInfoGuid, &InfoSize, Info);
-    if (EFI_ERROR(Status)) goto cleanup_info;
+    status = File->GetInfo(File, &gEfiFileInfoGuid, &InfoSize, Info);
+    if (EFI_ERROR(status)) goto cleanup_info;
 
-    FileSize = (UINTN)Info->FileSize;
+    UINTN FileSize = (UINTN)Info->FileSize;
 
     if (FileSize <= 2)
     {
-        Status = EFI_INVALID_PARAMETER;
+        status = EFI_INVALID_PARAMETER;
         goto cleanup_info;
     }
 
-    Status = SystemTable->BootServices->AllocatePool(
-        EfiLoaderData,
-        FileSize,
-        &Buffer
-    );
-    if (EFI_ERROR(Status)) goto cleanup_info;
+    status = SystemTable->BootServices->AllocatePool(EfiLoaderData, FileSize, &Buffer);
+    if (EFI_ERROR(status)) goto cleanup_info;
 
-    Status = File->Read(File, &FileSize, Buffer);
-    if (EFI_ERROR(Status)) goto cleanup_buffer;
+    status = File->Read(File, &FileSize, Buffer);
+    if (EFI_ERROR(status)) goto cleanup_buffer;
 
-    UINT8 *Raw = (UINT8 *)Buffer;
-    UINT8 *Adjusted = Raw + 2;
-    UINTN AdjustedSize = FileSize - 2;
+    // Skip 2-byte NE prefix written by the build system
+    UINT8 *Payload     = (UINT8 *)Buffer + 2;
+    UINTN  PayloadSize = FileSize - 2;
 
     EFI_HANDLE LoadedImage = NULL;
 
-    Status = SystemTable->BootServices->LoadImage(
-        FALSE,
-        ImageHandle,
-        NULL,
-        Adjusted,
-        AdjustedSize,
-        &LoadedImage
+    status = SystemTable->BootServices->LoadImage(
+        FALSE, ImageHandle, NULL, Payload, PayloadSize, &LoadedImage
     );
+    if (EFI_ERROR(status)) goto cleanup_buffer;
 
-    if (EFI_ERROR(Status)) goto cleanup_buffer;
+    // Log kernel base/size for diagnostics
+    EFI_GUID                   LipGuid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
+    EFI_LOADED_IMAGE_PROTOCOL *Lip     = NULL;
 
-    if (EFI_ERROR(Status))
-    goto cleanup_buffer;
-
-
-    EFI_LOADED_IMAGE_PROTOCOL *Image = NULL;
-
-    EFI_GUID LoadedImageGUID = EFI_LOADED_IMAGE_PROTOCOL_GUID;
-
-
-    Status = SystemTable->BootServices->HandleProtocol(
-        LoadedImage,
-        &LoadedImageGUID,
-        (void**)&Image
-    );
-
-
-    if (!EFI_ERROR(Status))
+    if (!EFI_ERROR(SystemTable->BootServices->HandleProtocol(LoadedImage, &LipGuid, (void **)&Lip)))
     {
-        printf(
-            L"Kernel Base: 0x%llx\r\n",
-            (unsigned long long)Image->ImageBase
-        );
-
-        printf(
-            L"Kernel Size: 0x%llx\r\n",
-            (unsigned long long)Image->ImageSize
-        );
+        printf(L"Kernel Base: 0x%llx\r\n", (unsigned long long)Lip->ImageBase);
+        printf(L"Kernel Size: 0x%llx\r\n", (unsigned long long)Lip->ImageSize);
     }
-
 
     *OutImage = LoadedImage;
 
 cleanup_buffer:
     if (Buffer) SystemTable->BootServices->FreePool(Buffer);
-
 cleanup_info:
-    if (Info) SystemTable->BootServices->FreePool(Info);
-
+    if (Info)   SystemTable->BootServices->FreePool(Info);
 cleanup_file:
-    if (File) File->Close(File);
+    if (File)   File->Close(File);
 
-    return Status;
+    return status;
 }
 
-// -------------------------------
-// Jump to kernel (NO ARGS)
-// -------------------------------
-EFI_STATUS kjump(EFI_SYSTEM_TABLE *SystemTable, EFI_HANDLE LoadedImage)
+// ─── Jump to kernel entry point ───────────────────────────────────────────────
+
+int kjump(EFI_SYSTEM_TABLE *SystemTable, EFI_HANDLE LoadedImage)
 {
-    return SystemTable->BootServices->StartImage(
-        LoadedImage,
-        NULL,
-        NULL
+    EFI_LOADED_IMAGE_PROTOCOL *Lip  = NULL;
+
+    gBS->HandleProtocol(
+        LoadedImage, &gEfiLoadedImageProtocolGuid, (void **)&Lip
     );
+
+    IMAGE_DOS_HEADER      *Dos = (IMAGE_DOS_HEADER *)Lip->ImageBase;
+    IMAGE_NT_HEADERS64_PART *Nt =
+        (IMAGE_NT_HEADERS64_PART *)((UINT8 *)Lip->ImageBase + Dos->e_lfanew);
+
+    void *EntryPoint = (UINT8 *)Lip->ImageBase + Nt->OptionalHeader.AddressOfEntryPoint;
+
+    // C99/C11 compliant function-pointer recovery via union
+    typedef int (*KernelEntry)(void);
+    union { void *obj; KernelEntry fn; } cast;
+    cast.obj = EntryPoint;
+
+    EFI_STATUS status = exit_boot_services(image, SystemTable);
+    if (EFI_ERROR(status))
+    {
+        printf(L"ExitBootServices failed: 0x%llx\r\n", (unsigned long long)status);
+        while (1);
+    }
+
+    return cast.fn();
 }
 
-// -------------------------------
-// Unload EFI image
-// -------------------------------
+// ─── Unload image ─────────────────────────────────────────────────────────────
+
 EFI_STATUS unload_efi(EFI_HANDLE LoadedImage, EFI_SYSTEM_TABLE *SystemTable)
 {
     return SystemTable->BootServices->UnloadImage(LoadedImage);
 }
 
-// -------------------------------
-// Boot helper
-// -------------------------------
+// ─── Load, jump, unload ───────────────────────────────────────────────────────
+
 EFI_STATUS kboot(
-    EFI_HANDLE ImageHandle,
-    EFI_SYSTEM_TABLE* SystemTable,
-    CHAR16* name
+    EFI_HANDLE        ImageHandle,
+    EFI_SYSTEM_TABLE *SystemTable,
+    CHAR16           *path
 )
 {
     EFI_HANDLE LoadedImage = NULL;
 
-    EFI_STATUS Status = load_efi(ImageHandle, SystemTable, name, &LoadedImage);
-    if (EFI_ERROR(Status))
+    EFI_STATUS status = load_efi(ImageHandle, SystemTable, path, &LoadedImage);
+    if (EFI_ERROR(status))
+    {
+        printf(L"kboot: load_efi failed: 0x%llx\r\n", (unsigned long long)status);
         goto cleanup;
+    }
 
-    Status = kjump(SystemTable, LoadedImage);
+    kjump(SystemTable, LoadedImage); // does not return on success
 
 cleanup:
-    printf(L"Returned from kernel (Press any key to continue...)\r\n");
+    printf(L"Returned from kernel (press any key)\r\n");
     get_key();
 
     if (LoadedImage)
         unload_efi(LoadedImage, SystemTable);
 
-    return Status;
+    return status;
 }
 
-void get_acpi_info(EFI_SYSTEM_TABLE *SystemTable)
-{
-    boot_info.rsdp = 0;
-    boot_info.rsdt = 0;
-    boot_info.xsdt = 0;
-    boot_info.acpi_available = 0;
+// ─── Kernel launch UI ─────────────────────────────────────────────────────────
 
-
-    for(UINTN i = 0;
-        i < SystemTable->NumberOfTableEntries;
-        i++)
-    {
-
-        EFI_CONFIGURATION_TABLE *table =
-            &SystemTable->ConfigurationTable[i];
-
-
-        if(memcmp(
-            &table->VendorGuid,
-            &gEfiAcpi20TableGuid,
-            sizeof(EFI_GUID)) == 0)
-        {
-
-            ACPI_RSDP *rsdp =
-                (ACPI_RSDP*)table->VendorTable;
-
-
-            boot_info.rsdp =
-                (uint64_t)rsdp;
-
-
-            boot_info.acpi_revision =
-                rsdp->Revision;
-
-
-            boot_info.acpi_available = 1;
-
-
-            if(rsdp->Revision >= 2)
-            {
-                boot_info.xsdt =
-                    rsdp->XsdtAddress;
-            }
-            else
-            {
-                boot_info.rsdt =
-                    rsdp->RsdtAddress;
-            }
-
-
-            break;
-        }
-
-
-        if(memcmp(
-            &table->VendorGuid,
-            &gEfiAcpi10TableGuid,
-            sizeof(EFI_GUID)) == 0)
-        {
-
-            ACPI_RSDP *rsdp =
-                (ACPI_RSDP*)table->VendorTable;
-
-
-            boot_info.rsdp =
-                (uint64_t)rsdp;
-
-
-            boot_info.rsdt =
-                rsdp->RsdtAddress;
-
-
-            boot_info.acpi_revision =
-                rsdp->Revision;
-
-
-            boot_info.acpi_available = 1;
-
-            break;
-        }
-    }
-}
-
-void get_framebuffer() {
-    EFI_GRAPHICS_OUTPUT_PROTOCOL *gop;
-
-    EFI_GUID gopGuid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
-
-    EFI_STATUS Status;
-
-    Status = gST->BootServices->LocateProtocol(&gopGuid, NULL, (VOID**)&gop);
-
-    if(EFI_ERROR(Status))
-    {
-        printf(L"GOP not found\n");
-        return;
-    }
-
-    boot_info.framebuffer = 0;
-    boot_info.framebuffer_size = 0;
-    boot_info.width = 0;
-    boot_info.height = 0;
-    boot_info.pitch = 0;
-    boot_info.format = 0;
-
-    EFI_GRAPHICS_OUTPUT_MODE_INFORMATION *info =
-        gop->Mode->Info;
-
-    boot_info.framebuffer =
-        gop->Mode->FrameBufferBase;
-
-    boot_info.framebuffer_size =
-        gop->Mode->FrameBufferSize;
-
-    boot_info.width =
-        info->HorizontalResolution;
-
-    boot_info.height =
-        info->VerticalResolution;
-
-    boot_info.pitch =
-        info->PixelsPerScanLine;
-
-    boot_info.format =
-        info->PixelFormat;
-}
-
-void mem_write(int debug) {
-    get_memory_mapl(gST);
-    get_acpi_info(gST);
-    get_framebuffer();
-
-    volatile uint8_t *slot = (volatile uint8_t*)KDI;
-    *slot = (uint8_t)debug; 
-
-    volatile BOOT_INFO *slot1 = (volatile BOOT_INFO*)KSP;
-    *slot1 = boot_info;
-    
-}
-
-// -------------------------------
-// Kernel entry UI
-// -------------------------------
-void kernel(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, int debug)
+void kernel(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable, int debug)
 {
     clear_screen();
 
-    if (debug == 404) {
-        SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Jump to Kernel to shutdown\r\n");
-    } else {
-        SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Jump to Kernel\r\n");
-    }
-    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Press ESC to return\r\n");
+    if (debug == 404)
+        cout->OutputString(cout, L"Jump to Kernel to shutdown\r\n");
+    else
+        cout->OutputString(cout, L"Jump to Kernel\r\n");
 
+    cout->OutputString(cout, L"Press ESC to return\r\n");
+
+    UINTN      index;
     EFI_INPUT_KEY key;
-    UINTN index;
 
-    SystemTable->BootServices->WaitForEvent(
-        1,
-        &SystemTable->ConIn->WaitForKey,
-        &index
-    );
-
+    SystemTable->BootServices->WaitForEvent(1, &SystemTable->ConIn->WaitForKey, &index);
     SystemTable->ConIn->ReadKeyStroke(SystemTable->ConIn, &key);
 
     if (key.ScanCode == SCANCODE_ESC)
@@ -540,95 +433,89 @@ void kernel(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, int debug)
 
     mem_write(debug);
 
-    EFI_STATUS Status = kboot(
-        ImageHandle,
-        SystemTable,
-        L"\\EFI\\FEUE\\KERNEL.RE"
-    );
-
-    printf(L"Kernel returned: 0x%llx\r\n", (unsigned long long)Status);
+    EFI_STATUS status = kboot(ImageHandle, SystemTable, L"\\EFI\\FEUE\\KERNEL.RE");
+    printf(L"Kernel returned: 0x%llx\r\n", (unsigned long long)status);
 }
 
-// -------------------------------
-// Menu
-// -------------------------------
-void ShowMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected)
+// ─── Menu ─────────────────────────────────────────────────────────────────────
+
+const CHAR16 *menu_options[] =
+{
+    L"CoreSys Kernel (Normal)",
+    L"CoreSys Kernel (Debug)",
+    L"CoreSys Kernel (Silent — not recommended)",
+    L"Shutdown",
+};
+
+#define MENU_COUNT 4
+
+void show_menu(UINTN selected)
 {
     clear_screen();
-
     cout->SetAttribute(cout, EFI_TEXT_ATTR(EFI_BLACK, EFI_WHITE));
+    cout->OutputString(cout, L"CoreSys Init UEFI\r\n\r\n");
+    cout->OutputString(cout, L"W/S to navigate   ENTER to select\r\n\r\n");
 
-    cout->OutputString(cout, L"CoreSys Init UEFI Version\r\n\r\n");
-    cout->OutputString(cout, L"W/S navigation, ENTER select\r\n\r\n");
-
-    CHAR16* options[] =
+    for (UINTN i = 0; i < MENU_COUNT; i++)
     {
-        L"CoreSys Kernel (Normal)",
-        L"CoreSys Kernel (Debug)",
-        L"CoreSys Kernel (Silent (not recommened))",
-        L"Shutdown"
-    };
-
-    for (UINTN i = 0; i < 4; i++)
-    {
-        if (i == selected)
-            cout->OutputString(cout, L"> ");
-        else
-            cout->OutputString(cout, L"  ");
-
-        cout->OutputString(cout, options[i]);
+        cout->OutputString(cout, (i == selected) ? L"> " : L"  ");
+        cout->OutputString(cout, (CHAR16 *)menu_options[i]);
         cout->OutputString(cout, L"\r\n");
     }
 }
 
-// -------------------------------
-// Main menu loop
-// -------------------------------
-void imain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
+// ─── Main menu loop ───────────────────────────────────────────────────────────
+
+void imain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable)
 {
     UINTN selected = 0;
     EFI_INPUT_KEY key;
 
-    ShowMenu(cout, selected);
+    show_menu(selected);
 
     while (1)
     {
-        if (cin->ReadKeyStroke(cin, &key) == EFI_SUCCESS)
+        if (cin->ReadKeyStroke(cin, &key) != EFI_SUCCESS)
+            continue;
+
+        switch (key.UnicodeChar)
         {
-            switch (key.UnicodeChar)
-            {
-                case L'w':
-                case L'W':
-                    selected = (selected == 0) ? 3 : selected - 1;
-                    ShowMenu(cout, selected);
-                    break;
+            case L'w':
+            case L'W':
+                selected = (selected == 0) ? MENU_COUNT - 1 : selected - 1;
+                show_menu(selected);
+                break;
 
-                case L's':
-                case L'S':
-                    selected = (selected + 1) % 4;
-                    ShowMenu(cout, selected);
-                    break;
+            case L's':
+            case L'S':
+                selected = (selected + 1) % MENU_COUNT;
+                show_menu(selected);
+                break;
 
-                case L'\r':
-                    if (selected == 0) kernel(ImageHandle, SystemTable, 0);
-                    if (selected == 1) kernel(ImageHandle, SystemTable, 1);
-                    if (selected == 2) kernel(ImageHandle, SystemTable, 2);
-                    if (selected == 3) kernel(ImageHandle, SystemTable, 404);
-                    break;
-            }
+            case L'\r':
+                switch (selected)
+                {
+                    case 0: kernel(ImageHandle, SystemTable, 0);   break;
+                    case 1: kernel(ImageHandle, SystemTable, 1);   break;
+                    case 2: kernel(ImageHandle, SystemTable, 2);   break;
+                    case 3: kernel(ImageHandle, SystemTable, 404); break;
+                }
+                break;
+
+            default:
+                break;
         }
     }
 }
 
-// -------------------------------
-// Entry
-// -------------------------------
+// ─── Entry ────────────────────────────────────────────────────────────────────
+
 EFI_STATUS EFIAPI imain(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable)
 {
     init(ImageHandle, SystemTable);
     clear_screen();
 
-    cs_logf(CS_LOG_INFO, u"CoreSys Init has been boot successfully");
+    cs_logf(CS_LOG_INFO, u"CoreSys Init has been booted successfully");
     cs_logf(CS_LOG_INFO, u"Press any key to continue...");
 
     get_key();

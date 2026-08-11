@@ -1,51 +1,8 @@
-// #pragma once
-
-// #include <stdint.h>
-// #include <stddef.h>
-// #include <drivers/task/main.h>
-
-// static uint8_t *heap_start = (uint8_t*)0x100000;
-// static size_t heap_offset = 0;
-
-// void kmalloc_init(uint8_t *start)
-// {
-//     heap_start = start;
-//     heap_offset = 0;
-// }
-
-// void kmalloc_deinit(cs_task *self)
-// {
-//     (void)self;
-
-//     heap_start = NULL;
-//     heap_offset = 0;
-// }
-
-// // LIFO order only
-
-// void *kmalloc(size_t size)
-// {
-//     size = (size + 15) & ~15; // align 16 bytes
-
-//     void *ptr = heap_start + heap_offset;
-//     heap_offset += size;
-
-//     return ptr;
-// }
-
-// void kfree(size_t size)
-// {
-//     size = (size + 15) & ~15;
-
-//     if (size > heap_offset)
-//         heap_offset = 0;
-//     else
-//         heap_offset -= size;
-// }
-
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
+
+#include <drivers/task/main.h>
 
 #define PAGE_SIZE 4096
 #define PMM_MAX_MEMORY (4ULL * 1024 * 1024 * 1024)
@@ -99,6 +56,21 @@ void pmm_init(
          i++)
     {
         pmm_clear(i);
+    }
+}
+
+void pmm_deinit(cs_task *self)
+{
+    (void)self;
+    
+    pmm_base = 0;
+    pmm_total_pages = 0;
+
+    for (size_t i = 0;
+         i < PMM_MAX_PAGES / 8;
+         i++)
+    {
+        pmm_bitmap[i] = 0xFF;
     }
 }
 
@@ -201,8 +173,10 @@ void* kmalloc(size_t size)
     size_t pages = kmalloc_align(total);
 
     kmalloc_hdr* hdr = (kmalloc_hdr*)pmm_alloc_pages(pages);
-    if (!hdr)
+    if (!hdr) {
+        k_sff("[PAGE] [KMALLOC] Could not allocate %d :(", (int)size);
         return NULL;
+    }
 
     hdr->pages = pages;
 

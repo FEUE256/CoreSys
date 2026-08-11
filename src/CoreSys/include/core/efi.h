@@ -2128,3 +2128,46 @@ typedef struct EFI_HII_DATABASE_PROTOCOL {
 } EFI_HII_DATABASE_PROTOCOL;
 
 #define EFI_ABORTED ((EFI_STATUS)0x8000000000000015ULL)
+
+typedef struct
+{
+    UINT16 e_magic;
+    UINT8  unused[58];
+    UINT32 e_lfanew;
+} IMAGE_DOS_HEADER;
+
+
+typedef struct
+{
+    UINT16 Machine;
+    UINT16 NumberOfSections;
+    UINT32 TimeDateStamp;
+    UINT32 PointerToSymbolTable;
+    UINT32 NumberOfSymbols;
+    UINT16 SizeOfOptionalHeader;
+    UINT16 Characteristics;
+} IMAGE_FILE_HEADER;
+
+
+typedef struct
+{
+    UINT16 Magic;
+    UINT8  MajorLinkerVersion;
+    UINT8  MinorLinkerVersion;
+    UINT32 SizeOfCode;
+    UINT32 SizeOfInitializedData;
+    UINT32 SizeOfUninitializedData;
+    UINT32 AddressOfEntryPoint;
+} IMAGE_OPTIONAL_HEADER64_PART;
+
+
+typedef struct
+{
+    UINT32 Signature;
+
+    IMAGE_FILE_HEADER FileHeader;
+
+    IMAGE_OPTIONAL_HEADER64_PART OptionalHeader;
+
+} IMAGE_NT_HEADERS64_PART;
+

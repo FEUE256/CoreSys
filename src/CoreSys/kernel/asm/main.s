@@ -34,8 +34,6 @@ section .bss
 
 section .data
     global _cs_asm_init_main ; Init main globe
-    global _cs_asm_ud2_main ; ud2 main globe
-    global _cs_asm_int3_main ; int3 main globe
     global _cs_asm_stack_main ; Stack main
     global _cs_asm_get_regs ; Get regs
 
@@ -157,14 +155,6 @@ section .text
 
     _cs_asm_init_main:
         call init_print
-        ret
-
-    _cs_asm_ud2_main:
-        ud2
-        ret
-    
-    _cs_asm_int3_main:
-        int3
         ret
 
     _cs_asm_get_regs:

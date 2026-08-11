@@ -3,8 +3,8 @@
   "WorkspaceRootPath": "F:\\Code\\CoreSys\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|F:\\Code\\CoreSys\\src\\CIOS\\cios.s||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\CIOS\\cios.s||{3B902123-F8A7-4915-9F01-361F908088D0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|F:\\Code\\CoreSys\\src\\CoreSys\\kernel\\main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\CoreSys\\kernel\\main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|F:\\Code\\CoreSys\\src\\CoreSys\\c\\main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -17,10 +17,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|F:\\Code\\CoreSys\\src\\CoreSys\\kernel\\asm\\main.s||{3B902123-F8A7-4915-9F01-361F908088D0}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\CoreSys\\kernel\\asm\\main.s||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|F:\\Code\\CoreSys\\src\\CoreSys\\kernel\\main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\CoreSys\\kernel\\main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,21 +26,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 3,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "cios.s",
-              "DocumentMoniker": "F:\\Code\\CoreSys\\src\\CIOS\\cios.s",
-              "RelativeDocumentMoniker": "src\\CIOS\\cios.s",
-              "ToolTip": "F:\\Code\\CoreSys\\src\\CIOS\\cios.s",
-              "RelativeToolTip": "src\\CIOS\\cios.s",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-06-28T13:10:03.235Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Document",
               "DocumentIndex": 1,
@@ -68,8 +51,7 @@
               "RelativeToolTip": "src\\CoreSys\\c\\c.ld",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-06-28T13:04:19.892Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-28T13:04:19.892Z"
             },
             {
               "$type": "Document",
@@ -81,18 +63,17 @@
               "RelativeToolTip": "src\\CoreSys\\kernel\\asm\\main.s",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-06-28T13:04:12.07Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-28T13:04:12.07Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
               "Title": "main.c",
               "DocumentMoniker": "F:\\Code\\CoreSys\\src\\CoreSys\\kernel\\main.c",
               "RelativeDocumentMoniker": "src\\CoreSys\\kernel\\main.c",
               "ToolTip": "F:\\Code\\CoreSys\\src\\CoreSys\\kernel\\main.c",
               "RelativeToolTip": "src\\CoreSys\\kernel\\main.c",
-              "ViewState": "AgIAAFAAAAAAAAAAAAAAAGcAAAANAAAAAAAAAA==",
+              "ViewState": "AgIAAGgAAAAAAAAAAAAnwH8AAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
               "WhenOpened": "2026-06-25T14:56:00.503Z",
               "EditorCaption": ""

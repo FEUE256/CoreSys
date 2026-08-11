@@ -50,6 +50,8 @@ nice -21 qemu-system-x86_64 \
   -cpu max,+avx,enforce \
   -audiodev wav,id=audio0,path="$HOME/CoreSysVM/sound.wav" \
   -device ich9-intel-hda \
-  -device hda-output,audiodev=audio0
+  -device hda-output,audiodev=audio0 # \
+  # -no-reboot \
+  # -no-shutdown \
   # -nographic 
   

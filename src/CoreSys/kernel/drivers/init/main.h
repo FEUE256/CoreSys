@@ -11,7 +11,6 @@
 #include <drivers/pci/main.h>        // PCI
 #include <drivers/cop/main.h>       // FS
 #include <drivers/hw/ACPI/main.h>  // ACPI
-#include <drivers/idt/main.h>  // IDT
 #include <kernel/mem.h>
 #include <asm/global.h>
 #include <cs.h>
@@ -32,10 +31,10 @@ void init(cs_task* self) {
         .entry_name = "initSerial",
         .entry = initSerial
     };
-    task_run(&init_serial_task); // init Serial Drivers
+    g_core.task.task_run(&init_serial_task); // init Serial Drivers
     if (debug != 2) { k_log("Serial port initialized successfully."); }
 
-    pmm_init(
+    g_core.mem.pmm_init(
         0x100000,
         512 * 1024 * 1024
     );
@@ -49,7 +48,7 @@ void init(cs_task* self) {
         .entry_name = "cfs_init",
         .entry = cfs_init
     };
-    task_run(&init_cfs_task); // init CFS
+    g_core.task.task_run(&init_cfs_task); // init CFS
     if (debug != 2) { k_log("CFS initialized successfully."); }
 
     cs_task init_cop_task = {
@@ -58,7 +57,7 @@ void init(cs_task* self) {
         .entry_name = "cop_init",
         .entry = cop_init
     };
-    task_run(&init_cop_task); // init COP
+    g_core.task.task_run(&init_cop_task); // init COP
     if (debug != 2) { k_log("COP initialized successfully."); }
 
     cs_task init_ahci_task = {
@@ -67,7 +66,7 @@ void init(cs_task* self) {
         .entry_name = "ahci_init",
         .entry = ahci_init
     };
-    task_run(&init_ahci_task); // init AHCI
+    g_core.task.task_run(&init_ahci_task); // init AHCI
     if (debug != 2) { k_log("AHCI initialized successfully."); }
 
     cs_task init_pci_task = {
@@ -76,7 +75,7 @@ void init(cs_task* self) {
         .entry_name = "pci_init",
         .entry = pci_init
     };
-    task_run(&init_pci_task); // init PCI
+    g_core.task.task_run(&init_pci_task); // init PCI
     if (debug != 2) { k_log("PCI iGPU/GPU initialized successfully."); }
 
     /*
@@ -97,7 +96,7 @@ void init(cs_task* self) {
         .entry_name = "fs_init",
         .entry = fs_init
     };
-    task_run(&init_fs_task); // init FS
+    g_core.task.task_run(&init_fs_task); // init FS
     if (debug != 2) { k_log("FS initialized successfully."); }
 
     cs_task init_acpi_task = {
@@ -106,7 +105,7 @@ void init(cs_task* self) {
         .entry_name = "acpi_init",
         .entry = acpi_init
     };
-    task_run(&init_acpi_task); // init ACPI
+    g_core.task.task_run(&init_acpi_task); // init ACPI
     if (debug != 2) { k_log("ACPI initialized successfully."); }
 
     // For extra safty
@@ -130,7 +129,7 @@ void deinit(cs_task* self) {
         .entry_name = "deinitSerial",
         .entry = deinitSerial
     };
-    task_run(&deinit_serial_task); // Deinit Serial Drivers
+    g_core.task.task_run(&deinit_serial_task); // Deinit Serial Drivers
 
     cs_task deinit_cfs_task = {
         .name = "CFS Deinitialization Task",
@@ -138,7 +137,7 @@ void deinit(cs_task* self) {
         .entry_name = "cfs_deinit",
         .entry = cfs_deinit
     };
-    task_run(&deinit_cfs_task); // Deinit CFS
+    g_core.task.task_run(&deinit_cfs_task); // Deinit CFS
 
     cs_task deinit_ahci_task = {
         .name = "AHCI deinitialization Task",
@@ -146,7 +145,7 @@ void deinit(cs_task* self) {
         .entry_name = "ahci_deinit",
         .entry = ahci_deinit
     };
-    task_run(&deinit_ahci_task); // deinit AHCI
+    g_core.task.task_run(&deinit_ahci_task); // deinit AHCI
 
     cs_task deinit_pci_task = {
         .name = "PCI iGPU/GPU deinitialization Task",
@@ -154,7 +153,7 @@ void deinit(cs_task* self) {
         .entry_name = "pci_deinit",
         .entry = pci_deinit
     };
-    task_run(&deinit_pci_task); // deinit PCI
+    g_core.task.task_run(&deinit_pci_task); // deinit PCI
 
     cs_task deinit_fs_task = {
         .name = "FS deinitialization Task",
@@ -162,7 +161,17 @@ void deinit(cs_task* self) {
         .entry_name = "fs_deinit",
         .entry = fs_deinit
     };
-    task_run(&deinit_fs_task); // deinit FS
+    g_core.task.task_run(&deinit_fs_task); // deinit FS
+
+    cs_task deinit_pmm_task = {
+        .name = "PMM deinitialization Task",
+        .source_header = "drivers/page/main.h",
+        .entry_name = "pmm_deinit",
+        .entry = pmm_deinit
+    };
+    g_core.task.task_run(&deinit_pmm_task); // deinit PMM
+
+    // g_core.mem.pmm_deinit();
 
     cs_task deinit_cop_task = {
         .name = "COP deinitialization Task",
@@ -170,7 +179,7 @@ void deinit(cs_task* self) {
         .entry_name = "cop_deinit",
         .entry = cop_deinit
     };
-    task_run(&deinit_cop_task); // deinit COP
+    g_core.task.task_run(&deinit_cop_task); // deinit COP
 
     // Dont deinit ACPI because its used to shutdown or reboot
     
@@ -185,7 +194,7 @@ void kreinit(cs_task* self) {
         .entry_name = "deinit",
         .entry = deinit
     };
-    task_run(&deinit_task); // Deinit Drivers
+    g_core.task.task_run(&deinit_task); // Deinit Drivers
 
     cs_task init_task = {
         .name = "Initialization Task",
@@ -194,6 +203,6 @@ void kreinit(cs_task* self) {
         .entry = init
     };
 
-    task_run(&init_task); // Reinit Drivers
+    g_core.task.task_run(&init_task); // Reinit Drivers
 
 }

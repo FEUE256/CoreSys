@@ -1,6 +1,6 @@
 # CoreSys & Co Version
 
-- CoreSys Version: 0.5.2v Dev
+- CoreSys Version: 0.5.2v Dev COMMIT MSG add (changed ABI to 1.1v)
 - MC Version: 1.1v Release
 - GPT Tool Version: 2.5 Release
 - Project (Everything around CoreSyS including website etc.) 0.4.8v

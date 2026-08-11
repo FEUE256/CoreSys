@@ -68,7 +68,7 @@ ret_t kmain(void) {
         .entry_name = "boot_sound",
         .entry = boot_sound
     };
-    task_run(&boots_task);
+    core.task.task_run(&boots_task);
 
     // Runs asm init if debug != is 2 ("init" more like a test)
     if (debug != 2) { 
@@ -84,7 +84,7 @@ ret_t kmain(void) {
     // CoreSys.h BM/IM include assert 
     #ifdef CORESYS_H_INCLUDED
     #error CoreSys.h (BM/IM) is included
-    assert_hard("CoreSys.h (BM/IM) is included"); // This will not assert but it looks nice and will give compiler error because of multibale defintions
+    assert_hard("CoreSys.h (BM/IM) is included"); // This will not assert but it looks nice and will give compiler error because of multi defintions from CoreSys.h (BM/IM)
     #endif
 
     // Sstatus defined in globe.h
@@ -121,16 +121,17 @@ ret_t kmain(void) {
         .entry_name = "print_vga",
         .entry = print_vga
     };
-    task_run(&vga_task);
+    core.task.task_run(&vga_task);
 
     // Runs TTY loop via CS_CORE
     core.hal.tty_loop();
+    __builtin_unreachable();
 
     // Sets status to that TTY has ran
     status |= CS_TTY_OK; // TTY has been ran
 
     // Sets cs_return_value to core.sys.null() before CS_CORE has been deinit
-    reg_t ret_t cs_return_value = core.sys.null();
+    reg_t ret_t cs_return_value = core.task.null(1);
 
     // Runs deinit via CS_CORE
     core.sys.deinit();
@@ -155,11 +156,11 @@ ret_t kmain(void) {
     // Halts because shutdown failed
     khlt();
 
-    // DEAD CODE |
-    //           v
-
     // Sets the status to the halt task has been run
     status |= CS_HALT_OK; // Halt
+
+    // Why did halt fail, trying to #MC
+    _cs_asm_irq_mc(); // If fail continue to RKC ret and enter MRKC
 
     rkc_ret();
 
@@ -169,4 +170,5 @@ ret_t kmain(void) {
 
     // Return CS_SUCCESS via core.sys.null();
     return cs_return_value; // Can't use core.sys.null() because of cs_deinit has already happend (CS_SUCCESS)
+    __builtin_unreachable();
 }
