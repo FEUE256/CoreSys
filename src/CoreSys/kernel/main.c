@@ -61,6 +61,45 @@ ret_t kmain(void) {
 
     // Inits the CoreSys kernel
     core.sys.init();
+    
+    uint8_t digest384[48];
+    uint8_t digest512[64];
+    uint8_t digest256[32];
+
+    const char *message = "Hello";
+
+    ace_sha384(
+        digest384,
+        (const uint8_t *)message,
+        strlen(message)
+    );
+
+    ace_sha512(
+        digest512,
+        (const uint8_t *)message,
+        strlen(message)
+    );
+
+    ace_sha256(
+        digest256,
+        (const uint8_t *)message,
+        strlen(message)
+    );
+
+    kprintf("SHA-384: ");
+    for (size_t i = 0; i < sizeof(digest384); i++)
+        kprintf("%02x", digest384[i]);
+    kprintf("\n");
+
+    kprintf("SHA-512: ");
+    for (size_t i = 0; i < sizeof(digest512); i++)
+        kprintf("%02x", digest512[i]);
+    kprintf("\n");
+
+    kprintf("SHA-256: ");
+    for (size_t i = 0; i < sizeof(digest256); i++)
+        kprintf("%02x", digest256[i]);
+    kprintf("\n");
 
     cs_task boots_task = {
         .name = "Boot Sound Task",

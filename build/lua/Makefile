@@ -1,5 +1,6 @@
 all:
-	$(MAKE) -C src/ all -B
+	$(MAKE) -C ../../src/lua/ all -B -j$(shell nproc)
 
 clean:
-	$(MAKE) -C src/ clean -B
+	$(MAKE) -C ../../src/lua/ clean -B -j$(shell nproc)
+	

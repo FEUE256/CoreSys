@@ -14,6 +14,10 @@ For mini build time use NO\_NPM=1 eg make all NO\_NPM=1
 
 Changed EULA and License
 
+## 0.1.3.8v (2026-08-22)
+
+Added ACE and paused coresys dev
+
 ## 0.1.3.7v (2026-07-29)
 
 Changed: build system, docs, QEMU, bootloader, init, and big kernel update. Kernel Update; asm, kernel/mem.h, ACPI, AHCI, COPFS, All four calling systems (including irq WIP), eth, added idt (not used will be removed), added multitasking ctrl t in terminal kernel and more

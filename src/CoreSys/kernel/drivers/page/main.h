@@ -37,12 +37,10 @@ void pmm_init(
     uint64_t usable_size
 )
 {
-    pmm_base =
-        usable_start;
+    pmm_base = usable_start;
 
     pmm_total_pages =
-        usable_size /
-        PAGE_SIZE;
+        usable_size / PAGE_SIZE;
 
     for (size_t i = 0;
          i < PMM_MAX_PAGES / 8;
@@ -62,7 +60,7 @@ void pmm_init(
 void pmm_deinit(cs_task *self)
 {
     (void)self;
-    
+
     pmm_base = 0;
     pmm_total_pages = 0;
 
@@ -74,9 +72,7 @@ void pmm_deinit(cs_task *self)
     }
 }
 
-void* pmm_alloc_pages(
-    size_t pages
-)
+void* pmm_alloc_pages(size_t pages)
 {
     if (!pages)
         return NULL;
@@ -108,8 +104,7 @@ void* pmm_alloc_pages(
                     (void*)
                     (
                         pmm_base +
-                        start *
-                        PAGE_SIZE
+                        start * PAGE_SIZE
                     );
             }
         }
@@ -134,34 +129,30 @@ void pmm_free_pages(
         (
             (
                 uint64_t)ptr -
-            pmm_base
-        ) /
-        PAGE_SIZE;
+                pmm_base
+        ) / PAGE_SIZE;
 
     for (size_t i = 0;
          i < pages;
          i++)
     {
-        pmm_clear(
-            page + i
-        );
+        pmm_clear(page + i);
     }
 }
 
+/*
+ * Header stored immediately before
+ * the pointer returned by kmalloc().
+ */
 typedef struct
 {
     size_t pages;
+    size_t size;
 } kmalloc_hdr;
-
-/*
-Required:
-void* pmm_alloc_pages(size_t pages);
-void  pmm_free_pages(void* ptr, size_t pages);
-*/
 
 static inline size_t kmalloc_align(size_t size)
 {
-    return (size + 4095) / 4096;
+    return (size + PAGE_SIZE - 1) / PAGE_SIZE;
 }
 
 void* kmalloc(size_t size)
@@ -169,16 +160,30 @@ void* kmalloc(size_t size)
     if (size == 0)
         return NULL;
 
-    size_t total = size + sizeof(kmalloc_hdr);
-    size_t pages = kmalloc_align(total);
+    if (size > SIZE_MAX - sizeof(kmalloc_hdr))
+        return NULL;
 
-    kmalloc_hdr* hdr = (kmalloc_hdr*)pmm_alloc_pages(pages);
-    if (!hdr) {
-        k_sff("[PAGE] [KMALLOC] Could not allocate %d :(", (int)size);
+    size_t total =
+        size + sizeof(kmalloc_hdr);
+
+    size_t pages =
+        kmalloc_align(total);
+
+    kmalloc_hdr* hdr =
+        (kmalloc_hdr*)pmm_alloc_pages(pages);
+
+    if (!hdr)
+    {
+        k_sff(
+            "[PAGE] [KMALLOC] Could not allocate %d :(",
+            (int)size
+        );
+
         return NULL;
     }
 
     hdr->pages = pages;
+    hdr->size = size;
 
     return (void*)(hdr + 1);
 }
@@ -197,7 +202,83 @@ void kfree(void* ptr)
     );
 }
 
-void *memcpy(void *dest, const void *src, size_t n)
+/*
+ * Reallocate memory.
+ *
+ * krealalloc(NULL, size)
+ *     == kmalloc(size)
+ *
+ * krealalloc(ptr, 0)
+ *     == kfree(ptr), return NULL
+ *
+ * krealalloc(ptr, new_size)
+ *     allocates a new block, copies the
+ *     old contents, then frees the old block.
+ */
+void* krealalloc(
+    void* ptr,
+    size_t new_size
+)
+{
+    /* realloc(NULL, size) */
+    if (!ptr)
+        return kmalloc(new_size);
+
+    /* realloc(ptr, 0) */
+    if (new_size == 0)
+    {
+        kfree(ptr);
+        return NULL;
+    }
+
+    kmalloc_hdr* old_hdr =
+        ((kmalloc_hdr*)ptr) - 1;
+
+    size_t old_size =
+        old_hdr->size;
+
+    /*
+     * If the new allocation fits inside
+     * the existing allocation, keep it.
+     */
+    if (new_size <= old_size)
+    {
+        old_hdr->size = new_size;
+        return ptr;
+    }
+
+    /*
+     * Allocate a new block.
+     */
+    void* new_ptr =
+        kmalloc(new_size);
+
+    if (!new_ptr)
+        return NULL;
+
+    /*
+     * Only copy bytes that existed in
+     * the old allocation.
+     */
+    memcpy(
+        new_ptr,
+        ptr,
+        old_size
+    );
+
+    /*
+     * Release the old allocation.
+     */
+    kfree(ptr);
+
+    return new_ptr;
+}
+
+void *memcpy(
+    void *dest,
+    const void *src,
+    size_t n
+)
 {
     uint8_t *d = dest;
     const uint8_t *s = src;
@@ -208,7 +289,11 @@ void *memcpy(void *dest, const void *src, size_t n)
     return dest;
 }
 
-void *memset(void *dest, int val, size_t n)
+void *memset(
+    void *dest,
+    int val,
+    size_t n
+)
 {
     uint8_t *d = dest;
 

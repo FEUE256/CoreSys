@@ -53,45 +53,22 @@ num_t rkc_mode = 0;
 CS_CORE g_core; // Inited in kmain after RKC segment
 
 typedef struct regs_t {
-    // General Purpose Registers
-    uint64_t rax;
-    uint64_t rbx;
-    uint64_t rcx;
-    uint64_t rdx;
-    uint64_t rsi;
-    uint64_t rdi;
-    uint64_t rbp;
-    uint64_t rsp;
+    uint64_t rax, rbx, rcx, rdx;
+    uint64_t rsi, rdi, rbp, rsp;
+    uint64_t r8, r9, r10, r11;
+    uint64_t r12, r13, r14, r15;
 
-    uint64_t r8;
-    uint64_t r9;
-    uint64_t r10;
-    uint64_t r11;
-    uint64_t r12;
-    uint64_t r13;
-    uint64_t r14;
-    uint64_t r15;
-
-    // Instruction state
     uint64_t rip;
     uint64_t rflags;
 
-    // Segment registers
-    uint64_t cs;
-    uint64_t ds;
-    uint64_t es;
-    uint64_t ss;
-    uint64_t fs;
-    uint64_t gs;
+    uint64_t cs, ds, es, ss, fs, gs;
 
-    // Control registers
     uint64_t cr0;
-    uint64_t cr2;   // Page fault address
-    uint64_t cr3;   // Page table base
+    uint64_t cr2;
+    uint64_t cr3;
     uint64_t cr4;
     uint64_t cr8;
 
-    // Debug registers
     uint64_t dr0;
     uint64_t dr1;
     uint64_t dr2;
@@ -99,7 +76,33 @@ typedef struct regs_t {
     uint64_t dr6;
     uint64_t dr7;
 
-    // XMM registers
+    uint64_t tss_rsp0;
+    uint64_t tss_rsp1;
+    uint64_t tss_rsp2;
+
+    uint16_t fpu_control_word;
+    uint16_t fpu_status_word;
+    uint16_t fpu_tag_word;
+    uint16_t fpu_opcode;
+
+    uint64_t fpu_ip;
+    uint64_t fpu_dp;
+
+    uint16_t fpu_cs;
+    uint16_t fpu_ds;
+
+    uint64_t mmx0;
+    uint64_t mmx1;
+    uint64_t mmx2;
+    uint64_t mmx3;
+    uint64_t mmx4;
+    uint64_t mmx5;
+    uint64_t mmx6;
+    uint64_t mmx7;
+
+    uint32_t mxcsr;
+    uint32_t mxcsr_mask;
+
     uint128_t xmm0;
     uint128_t xmm1;
     uint128_t xmm2;
@@ -117,31 +120,25 @@ typedef struct regs_t {
     uint128_t xmm14;
     uint128_t xmm15;
 
+    uint64_t msr_efer;
+    uint64_t msr_star;
+    uint64_t msr_lstar;
+    uint64_t msr_cstar;
+    uint64_t msr_sfmask;
+    uint64_t msr_kernel_gs_base;
+    uint64_t msr_apic_base;
+
+    uint64_t tlb_base;
+    uint64_t tlb_entries;
+
+    uint64_t tss_ist1;
+    uint64_t tss_ist2;
+    uint64_t tss_ist3;
+    uint64_t tss_ist4;
+    uint64_t tss_ist5;
+    uint64_t tss_ist6;
+    uint64_t tss_ist7;
 } regs_t;
-
-// TODO: FPU/MMX/x87 state MXCSR YMM and ZMM opmask0-7 MSR TLBuint64_t tss_rsp0;
-// uint64_t tss_rsp1;
-// uint64_t tss_rsp2;
-
-// uint64_t ist1;
-// uint64_t ist2;
-// uint64_t ist3;
-// uint64_t ist4;
-// uint64_t ist5;
-// uint64_t ist6;
-// uint64_t ist7;
-
-// TODO: Software irt 
-// 0x80  System call
-// 0x81  Kernel debug
-// 0x82  Kernel panic
-// 0x83  Scheduler request
-// 0x84  Yield CPU
-// 0x85  Process exit
-// 0x86  Spawn process
-// 0x87  IPC message
-// 0x88  Memory statistics
-// 0x89  File system service for exaple
 
 regs_t regs;
 

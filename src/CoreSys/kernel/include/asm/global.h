@@ -8,7 +8,6 @@ extern void _cs_asm_init_main(void);
 extern void _cs_asm_get_regs(regs_t *regs);
 
 // ASM INT 
-
 extern void _cs_asm_irq_de(void);    // 00 (0)  #DE Divide Error
 extern void _cs_asm_irq_db(void);    // 01 (1)  #DB Debug Exception
 extern void _cs_asm_irq_nmi(void);   // 02 (2)  NMI Interrupt
@@ -18,7 +17,7 @@ extern void _cs_asm_irq_br(void);    // 05 (5)  #BR Bound Range Exceeded
 extern void _cs_asm_irq_ud(void);    // 06 (6)  #UD Invalid Opcode
 extern void _cs_asm_irq_nm(void);    // 07 (7)  #NM Device Not Available
 extern void _cs_asm_irq_df(void);    // 08 (8)  #DF Double Fault
-extern void _cs_asm_irq_cs(void);    // 09 (9)  Coprocessor Segment Overrun (#CS in CoreSyS)
+extern void _cs_asm_irq_cs(void);    // 09 (9)  #CS Coprocessor Segment Overrun (#CS in CoreSyS)
 extern void _cs_asm_irq_ts(void);    // 0A (10) #TS Invalid TSS
 extern void _cs_asm_irq_np(void);    // 0B (11) #NP Segment Not Present
 extern void _cs_asm_irq_ss(void);    // 0C (12) #SS Stack-Segment Fault

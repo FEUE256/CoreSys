@@ -210,35 +210,3 @@ void cs_init(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
     if (Info) SystemTable->BootServices->FreePool(Info);
     if (File) File->Close(File);
 }
-
-// Main HW initialization
-void hw_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
-    if (!SystemTable) return;
-
-    clear_screen();
-    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Jump to HW init layer\r\n");
-    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Press the ESC key to exit...\r\n");
-    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Press any other key to continue...\r\n");
-
-    // Wait for key
-    EFI_INPUT_KEY key;
-    UINTN index;
-
-    SystemTable->BootServices->WaitForEvent(
-        1,
-        &SystemTable->ConIn->WaitForKey,
-        &index
-    );
-
-    SystemTable->ConIn->ReadKeyStroke(SystemTable->ConIn, &key);
-
-    // ESC handling (ScanCode, not Unicode)
-    if (key.ScanCode == SCANCODE_ESC) {
-        SystemTable->ConOut->OutputString(SystemTable->ConOut, L"ESC pressed. Returning...\r\n");
-        bmain_main(ImageHandle, SystemTable);
-        return;
-    }
-
-    // Continue normally
-    hw_imain(ImageHandle, SystemTable);
-}

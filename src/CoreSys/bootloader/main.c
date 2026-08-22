@@ -464,10 +464,21 @@ void ShowCSMenu(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *cout, UINTN selected) {
     }
 }
 
+void hw_main1() {
+    clear_screen();
+
+    cout->OutputString(cout, L"No HW Support\n");
+    cout->OutputString(cout, L"Press any key to continue...\n");
+    get_key();
+    return;
+}
+
 void cs_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
     UINTN selected = 0;
     EFI_INPUT_KEY key;
     const UINTN optionCount = 4;
+
+    clear_screen();
 
     ShowCSMenu(cout, selected);
 
@@ -486,7 +497,7 @@ void cs_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
                 switch (selected) {
                     case 0: cs_init(ImageHandle, SystemTable); break; // extern Function
                     case 1: cr(); break; // extern Function
-                    case 2: hw_main(ImageHandle, SystemTable); break; // extern Function
+                    case 2: hw_main1(); break; // extern Function
                     case 3: bmain_main(ImageHandle, SystemTable); break;
                 }
                 break;
@@ -630,6 +641,7 @@ void bmain_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
 }
 
 EFI_STATUS EFIAPI bmain(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
+    // Disables Interrupts
     __asm__ volatile ("cli");
 
     init(ImageHandle, SystemTable);

@@ -23,23 +23,23 @@ all: bootloader init kernel c gpt
 
 bootloader:
 	@echo "Building CoreSys bootloader in $(MODE) mode..."
-	@$(MAKE) -f $(B_MAKE) all -B
+	@$(MAKE) -f $(B_MAKE) all -j$(shell nproc)
 	@echo "Bootloader built successfully"
 
 init:
 	@echo "Building CoreSys init in $(MODE) mode..."
-	@$(MAKE) -f $(I_MAKE) all -B
+	@$(MAKE) -f $(I_MAKE) all -j$(shell nproc)
 	@echo "Init built successfully"
 
 
 kernel:
 	@echo "Building CoreSys kernel in $(MODE) mode..."
-	@$(MAKE) -f $(K_MAKE) all a -B 
+	@$(MAKE) -f $(K_MAKE) all a -j$(shell nproc)
 	@echo "Kernel built successfully"
 
 c:
 	@echo "Building CoreSys c in $(MODE) mode..."
-	@$(MAKE) -f $(C_MAKE) all -B
+	@$(MAKE) -f $(C_MAKE) all -j$(shell nproc)
 	@echo "C built successfully"
 
 
@@ -56,7 +56,7 @@ ifeq ($(ADD_ESP_DEFINED),1)
 endif
 
 	@mv $(GPT_IMG) $(FINAL_IMG)
-	@rm -f $(BUILD_EFI) $(GPT_FILE_TXT)
+	@rm -f $(GPT_FILE_TXT)
 	@cp -f $(FINAL_IMG) $(DIST_LOCATION)
 	@echo "CoreSys.img created at $(DIST_LOCATION)"
 

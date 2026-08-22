@@ -41,8 +41,8 @@ subdirs:
 		fi \
 	done
 	@if [ -f $(CORESYS_DIR)/Makefile ]; then \
-		echo "[Make] Building CoreSys last..."; \
-		$(MAKE) -C $(CORESYS_DIR) all -B; \
+		echo "[Make] Building CoreSys last..." -B; \
+		$(MAKE) -C $(CORESYS_DIR) all; \
 	else \
 		echo "[Make] No Makefile in CoreSys, skipping"; \
 	fi

@@ -443,6 +443,15 @@ void kitoa_base(unsigned long v, int base, char *buf)
     buf[j] = 0;
 }
 
+static void out_char(char **buf, size_t *n, char c)
+{
+    if (*n > 1) {
+        **buf = c;
+        (*buf)++;
+        (*n)--;
+    }
+}
+
 int kprintf(const char *fmt, ...)
 {
     va_list ap;
@@ -591,6 +600,24 @@ int kprintf(const char *fmt, ...)
                 break;
             }
 
+            case 'q':
+            {
+                const uint8_t *digest = va_arg(ap, const uint8_t *);
+                const char hex[] = "0123456789abcdef";
+
+                for (unsigned int i = 0; i < 32; i++)
+                {
+                    unsigned int v = digest[i];
+
+                    kprint_char(hex[(v >> 4) & 0xF]);
+                    kprint_char(hex[v & 0xF]);
+
+                    count += 2;
+                }
+
+                break;
+            }
+
             default:
             {
                 kprint_char('%');
@@ -728,16 +755,6 @@ static inline void deinitSerial(cs_task* self)
         .entry = serial_clear
     };
     task_run(&clear_task); // Clear serial output
-}
-
-
-static void out_char(char **buf, size_t *n, char c)
-{
-    if (*n > 1) {
-        **buf = c;
-        (*buf)++;
-        (*n)--;
-    }
 }
 
 static void out_str(char **buf, size_t *n, const char *s)
@@ -1259,4 +1276,23 @@ void cli(void)
 void sti(void)
 {
     __asm__ volatile ("sti" ::: "memory");
+}
+
+void *kmemmove(void *dest, const void *src, size_t n)
+{
+    uint8_t *d = (uint8_t *)dest;
+    const uint8_t *s = (const uint8_t *)src;
+
+    if (d == s || n == 0)
+        return dest;
+
+    if (d < s) {
+        for (size_t i = 0; i < n; i++)
+            d[i] = s[i];
+    } else {
+        for (size_t i = n; i > 0; i--)
+            d[i - 1] = s[i - 1];
+    }
+
+    return dest;
 }

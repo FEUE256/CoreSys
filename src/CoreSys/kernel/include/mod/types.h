@@ -39,5 +39,22 @@ typedef struct {
     int64_t high;
 } int128_t;
 
+typedef struct {
+    uint128_t q0;
+    uint128_t q1;
+    uint128_t q2;
+    uint128_t q3;
+} uint512_t;
+
+typedef struct {
+    int128_t q0;
+    int128_t q1;
+    int128_t q2;
+    int128_t q3;
+} int512_t;
+
 typedef int128_t num128_t;
 typedef uint128_t unum128_t;
+
+typedef int512_t num512_t;
+typedef uint512_t unum512_t;

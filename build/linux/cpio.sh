@@ -4,8 +4,8 @@ set -e
 mkdir -p root/
 
 cp init root/
-cp ../lua/src/lua root/
-cp utils/busybox root/
+cp ../../src/lua/lua root/
+cp ../../bin/Release/utils/busybox root/
 
 chmod +x root/init root/lua
 

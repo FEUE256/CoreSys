@@ -12,7 +12,7 @@ EFI_STATUS EFIAPI cb(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
     init(ImageHandle, SystemTable);
     clear_screen();
 
-    printf(L"Download Cyber::Boot at CoreSys website! (If boot error use git lfs install, git lfs pull in root dir then you have CyberBoot.img in dist/\r\n");
+    printf(L"Cyber::Boot as of 2026-08-16 11:30 Summer Stockholm time, Cyber::Boot has reached End of Life Support If you want to access Cyber::Boot click enter from here and navigate to Extra Functions to access all Cyber::Boot Features.\r\n");
     printf(L"Press any key to continue...\r\n\r\n");
     get_key();
 

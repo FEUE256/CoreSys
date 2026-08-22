@@ -50,6 +50,8 @@ str_t       | struct         | 0  bits
 sta_t       | static         | 0  bits
 unum128_t   | uint64_t       | 128 bits
 num128_t    | int64_t        | 128 bits
+unum512_t   | uint128_t      | 512 bits
+num512_t    | int128_t       | 512 bits
 tid_t       | char[16]       | 16 bytes
 
 (If the type dont have a core abi varient use the normal type)
